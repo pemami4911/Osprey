@@ -1,9 +1,9 @@
-Kiwee
+Osprey
 =====
 
-CEN3031 Intro to Software Engineering // Health Accelerator // Kiwee
+CEN3031 Intro to Software Engineering // Health Accelerator // Osprey
 
-Kiwee is meant to be a 2D game that will allow kids (ages 10-15) with diabetes to keep track of their diet. It will also allow doctors to have access to this information to monitor their patients more closely. 
+Osprey is a 2D game that will allow kids (ages 10-15) to keep track of their diet. It will also allow doctors to have access to this information to monitor their patients more closely. 
 
 Gatorlink Usernames
 ===================
