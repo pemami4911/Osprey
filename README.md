@@ -16,7 +16,7 @@ Nick Jiang - njiang
 
 Peyt Dewar - pdewar
 
-Gabe Martins - gmartins
+Gabe Martins - gabe.martins
 
 Pivotal Tracker
 ===============
