@@ -1,8 +1,8 @@
 var ospreyApp = angular.module('ospreyCoreApp', [
 	'ngRoute', 
-	'splashPageController', 
+	'splashPageModule', 
 	'splashPageService', 
-	'regPageController'
+	'regPageModule'
 ]);
 
 
@@ -11,7 +11,7 @@ ospreyApp.config(['$routeProvider',
     $routeProvider.
       when('/', {
         templateUrl: 'views/splash.html',
-        controller: 'mainController'
+        controller: 'splashController'
       }).
       when('/registration', {
         templateUrl: 'views/registration.html',
