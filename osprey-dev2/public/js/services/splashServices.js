@@ -21,7 +21,11 @@ angular.module('splashPageService', [])
 
 			registerAttempt : function(loginData) {
 				return $http.post('/auth/checkReg', loginData);
-			},	
+			},
+
+			registerFinal : function(regData) {
+				return $http.post('auth/register', regData);
+			},
 
 			set : set,
 
