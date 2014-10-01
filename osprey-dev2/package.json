@@ -12,6 +12,7 @@
     "method-override": "~2.1.1"
   },
   "devDependencies": {
+    "grunt-karma": "^0.9.0",
     "karma-chrome-launcher": "^0.1.5",
     "karma-jasmine": "^0.1.5"
   }
