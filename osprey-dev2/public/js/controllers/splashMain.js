@@ -1,9 +1,9 @@
 'use strict';
-angular.module('splashPageController', [])
+angular.module('splashPageModule', [])
 
 	
 	// inject the Todo service factory into our controller
-	.controller('mainController', ['$scope','$http', '$location', 'splashFactory', function($scope, $http, $location, splashFactory) {
+	.controller('splashController', ['$scope','$http', '$location', 'splashFactory', function($scope, $http, $location, splashFactory) {
 		$scope.loginData = {};
 		$scope.initRegData = {};
 
