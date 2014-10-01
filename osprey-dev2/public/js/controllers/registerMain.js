@@ -20,7 +20,7 @@ angular.module('regPageController', [])
 					.success(function(data) {
 						$scope.loading = false;
 						console.log(data);
-						window.alert(data(data.count-1));
+						window.alert("User created");
 					});
 			}
 		};

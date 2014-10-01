@@ -1,8 +1,6 @@
 'use strict';
 angular.module('splashPageController', [])
-	// .config(function($locationProvider) {
-	// 	$locationProvider.html5Mode(true).hashPrefix('!');
-	// })
+
 	
 	// inject the Todo service factory into our controller
 	.controller('mainController', ['$scope','$http', '$location', 'splashFactory', function($scope, $http, $location, splashFactory) {
