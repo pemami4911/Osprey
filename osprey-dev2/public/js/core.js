@@ -1,4 +1,4 @@
-var ospreyApp = angular.module('ospreySplashPage', [
+var ospreyApp = angular.module('ospreyCoreApp', [
 	'ngRoute', 
 	'splashPageController', 
 	'splashPageService', 
