@@ -18,6 +18,6 @@ ospreyApp.config(['$routeProvider',
         controller: 'regController'
       }).
       otherwise({
-        redirectTo: '/'
+        redirectTo: 'views/splash.html'
       });
   }]);

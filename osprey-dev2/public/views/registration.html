@@ -1,6 +1,3 @@
-      {{initRegData.email}}
-
-      {{3 + 4}}
       <div class="container" style="height:100%">
          <div class="jumbotron">
             <img class="img-responsive" src="img/Osprey-Logo-Small.png"></img>
@@ -10,7 +7,7 @@
             <h2 class="text-center">REGISTRATION</h1>
             <h3 class="text-center" style="background-color:black; color:white">PHYSICIAN</h2>
             <div class="col-md-12">
-               <form class="form-horizontal" role="form">
+               <form class="form-horizontal" role="form" ng-submit="registerFinal()">
                   <div class="form-group">
                      <label for="inputEmail" class="col-sm-2 control-label" >Email</label>
                      <div class="col-sm-9">
@@ -34,9 +31,9 @@
                      </div>                     
                   </div>
                   <div class="form-group">
-                     <label for="inputField1" class="col-sm-2 control-label">Field 1</label>
+                     <label for="inputField1" class="col-sm-2 control-label">Password</label>
                      <div class="col-sm-9">
-                        <input type="text" class="form-control" id="inputField1" placeholder="Field 1">
+                        <input type="text" class="form-control" id="inputField1" placeholder="Field 1" ng-model="regData.password">
                      </div>
                   </div>     
                   <div class="form-group">
