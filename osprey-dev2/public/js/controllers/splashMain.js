@@ -21,13 +21,14 @@ angular.module('splashPageModule', [])
 						if(data == "null") {
 							console.log("Bad username or password");
 							window.alert("Bad username or password");
+							$scope.addAlert();
 						}
 						else {
 							console.log(data);
 							window.alert("Successful login");
 						}
 
-						$scope.loginData = {}; // clear the form so our user is ready to enter another
+						//$scope.loginData = {}; // clear the form so our user is ready to enter another
 						//$scope.todos = data; // assign our new list of todos
 					});
 			}
@@ -50,6 +51,19 @@ angular.module('splashPageModule', [])
 						}
 					});
 			}
+		};
+
+		// $scope.alerts = [
+		// 	{ type: 'danger', msg: 'Oh snap! Change a few things up and try submitting again.' },
+		// 	{ type: 'success', msg: 'Well done! You successfully read this important alert message.' }
+		// ];
+
+		$scope.addAlert = function() {
+			$scope.alerts.push({msg: 'Incorrect username or password!'});
+		};
+
+		$scope.closeAlert = function(index) {
+		$scope.alerts.splice(index, 1);
 		};
 	}]);
 
