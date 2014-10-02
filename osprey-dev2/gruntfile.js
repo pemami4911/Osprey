@@ -56,6 +56,4 @@ module.exports = function(grunt) {
 
     grunt.registerTask('test', ['karma']);
 
-    grunt.registerTask('default', ['node server.js']);
-
 };
