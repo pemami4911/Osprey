@@ -2,7 +2,8 @@ var ospreyApp = angular.module('ospreyCoreApp', [
 	'ngRoute', 
 	'splashPageModule', 
 	'splashPageService', 
-	'regPageModule'
+	'regPageModule',
+  'ui.bootstrap'
 ]);
 
 

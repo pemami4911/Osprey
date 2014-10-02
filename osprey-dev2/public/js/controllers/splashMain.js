@@ -5,7 +5,7 @@ angular.module('splashPageModule', ['splashPageService'])
 	// inject the Todo service factory into our controller
 	.controller('splashController', ['$scope','$http', '$location', 'splashFactory', function($scope, $http, $location, splashFactory) {
 		$scope.loginData = {};
-		$scope.initRegData = {};
+		$scope.initRegData = {userType: "Parent"};
 
 		$scope.login = function() {
 
@@ -20,12 +20,11 @@ angular.module('splashPageModule', ['splashPageService'])
 					.success(function(data) {
 						if(data == "null") {
 							console.log("Bad username or password");
-							window.alert("Bad username or password");
-							$scope.addAlert();
+							$scope.addAlert("Bad username or password!", "danger", true);
 						}
 						else {
 							console.log(data);
-							window.alert("Successful login");
+							$scope.addAlert("Successful login", "success", true);
 						}
 
 						//$scope.loginData = {}; // clear the form so our user is ready to enter another
@@ -44,7 +43,7 @@ angular.module('splashPageModule', ['splashPageService'])
 						$scope.loading = false;
 						console.log(data + " user(s) with that e-mail");
 						if (data >= 1)
-							window.alert("E-mail already exists");
+							$scope.addAlert("E-mail already exists", "danger", false);
 						else {
 							splashFactory.set($scope.initRegData.email);
 							$location.path('/registration');
@@ -53,17 +52,26 @@ angular.module('splashPageModule', ['splashPageService'])
 			}
 		};
 
-		// $scope.alerts = [
-		// 	{ type: 'danger', msg: 'Oh snap! Change a few things up and try submitting again.' },
-		// 	{ type: 'success', msg: 'Well done! You successfully read this important alert message.' }
-		// ];
+		$scope.loginAlerts = [];
+		$scope.regAlerts = [];
 
-		$scope.addAlert = function() {
-			$scope.alerts.push({msg: 'Incorrect username or password!'});
+		$scope.addAlert = function(message, type, forLogin) {
+			if (forLogin) {
+				if ($scope.loginAlerts.length > 0)
+					$scope.loginAlerts.splice(0, 1);
+				$scope.loginAlerts.push({msg: message, type: type});
+			} else {
+				if ($scope.regAlerts.length > 0)
+					$scope.regAlerts.splice(0, 1);
+				$scope.regAlerts.push({msg: message, type: type});
+			}
 		};
 
-		$scope.closeAlert = function(index) {
-		$scope.alerts.splice(index, 1);
+		$scope.closeAlert = function(index, forLogin) {
+			if (forLogin)
+				$scope.loginAlerts.splice(index, 1);
+			else
+				$scope.regAlerts.splice(index, 1);
 		};
 	}]);
 

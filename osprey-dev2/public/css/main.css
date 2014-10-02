@@ -1,0 +1,59 @@
+body {
+	color: #8DD528;
+	background-color: #FCF9E9;
+}
+
+.jumbotron{
+	background-color: #FCF9E9;
+}
+
+input.form-control{
+    background-color:#F7E4BF;
+    color: #7E4C4A;
+}
+
+textarea:focus,
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="datetime"]:focus,
+input[type="datetime-local"]:focus,
+input[type="date"]:focus,
+input[type="month"]:focus,
+input[type="time"]:focus,
+input[type="week"]:focus,
+input[type="number"]:focus,
+input[type="email"]:focus,
+input[type="url"]:focus,
+input[type="search"]:focus,
+input[type="tel"]:focus,
+input[type="color"]:focus,
+.uneditable-input:focus {
+  border-color: #62c462;
+  outline: 0;
+  outline: thin dotted \9;
+  /* IE6-9 */
+ 
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(98, 196, 98, 0.6);
+  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(98, 196, 98, 0.6);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(98, 196, 98, 0.6);
+}
+
+.btn-default{
+	background-color: #FF8800;
+	color: #FCF9E9;
+}
+
+.btn-default.active{
+	background-color: #EEF400;
+	color: #7E4C4A;
+}
+
+.btn-default:hover{
+	background-color: #EEF400;
+	color: #7E4C4A;
+}
+
+.btn-default:focus{
+	background-color: #EEF400;
+	color: #7E4C4A;
+}
