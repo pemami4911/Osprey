@@ -3,7 +3,7 @@ angular.module('splashPageService', [])
 
 	// super simple service
 	// each function returns a promise object 
-	.service('splashFactory', ['$http',function($http) {
+	.factory('splashFactory', ['$http',function($http) {
 
 		var regEmail = '';
 		// window.alert(savedData);

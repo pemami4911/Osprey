@@ -1,5 +1,5 @@
 'use strict';
-angular.module('splashPageModule', [])
+angular.module('splashPageModule', ['splashPageService'])
 
 	
 	// inject the Todo service factory into our controller
