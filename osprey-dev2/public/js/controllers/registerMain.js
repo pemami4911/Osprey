@@ -1,5 +1,5 @@
 'use strict';
-angular.module('regPageModule', [])
+angular.module('regPageModule', ['splashPageService'])
 
 	// inject the Todo service factory into our controller
 	.controller('regController', ['$scope','$http', 'splashFactory', function($scope, $http, splashFactory) {
