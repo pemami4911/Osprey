@@ -14,4 +14,9 @@ Run our tests with
   
     $ grunt test 
     
-  When you run our mocha tests, the current configuration will empty out our "users" collection in the mean-dev database. If you don't want this to happen, then comment out the code at the very bottom of app/tests/unit/*.js
+  When you run our mocha tests, the current test code removes all entries from the "users" collection within mongodb. If you don't want this to happen, then comment out this block of code at the very bottom of app/tests/unit/*.js
+  
+  	after(function(done) {
+  		User.remove().exec();
+  		done();
+  	});
