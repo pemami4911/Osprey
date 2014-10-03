@@ -1,5 +1,9 @@
 module.exports = function(grunt) {
 
+	var watchFiles = {
+		mochaTests: ['app/tests/**/*.js']
+	};
+
     grunt.initConfig({
 	    pkg: grunt.file.readJSON('package.json'),
 	    concat: {
@@ -40,6 +44,13 @@ module.exports = function(grunt) {
 		files: ['<%= jshint.files %>'],
 		tasks: ['jshint', 'qunit']
 	    },
+	    mochaTest: {
+			src: watchFiles.mochaTests,
+			options: {
+				reporter: 'spec',
+				require: 'server.js'
+			}
+		},
 	    karma: {
 		unit: {
 		    configFile: 'karma.conf.js'
@@ -52,10 +63,10 @@ module.exports = function(grunt) {
     // grunt.loadNpmTasks('grunt-contrib-qunit');
     // grunt.loadNpmTasks('grunt-contrib-watch');
     // grunt.loadNpmTasks('grunt-contrib-concat');
-
+    grunt.loadNpmTasks('grunt-mocha-test');
     grunt.loadNpmTasks('grunt-karma');
 
-    grunt.registerTask('test', ['karma']);
+    grunt.registerTask('test', ['karma', 'mochaTest']);
 
     // grunt.registerTask('default', ['jshint', 'qunit', 'concat', 'uglify']);
 
