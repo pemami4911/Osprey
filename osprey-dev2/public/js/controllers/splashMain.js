@@ -33,8 +33,6 @@ angular.module('splashPageModule', ['splashPageService'])
 						$scope.error = response.message;
 					});
 			}
-			else
-				$scope.addAlert("Please enter a valid e-mail and password", "danger", true); 
 		};
 
 		$scope.register = function() {
