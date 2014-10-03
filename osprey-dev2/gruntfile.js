@@ -57,8 +57,6 @@ module.exports = function(grunt) {
 
     grunt.registerTask('test', ['karma']);
 
-
-    grunt.registerTask('default', ['node server.js']);
     // grunt.registerTask('default', ['jshint', 'qunit', 'concat', 'uglify']);
 
 

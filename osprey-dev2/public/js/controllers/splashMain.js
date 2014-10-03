@@ -29,8 +29,12 @@ angular.module('splashPageModule', ['splashPageService'])
 
 						//$scope.loginData = {}; // clear the form so our user is ready to enter another
 						//$scope.todos = data; // assign our new list of todos
+					}).error(function(response) {
+						$scope.error = response.message;
 					});
 			}
+			else
+				$scope.addAlert("Please enter a valid e-mail and password", "danger", true); 
 		};
 
 		$scope.register = function() {
@@ -48,6 +52,8 @@ angular.module('splashPageModule', ['splashPageService'])
 							splashFactory.set($scope.initRegData.email);
 							$location.path('/registration');
 						}
+					}).error(function(response) {
+						$scope.error = response.message;
 					});
 			}
 		};
