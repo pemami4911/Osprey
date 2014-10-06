@@ -65,10 +65,11 @@ describe('splashController', function(){
 		expect($location.url()).toBe('/registration');
 	});
 
-	it('$scope.register() should fail to register with duplicate Username', function() {
+	it('$scope.register() should fail to register with duplicate email', function() {
 
 		// pretend like test@test.com has already been registered before
 		scope.initRegData.email = 'test@test.com'; 
+		scope.register(); 
 
 		// Test expected POST request
 		$httpBackend.when('POST', '/auth/checkReg').respond(400, {
