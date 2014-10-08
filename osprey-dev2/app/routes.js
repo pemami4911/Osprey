@@ -22,6 +22,7 @@ module.exports = function(app) {
 		UserModel.create({
 			email : req.body.email, 
 			password : req.body.password,
+			userType : req.body.userType, 
 			done : false
 		}, function(err, user) {
 			if (err)

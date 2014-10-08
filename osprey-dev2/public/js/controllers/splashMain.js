@@ -47,7 +47,8 @@ angular.module('splashPageModule', ['splashPageService'])
 						if (data >= 1)
 							$scope.addAlert("E-mail already exists", "danger", false);
 						else {
-							splashFactory.set($scope.initRegData.email);
+							splashFactory.set($scope.initRegData.email, 'e-mail');
+							splashFactory.set($scope.initRegData.userType, 'userType');
 							$location.path('/registration');
 						}
 					}).error(function(response) {

@@ -4,7 +4,8 @@ angular.module('regPageModule', ['splashPageService'])
 	// inject the Todo service factory into our controller
 	.controller('regController', ['$scope','$http', 'splashFactory', function($scope, $http, splashFactory) {
 		$scope.regData = {};
-		$scope.regData.email = splashFactory.get();
+		$scope.regData.email = splashFactory.get('e-mail');
+		$scope.regData.userType = splashFactory.get('userType'); 
 		$scope.loading = true;
 
 		$scope.registerFinal = function() {

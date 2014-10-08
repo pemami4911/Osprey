@@ -20,10 +20,13 @@ describe('User Model Unit Tests:', function() {
 		user = new User({
 			email: 'test@test.com',
 			password: 'password',
+			userType: 'Parent'
 		});
+
 		user2 = new User({
 			email: 'test@test.com',
 			password: 'password',
+			userType: 'Parent'
 		});
 
 		done();
