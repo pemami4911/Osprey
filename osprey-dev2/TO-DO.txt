@@ -1,13 +1,4 @@
 Things that I think we need to do 
  - Patrick
 
- 1. I think our login process needs to be made a little more like how Mean does it
- 		What I mean is, we need to check whether we need to delete the password field and stuff like that
-
- 2. Our routes.js file in /app probably could be renamed and/or placed in an appropriate sub-folder
-
- 3. Decide at what level should there be checks for duplicate emails in registration. We can set the 'email' property to be unique
- 	for users. Therefore - when we try to save a user model into our data with mongoose, it will return an error if there is a duplicate. 
- 	Currently, we use findOne() to see if there is already a user in the db with the email. For scalability reasons, i think we should set the email property to be unique. I am not sure how "expensive" findOne() is but i'm assuming it's at least O(n)
-
- 4. 
+1. Change routes.js and splashMain.js to accomodate new unique email value 
