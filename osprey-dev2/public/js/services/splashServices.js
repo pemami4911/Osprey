@@ -1,4 +1,5 @@
 'use strict';
+
 angular.module('splashPageService', [])
 
 	// super simple service
@@ -6,12 +7,21 @@ angular.module('splashPageService', [])
 	.factory('splashFactory', ['$http',function($http) {
 
 		var regEmail = '';
-		// window.alert(savedData);
-		var set = function (data) {
-			regEmail = data;
+		var userType = ''; 
+
+		//window.alert(savedData);
+		var set = function (data, type) {
+			if (type === 'e-mail')
+				regEmail = data;
+			else if (type === 'userType')
+				userType = data; 
 		}
-		var get = function () {
-			return regEmail;
+
+		var get = function (type) {
+			if (type === 'e-mail')
+				return regEmail;
+			else if( type === 'userType')
+				return userType; 
 		}
 
 		return {
@@ -19,8 +29,8 @@ angular.module('splashPageService', [])
 				return $http.post('/auth/login', loginData);
 			},	
 
-			registerAttempt : function(loginData) {
-				return $http.post('/auth/checkReg', loginData);
+			registerAttempt : function(initRegData) {
+				return $http.post('/auth/checkReg', initRegData);
 			},
 
 			registerFinal : function(regData) {

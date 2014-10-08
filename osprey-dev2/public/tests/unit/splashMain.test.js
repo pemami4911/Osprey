@@ -20,7 +20,7 @@ describe('splashController', function(){
     	 $location = _$location_; 
   	}));
 
-	it('should successfully save the email and password', function() {
+	it('should successfully save the email and password on login', function() {
 
 		scope.loginData.email = 'test@a.com'; 
 		scope.loginData.password = '12345'; 
