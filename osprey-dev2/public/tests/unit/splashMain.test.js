@@ -51,7 +51,7 @@ describe('splashController', function(){
 		expect(scope.error).toEqual('Missing or hostile credentials');
 	});
 
-	it('$scope.register() should succeed with correct data', function() {
+	it('$scope.register() should succeed with correct data and redirect to physician page', function() {
 
 		scope.initRegData.email = 'test@test.com';
 		scope.initRegData.userType = 'Physician'; 
@@ -64,7 +64,23 @@ describe('splashController', function(){
 		expect(scope.initRegData.email).toBe('test@test.com');
 		expect(scope.initRegData.userType).toBe('Physician'); 
 		expect(scope.error).toEqual(undefined);
-		expect($location.url()).toBe('/registration');
+		expect($location.url()).toBe('/regPhysician');
+	});
+
+	it('$scope.register() should succeed with correct data and redirect to parent page', function() {
+
+		scope.initRegData.email = 'test@test.com';
+		scope.initRegData.userType = 'Parent'; 
+		$httpBackend.when('POST', '/auth/checkReg').respond(200);
+
+		scope.register();
+		$httpBackend.flush();
+
+		// test scope value
+		expect(scope.initRegData.email).toBe('test@test.com');
+		expect(scope.initRegData.userType).toBe('Parent'); 
+		expect(scope.error).toEqual(undefined);
+		expect($location.url()).toBe('/regParent');
 	});
 
 	it('$scope.register() should fail to register with duplicate email', function() {

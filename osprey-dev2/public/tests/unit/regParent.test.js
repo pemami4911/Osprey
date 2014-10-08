@@ -1,6 +1,6 @@
-describe('regController', function(){
+describe('regParentController', function(){
 
-	beforeEach(module('regPageModule')); 
+	beforeEach(module('regParentPageModule')); 
 
 	 var ctrl, scope,
 	 	$httpBackend, 
@@ -12,7 +12,7 @@ describe('regController', function(){
    		 scope = $rootScope.$new();
        
     	// Create the controller
-    	 regCtrl = $controller('regController', {
+    	 regCtrl = $controller('regParentController', {
      	 	$scope : scope
    	 	});
 
