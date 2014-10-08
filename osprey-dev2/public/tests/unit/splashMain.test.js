@@ -95,7 +95,7 @@ describe('splashController', function(){
 
 		$httpBackend.flush(); 
 
-		expect(scope.initRegData.inviteCode).toBe('ai8s9d2fsd2'); 
+		expect(scope.initRegData.invCode).toBe('ai8s9d2fsd2'); 
 		expect(scope.error).toEqual(undefined); 
 	});
 });
