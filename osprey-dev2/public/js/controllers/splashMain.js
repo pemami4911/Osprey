@@ -49,7 +49,11 @@ angular.module('splashPageModule', ['splashPageService'])
 						else {
 							splashFactory.set($scope.initRegData.email, 'e-mail');
 							splashFactory.set($scope.initRegData.userType, 'userType');
-							$location.path('/registration');
+
+							if ($scope.initRegData.userType == 'Parent')
+								$location.path('/regParent');
+							else
+								$location.path('/regPhysician');
 						}
 					}).error(function(response) {
 						$scope.error = response.message;

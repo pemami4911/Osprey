@@ -1,0 +1,59 @@
+      <div class="container" style="height:100%">
+         <div class="jumbotron">
+            <img class="img-responsive" src="img/Osprey-Logo-Small.png"></img>
+         </div>
+
+         <div class="row marketing" style ="outline: 1px solid #ddd">
+            <h2 class="text-center">REGISTRATION</h1>
+            <h3 class="text-center" style="background-color:black; color:white">PHYSICIAN</h2>
+            <div class="col-md-12">
+               <form class="form-horizontal" role="form" ng-submit="registerFinal()">
+                  <div class="form-group">
+                     <label for="inputEmail" class="col-sm-2 control-label" >Email</label>
+                     <div class="col-sm-9">
+                        <input type="email" class="form-control" id="inputEmail" placeholder="Email" disabled ng-model="regData.email">
+                     </div>
+                  </div>
+                  <div class="form-group">
+                     <label for="inputFirstName" class="col-sm-2 control-label">First Name</label>
+                     <div class="col-sm-2">
+                        <input type="text" class="form-control" id="inputFirstName" placeholder="First Name">
+                     </div>
+
+                     <label for="inputMI" class="col-sm-1 control-label">M.I.</label>
+                     <div class="col-sm-2">
+                        <input type="text" class="form-control" id="inputFirstName" placeholder="M.I.">
+                     </div>                     
+
+                     <label for="inputLastName" class="col-sm-2 control-label">Last Name</label>
+                     <div class="col-sm-2">
+                        <input type="text" class="form-control" id="inputLastName" placeholder="Last Name">
+                     </div>                     
+                  </div>
+                  <div class="form-group">
+                     <label for="inputField1" class="col-sm-2 control-label">Password</label>
+                     <div class="col-sm-9">
+                        <input type="text" class="form-control" id="inputField1" placeholder="Field 1" ng-model="regData.password">
+                     </div>
+                  </div>     
+                  <div class="form-group">
+                     <label for="inputField2" class="col-sm-2 control-label">Field 2</label>
+                     <div class="col-sm-9">
+                        <input type="text" class="form-control" id="inputField2" placeholder="Field 2">
+                     </div>
+                  </div>     
+                  <div class="form-group">
+                     <label for="inputField3" class="col-sm-2 control-label">Field 3</label>
+                     <div class="col-sm-9">
+                        <input type="text" class="form-control" id="inputField3" placeholder="Field 3">
+                     </div>
+                  </div>                  
+                  <div class="form-group">
+                     <div class="col-sm-12 text-center">
+                        <button type="submit" class="btn btn-default btn-lg">Register</button>
+                     </div>
+                  </div>
+               </form>
+            </div>        
+         </div>
+      </div>

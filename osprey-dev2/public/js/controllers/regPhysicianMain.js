@@ -1,8 +1,8 @@
 'use strict';
-angular.module('regPageModule', ['splashPageService'])
+angular.module('regPhysicianPageModule', ['splashPageService'])
 
 	// inject the Todo service factory into our controller
-	.controller('regController', ['$scope','$http', '$location', 'splashFactory', function($scope, $http, $location, splashFactory) {
+	.controller('regPhysicianController', ['$scope','$http', '$location', 'splashFactory', function($scope, $http, $location, splashFactory) {
 		$scope.regData = {};
 		$scope.regData.email = splashFactory.get('e-mail');
 		$scope.regData.userType = splashFactory.get('userType'); 
