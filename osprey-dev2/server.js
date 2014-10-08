@@ -8,6 +8,12 @@ var morgan   = require('morgan');
 var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 
+//Passport requirements
+var path = require('path');
+var http = require('http');
+var passport = require('passport')
+var LocalStrategy = require('passport-local').Strategy;
+
 // configuration ===============================================================
 mongoose.connect(database.url); 	// connect to mongoDB database on modulus.io
 
@@ -17,6 +23,17 @@ app.use(bodyParser.urlencoded({'extended':'true'})); // parse application/x-www-
 app.use(bodyParser.json()); // parse application/json
 app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse application/vnd.api+json as json
 app.use(methodOverride('X-HTTP-Method-Override')); // override with the X-HTTP-Method-Override header in the request
+
+//app.use(express.cookieParser('your secret here'));
+//app.use(express.session());
+app.use(passport.initialize());
+app.use(passport.session());
+
+// passport config
+var Account = require('./app/models/user');
+passport.use(new LocalStrategy(Account.authenticate()));
+passport.serializeUser(Account.serializeUser());
+passport.deserializeUser(Account.deserializeUser());
 
 
 // routes ======================================================================

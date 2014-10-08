@@ -23,7 +23,7 @@ angular.module('regParentPageModule', ['splashPageService'])
 						console.log(data);
 						window.alert("User created");
 					}).error(function(response) {
-						$scope.error = response.message;
+						$scope.error = response.message; 
 					});
 			}
 		};
