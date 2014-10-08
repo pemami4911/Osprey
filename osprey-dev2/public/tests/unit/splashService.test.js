@@ -2,9 +2,8 @@ describe('splashPage service', function(){
 
 	beforeEach(module('splashPageService')); 
 
-	 var ctrl, scope, splashFactory,
-	 	$httpBackend, 
-	 	$location;
+	 var splashFactory,
+	 	$httpBackend; 
  	 // inject the $controller and $rootScope services
  	 // in the beforeEach block
  	 beforeEach(inject(function(_splashFactory_, _$httpBackend_) {

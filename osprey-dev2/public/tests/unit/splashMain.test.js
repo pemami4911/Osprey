@@ -54,6 +54,7 @@ describe('splashController', function(){
 	it('$scope.register() should succeed with correct data', function() {
 
 		scope.initRegData.email = 'test@test.com';
+		scope.initRegData.userType = 'Physician'; 
 		$httpBackend.when('POST', '/auth/checkReg').respond(200);
 
 		scope.register();
@@ -61,6 +62,7 @@ describe('splashController', function(){
 
 		// test scope value
 		expect(scope.initRegData.email).toBe('test@test.com');
+		expect(scope.initRegData.userType).toBe('Physician'); 
 		expect(scope.error).toEqual(undefined);
 		expect($location.url()).toBe('/registration');
 	});
@@ -76,11 +78,24 @@ describe('splashController', function(){
 			'message': 'Username already exists'
 		});
 
-		scope.register();
 		$httpBackend.flush();
 
 		// Test scope value
 		expect(scope.error).toBe('Username already exists');
 	});
 
+	it('should save the invite code', function() {
+
+		// assume this is a vali user + invite code
+		scope.initRegData.email = 'test@test.com'; 
+		scope.initRegData.invCode = 'ai8s9d2fsd2'; 
+		scope.register(); 
+
+		$httpBackend.when('POST', '/auth/checkReg'). respond(200); 
+
+		$httpBackend.flush(); 
+
+		expect(scope.initRegData.inviteCode).toBe('ai8s9d2fsd2'); 
+		expect(scope.error).toEqual(undefined); 
+	});
 });
