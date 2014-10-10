@@ -24,6 +24,6 @@ ospreyApp.config(['$routeProvider',
         controller: 'regPhysicianController'
       }).
       otherwise({
-        redirectTo: 'views/splash.html'
+        redirectTo: '/'
       });
   }]);

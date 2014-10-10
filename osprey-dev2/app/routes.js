@@ -5,38 +5,43 @@ var UserModel = require('./models/user');
 
 module.exports = function(app) {
 	// api ---------------------------------------------------------------------
-	app.post('/auth/login', passport.authenticate('local'), function(req, res) {
-	    res.send("");
-	});
+	app.post('/auth/login', function(req, res, next) {
+	  	passport.authenticate('local-login', function(err, user, info) {
 
+		  	console.log(user);
+		    if (err) { return next(err); }
+		    if (!user) { 
+		    	return res.send("null"); 
+		    }
+
+		    req.logIn(user, function(err) {
+
+			    if (err) { 
+			    	return next(err); 
+			    }
+		    	return res.send(user);
+		    });
+	  })(req, res, next);
+	});
 	// // create todo and send back all todos after creation
 
-	app.get('/', function (req, res) {
-	    res.send(req);
-	});
+	app.post('/auth/register', function(req, res, next) {
+		passport.authenticate('local-signup', function(err, user, info) {
+			console.log(user);
+		    if (err) { return next(err); }
+		    if (!user) { 
+		    	return res.send("null"); 
+		    }
 
-	app.post('/auth/register', function(req, res) {
-    	UserModel.register(new UserModel({ 
-    		email : req.body.email, 
-    		userType: req.body.userType 
-    	}), req.body.password, function(err, account) {
-    		console.log(account);
-	        if (err) {
-	            return res.send(err);
-	        }
-	        console.log("reg");
-        	passport.authenticate('local', function (req, res) {
-        		console.log("auth");
-        		UserModel.find(function(err, user) {
-        			console.log(err, user);
-					if (err)
-						res.send(err);
-					res.send(user);
-				});
-          		res.redirect('/');
-        	});
-    	});
-  	});
+		    req.logIn(user, function(err) {
+
+			    if (err) { 
+			    	return next(err); 
+			    }
+		    	return res.send(user);
+		    });
+		})(req, res, next);
+	});
 	
 	app.post('/auth/checkReg', function(req, res) {
 		// use mongoose to get all todos in the database
@@ -48,4 +53,18 @@ module.exports = function(app) {
 		});
 	});
 
+	app.get('/profile', isLoggedIn, function(req, res) {
+		res.send("hi");
+	});
+
 };
+
+function isLoggedIn(req, res, next) {
+	console.log(req.isAuthenticated());
+	// if user is authenticated in the session, carry on 
+	if (req.isAuthenticated())
+		return next();
+
+	// if they aren't redirect them to the home page
+	res.redirect('/');
+}
