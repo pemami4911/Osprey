@@ -26,6 +26,7 @@ angular.module('splashPageModule', ['splashPageService'])
 						else {
 							console.log(data);
 							$scope.addAlert("Successful login", "success", true);
+							$location.path('/dashboard');
 						}
 
 						//$scope.loginData = {}; // clear the form so our user is ready to enter another
