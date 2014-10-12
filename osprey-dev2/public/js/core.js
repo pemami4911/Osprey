@@ -4,6 +4,7 @@ var ospreyApp = angular.module('ospreyCoreApp', [
 	'splashPageService', 
 	'regParentPageModule',
   'regPhysicianPageModule',
+  'dashboardPageModule',
   'ui.bootstrap'
 ]);
 
@@ -23,7 +24,11 @@ ospreyApp.config(['$routeProvider',
         templateUrl: 'views/regPhysician.html',
         controller: 'regPhysicianController'
       }).
+      when('/dashboard', {
+        templateUrl: 'views/dashboard.html',
+        controller: 'dashboardController'
+      }).
       otherwise({
-        redirectTo: 'views/splash.html'
+        redirectTo: '/'
       });
   }]);

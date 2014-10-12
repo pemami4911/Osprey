@@ -34,7 +34,7 @@ angular.module('splashPageService', [])
 			},
 
 			registerFinal : function(regData) {
-				return $http.post('auth/register', regData);
+				return $http.post('/auth/register', regData);
 			},
 
 			set : set,

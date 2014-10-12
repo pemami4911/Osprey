@@ -1,41 +1,46 @@
 'use strict';
 
+var passport = require('passport');
 var UserModel = require('./models/user');
 
 module.exports = function(app) {
 	// api ---------------------------------------------------------------------
+	app.post('/auth/login', function(req, res, next) {
+	  	passport.authenticate('local-login', function(err, user, info) {
 
-	app.post('/auth/login', function(req, res) {
-		// use mongoose to get all todos in the database
-		UserModel.findOne({email : req.body.email, password : req.body.password}, function(err, users) {
-			// if there is an error retrieving, send the error. nothing after res.send(err) will execute
-			if (err)
-				res.send(err);
-			res.json(users); // return all todos in JSON format
-		});
+		  	console.log(user);
+		    if (err) { return next(err); }
+		    if (!user) { 
+		    	return res.send("null"); 
+		    }
+
+		    req.logIn(user, function(err) {
+
+			    if (err) { 
+			    	return next(err); 
+			    }
+		    	return res.send(user);
+		    });
+	  })(req, res, next);
 	});
-
 	// // create todo and send back all todos after creation
-	app.post('/auth/register', function(req, res) {
 
-		// create a todo, information comes from AJAX request from Angular
-		UserModel.create({
-			email : req.body.email, 
-			password : req.body.password,
-			userType : req.body.userType, 
-			done : false
-		}, function(err, user) {
-			if (err)
-				res.send(err);
+	app.post('/auth/register', function(req, res, next) {
+		passport.authenticate('local-signup', function(err, user, info) {
+			console.log(user);
+		    if (err) { return next(err); }
+		    if (!user) { 
+		    	return res.send("null"); 
+		    }
 
-			// get and return all the todos after you create another
-			UserModel.find(function(err, user) {
-				if (err)
-					res.send(err);
-				res.send(user);
-			});
-		});
+		    req.logIn(user, function(err) {
 
+			    if (err) { 
+			    	return next(err); 
+			    }
+		    	return res.send(user);
+		    });
+		})(req, res, next);
 	});
 	
 	app.post('/auth/checkReg', function(req, res) {
@@ -48,4 +53,18 @@ module.exports = function(app) {
 		});
 	});
 
+	app.get('/profile', isLoggedIn, function(req, res) {
+		res.send("hi");
+	});
+
 };
+
+function isLoggedIn(req, res, next) {
+	console.log(req.isAuthenticated());
+	// if user is authenticated in the session, carry on 
+	if (req.isAuthenticated())
+		return next();
+
+	// if they aren't redirect them to the home page
+	res.redirect('/');
+}

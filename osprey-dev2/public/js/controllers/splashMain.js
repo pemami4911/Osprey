@@ -8,7 +8,7 @@ angular.module('splashPageModule', ['splashPageService'])
 		$scope.initRegData = {userType: "Parent"};
 
 		$scope.login = function() {
-
+			$scope.loading = true;
 			// validate the formData to make sure that something is there
 			// if form is empty, nothing will happen
 			if ($scope.loginData.email != undefined) {
@@ -18,6 +18,7 @@ angular.module('splashPageModule', ['splashPageService'])
 
 					// if successful creation, call our get function to get all the new todos
 					.success(function(data) {
+						$scope.loading = false;
 						if(data == "null") {
 							console.log("Bad username or password");
 							$scope.addAlert("Bad username or password!", "danger", true);
@@ -25,12 +26,14 @@ angular.module('splashPageModule', ['splashPageService'])
 						else {
 							console.log(data);
 							$scope.addAlert("Successful login", "success", true);
+							$location.path('/dashboard');
 						}
 
 						//$scope.loginData = {}; // clear the form so our user is ready to enter another
 						//$scope.todos = data; // assign our new list of todos
 					}).error(function(response) {
 						$scope.error = response.message;
+						$scope.loading = false;
 					});
 			}
 		};
@@ -56,6 +59,7 @@ angular.module('splashPageModule', ['splashPageService'])
 								$location.path('/regPhysician');
 						}
 					}).error(function(response) {
+						$scope.loading = false;
 						$scope.error = response.message;
 					});
 			}
