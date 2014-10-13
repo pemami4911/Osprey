@@ -54,7 +54,7 @@ table.dataTable thead .sorting_desc_disabled {
     cursor: pointer;
 }
 
-table.dataTable thead .sorting {
+/*table.dataTable thead .sorting {
     background: url('../images/sort_both.png') no-repeat center right;
 }
 
@@ -72,7 +72,7 @@ table.dataTable thead .sorting_asc_disabled {
 
 table.dataTable thead .sorting_desc_disabled {
     background: url('../images/sort_desc_disabled.png') no-repeat center right;
-}
+}*/
 
 table.dataTable th:active {
     outline: none;

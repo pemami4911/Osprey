@@ -37,6 +37,10 @@ angular.module('splashPageService', [])
 				return $http.post('/auth/register', regData);
 			},
 
+			isLoggedIn : function() {
+				return $http.post('/auth/isLogged');
+			},
+
 			set : set,
 
 			get : get

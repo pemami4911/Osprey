@@ -9,13 +9,13 @@ module.exports = function(app) {
 	  	passport.authenticate('local-login', function(err, user, info) {
 
 		  	console.log(user);
+
 		    if (err) { return next(err); }
 		    if (!user) { 
 		    	return res.send("null"); 
 		    }
 
 		    req.logIn(user, function(err) {
-
 			    if (err) { 
 			    	return next(err); 
 			    }
@@ -28,6 +28,7 @@ module.exports = function(app) {
 	app.post('/auth/register', function(req, res, next) {
 		passport.authenticate('local-signup', function(err, user, info) {
 			console.log(user);
+
 		    if (err) { return next(err); }
 		    if (!user) { 
 		    	return res.send("null"); 
@@ -51,6 +52,17 @@ module.exports = function(app) {
 				res.send(err);
 			res.json(count); // return all todos in JSON format
 		});
+	});
+
+	app.post('/auth/isLogged', function(req, res) {
+		// use mongoose to get all todos in the database
+		console.log(req.isAuthenticated());
+		console.log(req.user);
+		if (req.isAuthenticated()) {
+			res.send(req.user);
+		} else {
+			res.send(false);
+		}
 	});
 
 	app.get('/profile', isLoggedIn, function(req, res) {
