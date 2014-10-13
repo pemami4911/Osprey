@@ -25,7 +25,7 @@ describe('regParentController', function(){
       scope.regData.email = "test@test123.com"; 
       scope.regData.userType = "Parent"; 
 
-      $httpBackend.when('POST', 'auth/register').respond(200); 
+      $httpBackend.when('POST', '/auth/register').respond(200); 
 
       scope.registerFinal();  
       $httpBackend.flush(); 
