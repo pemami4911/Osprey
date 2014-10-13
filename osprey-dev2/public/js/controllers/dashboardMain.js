@@ -10,6 +10,8 @@ angular.module('dashboardPageModule', ['splashPageService'])
 			$scope.activeTab = pageNumber;
 			if ($scope.activeTab == 1) {
 				$scope.contentUrl = 'views/dashPartials/dashMain.html';
+			} else if ($scope.activeTab == 2) {
+				$scope.contentUrl = 'views/dashPartials/dashCharts.html';
 			} else {
 				$scope.contentUrl = '';
 			}
