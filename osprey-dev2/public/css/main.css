@@ -1,4 +1,4 @@
-body {
+/*body {
 	color: #8DD528;
 	background-color: #FCF9E9;
 }
@@ -12,6 +12,32 @@ input.form-control{
     color: #7E4C4A;
 }
 
+.btn-default{
+	background-color: #FF8800;
+	color: #FCF9E9;
+}
+
+.btn-default.active{
+	background-color: #EEF400;
+	color: #7E4C4A;
+}
+
+.btn-default:hover{
+	background-color: #EEF400;
+	color: #7E4C4A;
+}
+
+.btn-default:focus{
+	background-color: #EEF400;
+	color: #7E4C4A;
+}*/
+
+/* fix ngReactGrid input */
+.ngReactGrid .ngReactGridSearch input {
+	height: 20px;
+}
+
+/* Create green highlight for text boxes */
 textarea:focus,
 input[type="text"]:focus,
 input[type="password"]:focus,
@@ -38,22 +64,5 @@ input[type="color"]:focus,
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(98, 196, 98, 0.6);
 }
 
-.btn-default{
-	background-color: #FF8800;
-	color: #FCF9E9;
-}
 
-.btn-default.active{
-	background-color: #EEF400;
-	color: #7E4C4A;
-}
 
-.btn-default:hover{
-	background-color: #EEF400;
-	color: #7E4C4A;
-}
-
-.btn-default:focus{
-	background-color: #EEF400;
-	color: #7E4C4A;
-}
