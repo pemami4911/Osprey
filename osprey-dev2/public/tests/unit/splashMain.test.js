@@ -20,6 +20,27 @@ describe('splashController', function(){
     	 $location = _$location_; 
   	}));
 
+ 	it('should be able to create an instance of itself', function() {
+ 		expect(ctrl).toExist; 
+ 	})
+
+ 	it('should be able to access the scopes variables', function() {
+ 		expect(scope.loginData).toExist; 
+ 		expect(scope.initRegData).toExist; 
+ 	}); 
+
+ 	it('should not accept an email on login with whitespace', function() {
+ 		scope.loginData.email = '    '; 
+ 		scope.login(); 
+ 		expect(scope.error).toBe('Email is undefined'); 
+ 	})
+
+	it('should not accept an email on initial registration with whitespace', function() {
+ 		scope.initRegData.email = '    '; 
+ 		scope.register(); 
+ 		expect(scope.error).toBe('Email is undefined'); 
+ 	})
+
 	it('should successfully save the email and password on login', function() {
 
 		scope.loginData.email = 'test@a.com'; 

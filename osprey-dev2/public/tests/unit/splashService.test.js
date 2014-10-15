@@ -22,4 +22,5 @@ describe('splashPage service', function(){
         expect(splashFactory.get('e-mail')).toBe('test@test123.com'); 
         expect(splashFactory.get('userType')).toBe('Physician'); 
    }); 
+
  }); 

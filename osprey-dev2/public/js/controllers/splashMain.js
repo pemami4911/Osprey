@@ -11,7 +11,7 @@ angular.module('splashPageModule', ['splashPageService'])
 			$scope.loading = true;
 			// validate the formData to make sure that something is there
 			// if form is empty, nothing will happen
-			if ($scope.loginData.email != undefined) {
+			if ($scope.loginData.email != undefined && $scope.loginData.email.trim() != '') {
 
 				// call the create function from our service (returns a promise object)
 				splashFactory.loginAttempt($scope.loginData)
@@ -20,8 +20,8 @@ angular.module('splashPageModule', ['splashPageService'])
 					.success(function(data) {
 						$scope.loading = false;
 						if(data == "null") {
-							console.log("Bad username or password");
-							$scope.addAlert("Bad username or password!", "danger", true);
+							console.log("Bad email or password");
+							$scope.addAlert("Bad email or password!", "danger", true);
 						}
 						else {
 							console.log(data);
@@ -36,11 +36,15 @@ angular.module('splashPageModule', ['splashPageService'])
 						$scope.loading = false;
 					});
 			}
+			else {
+				$scope.error = "Email is undefined";
+				$scope.addAlert($scope.error, "danger", true); 
+				$scope.loginData.email = null; 
+			}
 		};
 
 		$scope.register = function() {
-			if ($scope.initRegData.email != undefined) {
-
+			if ($scope.initRegData.email != undefined && $scope.initRegData.email.trim() != '') {
 				// call the create function from our service (returns a promise object)
 				splashFactory.registerAttempt($scope.initRegData)
 					// if successful creation, call our get function to get all the new todos
@@ -61,7 +65,13 @@ angular.module('splashPageModule', ['splashPageService'])
 					}).error(function(response) {
 						$scope.loading = false;
 						$scope.error = response.message;
+						//$scope.initRegData.email = {}; 
 					});
+			}
+			else {
+				$scope.error = "Email is undefined"; 
+				$scope.addAlert($scope.error, "danger", false); 
+				$scope.initRegData.email = null; 
 			}
 		};
 

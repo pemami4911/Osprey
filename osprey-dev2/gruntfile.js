@@ -67,7 +67,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-karma');
 
     grunt.registerTask('test', ['karma', 'mochaTest']);
-
+   	//grunt.registerTask('test', ['mochaTest']);
     // grunt.registerTask('default', ['jshint', 'qunit', 'concat', 'uglify']);
 
 

@@ -1,4 +1,5 @@
 'use strict';
+
 angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid'])
 
 	// inject the Todo service factory into our controller

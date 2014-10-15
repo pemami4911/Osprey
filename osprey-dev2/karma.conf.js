@@ -18,6 +18,8 @@ module.exports = function(config) {
             // external libraries
            'public/lib/angular/angular.js',
            'public/lib/angular-mocks/angular-mocks.js',
+           'public/lib/ngReactGrid/js/react-0.11.2.js',
+           'public/lib/ngReactGrid/js/ngReactGrid.js',
            'public/js/*/*.js',
            // tests
            'public/tests/unit/*.js',

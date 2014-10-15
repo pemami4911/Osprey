@@ -20,6 +20,14 @@ describe('regParentController', function(){
     	 $location = _$location_; 
   	}));
 
+   it('should be able to create an instance of itself', function() {
+      expect(regCtrl).toExist; 
+   }); 
+
+   it('should be able to access scope variable data', function() {
+      expect(scope.regData).toExist; 
+   });
+
    it('should save the email and usertype of the registrant', function() {
 
       scope.regData.email = "test@test123.com"; 
@@ -32,6 +40,22 @@ describe('regParentController', function(){
 
       expect(scope.regData.email).toBe('test@test123.com'); 
       expect(scope.regData.userType).toBe('Parent'); 
+      expect(scope.error).toBe(undefined); 
 
    }); 
+
+   it('should reject invalid emails', function() {
+      scope.regData.email = "test@test;.com"; 
+
+      $httpBackend.when('POST', '/auth/register').respond(400, {
+          'message': "Invalid email"
+      }); 
+
+      scope.registerFinal(); 
+      $httpBackend.flush(); 
+
+      expect(scope.error).toExist; 
+      expect(scope.error).toEqual('Invalid email'); 
+   });
+
  }); 

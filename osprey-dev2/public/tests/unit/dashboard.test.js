@@ -12,7 +12,7 @@ describe('dashboardController', function(){
    		 scope = $rootScope.$new();
        
     	// Create the controller
-    	 regCtrl = $controller('dashboardController', {
+    	 dashCtrl = $controller('dashboardController', {
      	 	$scope : scope
    	 	});
 
@@ -20,14 +20,48 @@ describe('dashboardController', function(){
     	 $location = _$location_; 
   	}));
 
-   it('should change the content url when a new tab is selected', function() {
+   it('should be able to instantiate a copy of the dashboardController', function() {
+      expect(dashCtrl).toExist; 
+   });
+
+   it('should have access to the dashboardControllers scope', function() {
+      expect(scope.activeTab).toExist; 
+      expect(scope.tableData).toExist; 
+   });
+
+   it('should check the page number is active', function() {
+      expect(scope.isActive).toBeTruthy(); 
+   });
+
+   // it('should execute isLoggedIn() correctly', function() {
+   //    $httpBackend.when('POST', '/auth/isLogged').respond(200); 
+
+   //    scope.isLoggedIn(); 
+   //    $httpBackend.flush(); 
+
+   //    expect(scope.error).toBe(undefined); 
+   // });
+
+   it('should change the content url when a new tab is selected, and should be able to switch back', function() {
 
       scope.activeTab = 1;
       expect(scope.contentUrl).toBe('views/dashPartials/dashMain.html'); 
       scope.switchTab(2);
-      expect(scope.contentUrl).toBe('views/dashPartials/dashCharts.html'); 
+      expect(scope.contentUrl).toBe('views/dashPartials/dashTables.html'); 
       scope.switchTab(1);
       expect(scope.contentUrl).toBe('views/dashPartials/dashMain.html'); 
 
    }); 
+
+   it('should change the content url to any other url', function() {
+
+      scope.switchTab(3);  
+          expect(scope.contentUrl).toBe('views/dashPartials/dashCharts.html'); 
+      scope.switchTab(1);
+          expect(scope.contentUrl).toBe('views/dashPartials/dashMain.html'); 
+      scope.switchTab(2); 
+          expect(scope.contentUrl).toBe('views/dashPartials/dashTables.html'); 
+   });
+
+
  }); 
