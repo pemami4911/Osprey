@@ -20,8 +20,8 @@ angular.module('splashPageModule', ['splashPageService'])
 					.success(function(data) {
 						$scope.loading = false;
 						if(data == "null") {
-							console.log("Bad email or password");
-							$scope.addAlert("Bad email or password!", "danger", true);
+							console.log("Invalid email or password");
+							$scope.addAlert("Invalid email or password!", "danger", true);
 						}
 						else {
 							console.log(data);

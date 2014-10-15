@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "Front-end application for Osprey",
   "main": "server.js",
-  "author": "Nick Jiang, Patrick Emami, Gabe Martins, Peyt Dewar",
+  "author": "Nick Jiang, Patrick Emami, Gabe Martins, Peyt Spencer Dewar",
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "~1.4.3",
