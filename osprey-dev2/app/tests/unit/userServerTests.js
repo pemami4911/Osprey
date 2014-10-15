@@ -115,16 +115,85 @@ describe('User Model Unit Tests:', function() {
 		});
 
 
-		it('should correctly save the user type of a user type in the database', function(done) {
+		it('should correctly save the user type of a Parent in the database', function(done) {
+			var newUser = new User();
+			newUser.email = 'abc@123.com';
+			newUser.password = 'p12345'; 
+			newUser.userType = 'Parent';
 
-			user.email = 'abc@123.com';
-			user.email = '12345'; 
-
-			user.save(function(err) {
-				User.findOne({ email : user.email }, function(err, user) {
-					user.userType.should.equal('Parent'); 
+			newUser.save(function(err) {
+				User.findOne({ email : newUser.email }, function(err, savedUser) {
+					savedUser.userType.should.equal('Parent'); 
 					done(); 
 				}); 
+			}); 
+		});
+
+		it('should correctly save the user type of a Physician in the database', function(done) {
+			var newUser = new User();
+			newUser.email = 'abc@1234.com';
+			newUser.password = '12345'; 
+			newUser.userType = 'Physician';
+			newUser.save(function(err) {
+				User.findOne({ email : newUser.email }, function(err, savedUser) {
+					savedUser.userType.should.equal('Physician'); 
+					done(); 
+				}); 
+			}); 
+		});
+
+		it('should fail to save a user with a user type of neither Parent nor Physician', function(done) {
+			var newUser = new User();
+			newUser.email = 'abcd@123.com';
+			newUser.password = '12345'; 
+			newUser.userType = 'Person';
+			newUser.save(function(err) {
+				should.exist(err);
+				done();
+			}); 
+		});
+
+		it('should fail to save a user with no @ in their e-mail adddress', function(done) {
+			var newUser = new User();
+			newUser.email = 'abcd123.com';
+			newUser.password = '12345'; 
+			newUser.userType = 'Physician';
+			newUser.save(function(err) {
+				should.exist(err);
+				done();
+			}); 
+		});
+
+		it('should fail to save a user with no . in their e-mail adddress', function(done) {
+			var newUser = new User();
+			newUser.email = 'abcd123com';
+			newUser.password = '12345'; 
+			newUser.userType = 'Physician';
+			newUser.save(function(err) {
+				should.exist(err);
+				done();
+			}); 
+		});
+
+		it('should fail to save a user with more than 4 characters after the . in their email address', function(done) {
+			var newUser = new User();
+			newUser.email = 'abcd1@asd.23com';
+			newUser.password = '12345'; 
+			newUser.userType = 'Physician';
+			newUser.save(function(err) {
+				should.exist(err);
+				done();
+			}); 
+		});
+
+		it('should fail to save a user with no characters between the @ and the . in their email address', function(done) {
+			var newUser = new User();
+			newUser.email = 'abcd1@asd.23com';
+			newUser.password = '12345'; 
+			newUser.userType = 'Physician';
+			newUser.save(function(err) {
+				should.exist(err);
+				done();
 			}); 
 		});
 

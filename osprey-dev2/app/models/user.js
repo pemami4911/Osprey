@@ -2,9 +2,9 @@ var mongoose = require('mongoose');
 var bcrypt   = require('bcrypt-nodejs');
 
 var userSchema = mongoose.Schema({
-    email: {type: String, unique: true},
-    userType: String,
-    password: String
+    email: {type: String, unique: true, validate: /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/i },
+    userType: {type: String, enum: ['Parent', 'Physician']},
+    password: {type: String, validate: /[A-Z0-9]+/i } // currently only letters or numbers, case sensitive
 });
 
 // methods ======================
