@@ -23,6 +23,7 @@
     "karma-chrome-launcher": "^0.1.5",
     "karma-jasmine": "^0.1.5",
     "karma-mocha": "^0.1.9",
-    "mocha": "^1.21.4"
+    "mocha": "^1.21.4",
+    "protractor": "^1.3.1"
   }
 }

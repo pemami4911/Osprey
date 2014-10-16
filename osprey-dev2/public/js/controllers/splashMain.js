@@ -71,7 +71,7 @@ angular.module('splashPageModule', ['splashPageService'])
 			else {
 				$scope.error = "Email is undefined"; 
 				$scope.addAlert($scope.error, "danger", false); 
-				$scope.initRegData.email = null; 
+				$scope.initRegData.email = {}; 
 			}
 		};
 

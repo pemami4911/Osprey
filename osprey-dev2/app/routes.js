@@ -23,13 +23,28 @@ module.exports = function(app) {
 		    });
 	  })(req, res, next);
 	});
-	// // create todo and send back all todos after creation
+
+	// adding log-out functionality 
+	app.get('/auth/logout', function(req, res) {
+		if (req.isAuthenticated()) {
+  				req.logout();
+  				if(req.isAuthenticated()) {
+  					console.log("Failed to log out successfully"); 
+  					return res.send("Failed to log out successfully")
+  				}
+   				console.log("Logged out successfully");
+   				return res.send("Logged out successfully");
+  		}
+	});
 
 	app.post('/auth/register', function(req, res, next) {
 		passport.authenticate('local-signup', function(err, user, info) {
 			console.log(user);
 
-		    if (err) { return next(err); }
+		    if (err) { 
+		    	console.log("Error caught");
+		    	return next(err); 
+		    }
 		    if (!user) { 
 		    	return res.send("null"); 
 		    }

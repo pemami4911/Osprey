@@ -2,8 +2,7 @@ Things that I think we need to do
  - Patrick
 
 1. When on the dashboard and back arrow is hit, there should be an identifier showing that you're still logged in
-2. When you hit NEXT and whitespace is entered, have it reset field automatically 
-3. 
+2. Should not crash with incorrect email input
 
 
 ***Nick,***

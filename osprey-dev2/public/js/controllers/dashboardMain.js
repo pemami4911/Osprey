@@ -110,5 +110,26 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid'])
 			return pageNumber === $scope.activeTab;
 		}
 
+		$scope.logoutAttempt = function() {
+			$scope.loading = true;
+
+			// check if someone is currently logged in 
+			if( $scope.loggedUser != undefined ) {
+				// call the factory service function logoutAttempt
+				splashFactory.logoutAttempt($scope.loggedUser) 
+					// on successful logout
+					.success(function(data){
+						$scope.loading = false; 
+						if( data === "Logged out successfully") {
+							$location.path('/'); 
+						}
+					}).error(function(response) {
+						$scope.error = response.message; 
+					});
+			}
+			else
+				$scope.error = "Failed call to logoutAttempt()"; 
+		}
+
 	}]);
 

@@ -41,8 +41,8 @@ module.exports = function(passport) {
         // User.findOne wont fire unless data is sent back
         process.nextTick(function() {
 
-    // find a user whose email is the same as the forms email
-    // we are checking to see if the user trying to login already exists
+        // find a user whose email is the same as the forms email
+        // we are checking to see if the user trying to login already exists
         User.findOne({ 'local.email' :  email }, function(err, user) {
             // if there are any errors, return the error
             if (err)
@@ -53,10 +53,10 @@ module.exports = function(passport) {
                 return done(null, false, req.flash('signupMessage', 'That email is already taken.'));
             } else {
 
-        // if there is no user with that email
+                // if there is no user with that email
                 // create the user
                 //console.log(req);
-                var newUser            = new User();
+                var newUser      = new User();
 
                 // set the user's local credentials
                 newUser.email    = email;
@@ -64,10 +64,12 @@ module.exports = function(passport) {
                 newUser.userType = req.body.userType;
                 // console.log(req);
 
-        // save the user
+                // save the user
                 newUser.save(function(err) {
-                    if (err)
-                        throw err;
+                    if (err) {
+                          console.log("Error saving new user");
+                          return done(err); 
+                    }
                     return done(null, newUser);
                 });
             }

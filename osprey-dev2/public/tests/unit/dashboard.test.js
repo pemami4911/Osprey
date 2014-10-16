@@ -33,14 +33,17 @@ describe('dashboardController', function(){
       expect(scope.isActive).toBeTruthy(); 
    });
 
-   // it('should execute isLoggedIn() correctly', function() {
-   //    $httpBackend.when('POST', '/auth/isLogged').respond(200); 
+   it('should be able to initiate log out', function() {
 
-   //    scope.isLoggedIn(); 
-   //    $httpBackend.flush(); 
+      scope.loggedUser = {}; 
 
-   //    expect(scope.error).toBe(undefined); 
-   // });
+      $httpBackend.expect('GET', '/auth/logout');
+
+      scope.logoutAttempt(scope.loggedUser); 
+      $httpBackend.flush(); 
+
+      expect(scope.error).toBe("Failed call to logoutAttempt()"); 
+   });
 
    it('should change the content url when a new tab is selected, and should be able to switch back', function() {
 

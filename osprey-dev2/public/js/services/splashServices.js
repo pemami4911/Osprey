@@ -41,6 +41,10 @@ angular.module('splashPageService', [])
 				return $http.post('/auth/isLogged');
 			},
 
+			logoutAttempt : function(userData) {
+				return $http.get('/auth/logout', userData); 
+			},
+
 			set : set,
 
 			get : get
