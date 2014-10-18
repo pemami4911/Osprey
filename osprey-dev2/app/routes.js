@@ -27,13 +27,11 @@ module.exports = function(app) {
 	// adding log-out functionality 
 	app.get('/auth/logout', function(req, res) {
 		if (req.isAuthenticated()) {
-  				req.logout();
-  				if(req.isAuthenticated()) {
-  					console.log("Failed to log out successfully"); 
-  					return res.send("Failed to log out successfully")
-  				}
-   				console.log("Logged out successfully");
+  				req.logout();	
    				return res.send("Logged out successfully");
+  		}
+  		else {
+  			return res.send("Failed to log out successfully");
   		}
 	});
 
