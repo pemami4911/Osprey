@@ -14,6 +14,30 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid'])
 		$scope.loggedUser = {};
 		$scope.tableSelections = [];
 
+		// $scope.$on is an event handler
+		// $routeChangeStart is an angular event that is called every time a route change begins
+		$scope.$on('$routeChangeStart', function () {
+	        var userAuthenticated = function() {
+	         	return (function() {
+	         		splashFactory.isLoggedIn()
+					// if successful, stay on dashboard. else (if you're not logged in)
+					// go back to the home page
+					.success(function(data) {
+						if (data == 'false') {
+							$location.path('/');
+						} else {
+							$location.path('/dashboard'); 
+						}
+					}).error(function(response) {
+						console.log(response);
+						$scope.error = response.message; 
+					});
+	         	})();
+	         }
+
+	        userAuthenticated(); 
+   		});
+   		
 		// Grab dummy data here
 		$http.get('../json/users.json').success(function(data) {
     		$scope.tableData = data;
