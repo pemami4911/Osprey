@@ -37,11 +37,10 @@ module.exports = function(app) {
 
 	app.post('/auth/register', function(req, res, next) {
 		passport.authenticate('local-signup', function(err, user, info) {
-			console.log(user);
 
 		    if (err) { 
-		    	console.log("Error caught");
-		    	return next(err); 
+		    	console.log(err); 
+		    	return res.send(err); 
 		    }
 		    if (!user) { 
 		    	return res.send("null"); 
@@ -54,6 +53,7 @@ module.exports = function(app) {
 			    }
 		    	return res.send(user);
 		    });
+
 		})(req, res, next);
 	});
 	

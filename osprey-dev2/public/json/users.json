@@ -1,0 +1,23 @@
+[
+	{	
+		"patientName" : "John Smith",
+	 	"parentName" : "Eric Smith",
+	 	"email" : "john@yahoo.com",
+	 	"weight" : 110,
+	 	"age" : 7
+	},
+	{	
+		"patientName" : "Jane Smith",
+	 	"parentName" : "abc def",
+	 	"email" : "test@yahoo.com",
+	 	"weight" : 123,
+	 	"age" : 6
+	},
+	{	
+		"patientName" : "das asda",
+	 	"parentName" : "sdf sdfs",
+	 	"email" : "as@yahoo.com",
+	 	"weight" : 80,
+	 	"age" : 5
+	}
+]

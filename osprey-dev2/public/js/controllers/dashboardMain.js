@@ -12,43 +12,23 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid'])
 		$scope.activeTab = 1;
 		$scope.contentUrl = 'views/dashPartials/dashMain.html';
 		$scope.loggedUser = {};
-
 		$scope.tableSelections = [];
-		$scope.tableData = [
-			{	
-				"patientName" : "John Smith",
-			 	"parentName" : "Eric Smith",
-			 	"email" : "john@yahoo.com",
-			 	"weight" : 110,
-			 	"age" : 7
-			},
-			{	
-				"patientName" : "Jane Smith",
-			 	"parentName" : "abc def",
-			 	"email" : "test@yahoo.com",
-			 	"weight" : 123,
-			 	"age" : 6
-			},
-			{	
-				"patientName" : "das asda",
-			 	"parentName" : "sdf sdfs",
-			 	"email" : "as@yahoo.com",
-			 	"weight" : 80,
-			 	"age" : 5
-			}
-		];
 
-		for (var i = 1; i <= 100; i++) {
-			$scope.tableData.push({	
-				"patientName" : "Patient " + i,
-			 	"parentName" : "Parent " + i,
-			 	"email" : "test@email.com" + i,
-			 	"weight" : i,
-			 	"age" : i * 2
-			})
-		}
-        
-        $scope.grid = {
+		// Grab dummy data here
+		$http.get('../json/users.json').success(function(data) {
+    		$scope.tableData = data;
+
+    		for (var i = 1; i <= 100; i++) {
+				$scope.tableData.push({	
+					"patientName" : "Patient " + i,
+				 	"parentName" : "Parent " + i,
+				 	"email" : "test@email.com" + i,
+				 	"weight" : i,
+				 	"age" : i * 2
+				})
+			}
+
+			$scope.grid = {
                 data: $scope.tableData,
                 columnDefs: [
                 new ngReactGridCheckbox($scope.tableSelections),
@@ -77,13 +57,13 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid'])
                     field: "age",
                     displayName: "Age"
                 }]
-        };
-
+        	};
+  		});
 
 		splashFactory.isLoggedIn()
 			// if successful creation, call our get function to get all the new todos
 			.success(function(data) {
-				console.log(data);
+				//console.log(data);
 				if (data == 'false') {
 					window.alert("Please log in first!");
 					$location.path('/');
