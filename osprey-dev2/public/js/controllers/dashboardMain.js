@@ -13,28 +13,17 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid'])
 		$scope.contentUrl = 'views/dashPartials/dashMain.html';
 		$scope.loggedUser = {};
 		$scope.tableSelections = [];
+		$scope.isLogged = false; 
 
 		// $scope.$on is an event handler
 		// $routeChangeStart is an angular event that is called every time a route change begins
 		$scope.$on('$routeChangeStart', function () {
-	        var userAuthenticated = function() {
-	         	return (function() {
-	         		splashFactory.isLoggedIn()
-					// if successful, stay on dashboard. else (if you're not logged in)
-					// go back to the home page
-					.success(function(data) {
-						if (data == 'false') {
-							$location.path('/');
-						} else {
-							$location.path('/dashboard'); 
-						}
-					}).error(function(response) {
-						console.log(response);
-						$scope.error = response.message; 
-					});
-	         	})();
+	        var userAuthenticated = function() {  	
+         		if( $scope.isLogged )
+         			$location.path('/dashboard'); 
+         		else
+         			$location.path('/');
 	         }
-
 	        userAuthenticated(); 
    		});
    		
@@ -90,9 +79,11 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid'])
 				//console.log(data);
 				if (data == 'false') {
 					window.alert("Please log in first!");
+					$scope.isLogged = false; 
 					$location.path('/');
 				} else {
 					$scope.loggedUser = data;
+					$scope.isLogged = true; 
 				}
 			}).error(function(response) {
 				console.log(response);
