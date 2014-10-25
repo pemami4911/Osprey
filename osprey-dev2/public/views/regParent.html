@@ -17,37 +17,37 @@
                   <div class="form-group">
                      <label for="inputFirstName" class="col-sm-2 control-label">First Name</label>
                      <div class="col-sm-2">
-                        <input type="text" class="form-control" id="inputFirstName" placeholder="First Name">
+                        <input type="text" class="form-control" id="inputFirstName" placeholder="First Name" ng-model="regData.firstName">
                      </div>
 
                      <label for="inputMI" class="col-sm-1 control-label">M.I.</label>
                      <div class="col-sm-2">
-                        <input type="text" class="form-control" id="inputFirstName" placeholder="M.I.">
+                        <input type="text" class="form-control" id="inputFirstName" placeholder="M.I." ng-model="regData.mI">
                      </div>                     
 
                      <label for="inputLastName" class="col-sm-2 control-label">Last Name</label>
                      <div class="col-sm-2">
-                        <input type="text" class="form-control" id="inputLastName" placeholder="Last Name">
+                        <input type="text" class="form-control" id="inputLastName" placeholder="Last Name" ng-model="regData.lastName">
                      </div>                     
                   </div>
                   <div class="form-group">
                      <label for="inputField1" class="col-sm-2 control-label">Password</label>
                      <div class="col-sm-9">
-                        <input type="text" class="form-control" id="inputField1" placeholder="Field 1" ng-model="regData.password">
+                        <input type="password" class="form-control" id="inputField1" placeholder="Password" ng-model="regData.password">
                      </div>
                   </div>     
                   <div class="form-group">
-                     <label for="inputField2" class="col-sm-2 control-label">Field 2</label>
+                     <label for="inputField2" class="col-sm-2 control-label">Parent Field 1</label>
                      <div class="col-sm-9">
-                        <input type="text" class="form-control" id="inputField2" placeholder="Field 2">
+                        <input type="text" class="form-control" id="inputField2" placeholder="Field 1" ng-model="regData.parentField1">
                      </div>
                   </div>     
                   <div class="form-group">
-                     <label for="inputField3" class="col-sm-2 control-label">Field 3</label>
+                     <label for="inputField3" class="col-sm-2 control-label">Parent Field 2</label>
                      <div class="col-sm-9">
-                        <input type="text" class="form-control" id="inputField3" placeholder="Field 3">
+                        <input type="text" class="form-control" id="inputField3" placeholder="Field 2" ng-model="regData.parentField2">
                      </div>
-                  </div>                  
+                  </div>
                   <div class="form-group">
                      <div class="col-sm-12 text-center">
                         <button type="submit" class="btn btn-default btn-lg" id="regParent">Register</button>

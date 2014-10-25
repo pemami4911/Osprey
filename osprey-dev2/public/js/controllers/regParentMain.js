@@ -14,16 +14,16 @@ angular.module('regParentPageModule', ['splashPageService'])
 			// validate the formData to make sure that something is there
 			// if form is empty, nothing will happen
 			if ($scope.regData.email != undefined) {
-
 				// call the create function from our service (returns a promise object)
 				splashFactory.registerFinal($scope.regData)
 					// if successful creation, call our get function to get all the new todos
 					.success(function(data) {
 						$scope.loading = false;
-						// console.log(data);
+						//console.log(data);
 						window.alert("User created");
 						$location.path('/dashboard');
 					}).error(function(response) {
+						console.log(response);
 						$scope.error = response.message; 
 						window.alert("Input was rejected. Try a different e-mail"); 
 					});

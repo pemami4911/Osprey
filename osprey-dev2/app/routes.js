@@ -37,10 +37,10 @@ module.exports = function(app) {
 
 	app.post('/auth/register', function(req, res, next) {
 		passport.authenticate('local-signup', function(err, user, info) {
-
 		    if (err) { 
-		    	console.log(err); 
-		    	return res.send(err); 
+		    	console.log("sending error");
+		    	console.log(err);
+		    	return next(err); 
 		    }
 		    if (!user) { 
 		    	return res.send("null"); 
@@ -78,10 +78,7 @@ module.exports = function(app) {
 		}
 	});
 
-	app.get('/profile', isLoggedIn, function(req, res) {
-		res.send("hi");
-	});
-
+	
 };
 
 function isLoggedIn(req, res, next) {

@@ -45,8 +45,10 @@ module.exports = function(passport) {
         // we are checking to see if the user trying to login already exists
         User.findOne({ 'local.email' :  email }, function(err, user) {
             // if there are any errors, return the error
-            if (err)
+            if (err) {
+                console.log(err);
                 return done(err);
+            }
 
             // check to see if theres already a user with that email
             if (user) {
@@ -64,13 +66,23 @@ module.exports = function(passport) {
                 newUser.email    = email;
                 newUser.password = newUser.generateHash(password);
                 newUser.userType = req.body.userType;
-                // console.log(req);
+                newUser.firstName = req.body.firstName;
+                newUser.lastName = req.body.lastName;
+
+                for (var key in req.body) {
+                    if (key.substr(0, 6) == "parent") {
+                        newUser.addProperty(key, req.body[key]);
+                    } else if (key.substr(0, 6) == "physic") {
+                        newUser.addProperty(key, req.body[key]);
+                    }
+                }
+
 
                 // save the user
                 newUser.save(function(err) {
                     if (err) {
-                          console.log("Error saving new user");
-                          return done(err); 
+                        console.log(err);
+                        return done( err );
                     }
                     return done(null, newUser);
                 });

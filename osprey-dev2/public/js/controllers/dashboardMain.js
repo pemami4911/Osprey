@@ -41,7 +41,8 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid'])
 				})
 			}
 
-			$scope.grid = {
+        
+        $scope.grid = {
                 data: $scope.tableData,
                 columnDefs: [
                 new ngReactGridCheckbox($scope.tableSelections),
