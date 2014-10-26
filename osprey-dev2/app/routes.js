@@ -69,8 +69,6 @@ module.exports = function(app) {
 
 	app.post('/auth/isLogged', function(req, res) {
 		// use mongoose to get all todos in the database
-		console.log(req.isAuthenticated());
-		console.log(req.user);
 		if (req.isAuthenticated()) {
 			res.send(req.user);
 		} else {
@@ -78,6 +76,30 @@ module.exports = function(app) {
 		}
 	});
 
+	app.post('/auth/changeEmail', function(req, res) {
+		// use mongoose to get all todos in the database
+		UserModel.update({email: req.body.user.email}, {email: req.body.newEmail}, {}, function(err, result) {
+			if (err) {
+				console.log("error" + err);
+				res.send(err);
+			}
+			res.json(result);
+		});
+	});
+
+	app.post('/auth/changePassword', function(req, res) {
+		// use mongoose to get all todos in the database
+		console.log(req.password);
+		console.log(req.body);
+		UserModel.update({email: req.body.user.email}, {password: UserModel.generateHash(req.body.newPassword)}, {}, function(err, result) {
+			if (err) {
+				console.log("error" + err);
+				res.send(err);
+			}
+
+			res.json(result);
+		});
+	});
 	
 };
 

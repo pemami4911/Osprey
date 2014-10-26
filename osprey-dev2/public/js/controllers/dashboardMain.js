@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid'])
+angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.bootstrap'])
 
 	// inject the Todo service factory into our controller
 	.controller('dashboardController', ['$scope',
@@ -73,24 +73,27 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid'])
                 }]
         	};
   		});
-
-		splashFactory.isLoggedIn()
+		
+		$scope.checkLogged = function() {
+			splashFactory.isLoggedIn()
 			// if successful creation, call our get function to get all the new todos
-			.success(function(data) {
-				//console.log(data);
-				if (data == 'false') {
-					window.alert("Please log in first!");
-					$scope.isLogged = false; 
-					$location.path('/');
-				} else {
-					$scope.loggedUser = data;
-					$scope.isLogged = true; 
-				}
-			}).error(function(response) {
-				console.log(response);
-				$scope.error = response.message; 
-			});
+				.success(function(data) {
+					//console.log(data);
+					if (data == 'false') {
+						window.alert("Please log in first!");
+						$scope.isLogged = false; 
+						$location.path('/');
+					} else {
+						$scope.loggedUser = data;
+						$scope.isLogged = true; 
+					}
+				}).error(function(response) {
+					console.log(response);
+					$scope.error = response.message; 
+				});
+		};
 
+		$scope.checkLogged();
 
 		$scope.switchTab = function( pageNumber ) {
 			$scope.activeTab = pageNumber;
@@ -100,6 +103,8 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid'])
 				$scope.contentUrl = 'views/dashPartials/dashTables.html';
 			} else if ($scope.activeTab == 3) {
 				$scope.contentUrl = 'views/dashPartials/dashCharts.html';
+			} else if ($scope.activeTab == 4) {
+				$scope.contentUrl = 'views/dashPartials/dashSettings.html';
 			}
 		}
 		$scope.isActive = function( pageNumber ) {
@@ -126,6 +131,41 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid'])
 			else
 				$scope.error = "Failed call to logoutAttempt()"; 
 		}
+
+		// CODE FOR SETTINGS PAGE:
+
+		// Toggles for Account Settings
+		$scope.passwordCollapsed = true;
+		$scope.emailCollapsed = true;
+
+		$scope.newAccountSettings = {};
+
+		$scope.changeEmail = function() {
+			splashFactory.changeEmail( $scope.loggedUser, $scope.newAccountSettings.newEmail )
+				.success(function (data) {
+					console.log(data);
+					if (data == 1) {
+						$scope.checkLogged();
+						window.alert("You have successfully changed your e-mail!");
+					}
+				}).error(function (response){
+					console.log(response);
+				});
+		};
+
+		$scope.changePassword = function() {
+			splashFactory.changePassword( $scope.loggedUser, $scope.newAccountSettings.newPassword )
+				.success(function (data) {
+					console.log(data);
+					if (data == 1) {
+						$scope.checkLogged();
+						window.alert("You have successfully changed your password!");
+					}
+				}).error(function (response){
+					console.log(response);
+				});
+		}
+
 
 	}]);
 
