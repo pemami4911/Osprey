@@ -51,7 +51,8 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
                     displayName: "Patient Name",
                     render: function(row) {
                       return React.DOM.a({href:"javascript:", onClick: function() {
-                          console.log(row);
+                      		$scope.switchTab(5);
+                        	console.log(row);
                       }}, row.patientName);
                   	}
                 },
@@ -105,6 +106,8 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 				$scope.contentUrl = 'views/dashPartials/dashCharts.html';
 			} else if ($scope.activeTab == 4) {
 				$scope.contentUrl = 'views/dashPartials/dashSettings.html';
+			} else if ($scope.activeTab == 5) {
+				$scope.contentUrl = 'views/dashPartials/dashPatient.html';
 			}
 		}
 		$scope.isActive = function( pageNumber ) {
