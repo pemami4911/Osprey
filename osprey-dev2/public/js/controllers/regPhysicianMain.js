@@ -6,7 +6,7 @@ angular.module('regPhysicianPageModule', ['splashPageService'])
 		$scope.regData = {};
 		$scope.regData.email = splashFactory.get('e-mail');
 		$scope.regData.userType = splashFactory.get('userType'); 
-		$scope.loading = true;
+		$scope.loading = false;
 
 		$scope.registerFinal = function() {
 			$scope.loading = true;
@@ -19,7 +19,6 @@ angular.module('regPhysicianPageModule', ['splashPageService'])
 				splashFactory.registerFinal($scope.regData)
 					// if successful creation, call our get function to get all the new todos
 					.success(function(data) {
-						$scope.loading = false;
 						// console.log(data);
 						//window.alert("User created");
 						$location.path('/dashboard');
@@ -27,5 +26,6 @@ angular.module('regPhysicianPageModule', ['splashPageService'])
 						$scope.error = response.message;
 					});
 			}
+			$scope.loading = false; 
 		};
 	}]);

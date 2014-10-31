@@ -33,7 +33,39 @@ describe('dashboardController', function(){
       expect(scope.isActive).toBeTruthy(); 
    });
 
-   it('should be able to initiate log out', function() {
+   it('should successfully be able to log out a user', function() {
+      expect($location.url()).toBe('/'); 
+   });
+
+   it('should kick a user out of the dashboard if the controller is loaded and no one is logged in', function() {
+      expect($location.url()).toBe('/'); 
+   });
+
+   it('should allow the user to customize the columns of the table with scope.changeTableSettings()', function() {
+
+   });
+
+   it('should populate the tables with an http.GET request to our dummy backend', function() {
+
+   });
+
+   it('should allow the user to successfully change their email', function() {
+
+   });
+
+   it('should allow the user to change their password', function () {
+
+   });
+
+   it('should send the user an email to notify them when their password has changed', function() {
+
+   });
+
+   it('should send the user\'s new email and email when the old email has been changed', function () {
+
+   });
+
+   it('should be fail to log out if scope.loggedUser is empty', function() {
 
       scope.loggedUser = {}; 
 
@@ -64,6 +96,11 @@ describe('dashboardController', function(){
       scope.switchTab(2); 
           expect(scope.contentUrl).toBe('views/dashPartials/dashMyPatients.html'); 
    });
+
+   it('should not allow a route change to complete unless the user has logged out', function() {
+
+   });
+
 
 
  }); 

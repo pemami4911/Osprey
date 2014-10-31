@@ -6,7 +6,14 @@ angular.module('regParentPageModule', ['splashPageService'])
 		$scope.regData = {};
 		$scope.regData.email = splashFactory.get('e-mail');
 		$scope.regData.userType = splashFactory.get('userType'); 
-		$scope.loading = true;
+		$scope.loading = false;
+
+		// prevent the user from losing all of their input data if the page is refreshed or if they hit backspace
+		$scope.$on('$routeChangeStart', function () {
+	        if( $scope.loading === false ) {
+
+	        }
+   		});
 
 		$scope.registerFinal = function() {
 			$scope.loading = true;
@@ -18,7 +25,6 @@ angular.module('regParentPageModule', ['splashPageService'])
 				splashFactory.registerFinal($scope.regData)
 					// if successful creation, call our get function to get all the new todos
 					.success(function(data) {
-						$scope.loading = false;
 						//console.log(data);
 						//window.alert("User created");
 						$location.path('/dashboard');
@@ -26,5 +32,6 @@ angular.module('regParentPageModule', ['splashPageService'])
 						$scope.error = response.message;
 					});
 			}
+			$scope.loading = false;
 		};
 	}]);

@@ -135,4 +135,9 @@ describe('splashController', function(){
 		expect(scope.initRegData.invCode).toBe('ai8s9d2fsd2'); 
 		expect(scope.error).toEqual(undefined); 
 	});
+
+	it('should not be able to finish a route change if the user has not legitimately logged in or registered', function() {
+
+	});
+
 });

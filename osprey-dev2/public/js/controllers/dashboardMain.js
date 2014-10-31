@@ -33,10 +33,11 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 						$scope.isLogged = true; 
 					}
 				}).error(function(response) {
-					console.log(response);
+					//console.log(response);
 					$scope.error = response.message; 
 				});
 		};
+
 		$scope.checkLogged();
 		// $scope.$on is an event handler
 		// $routeChangeStart is an angular event that is called every time a route change begins
@@ -102,8 +103,7 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
         	};
 
         	$scope.updateColumns();
-        	// console.log($scope.loggedUser);
-        	
+        	// console.log($scope.loggedUser);   	
   		});
 
 		$scope.switchTab = function( pageNumber ) {
