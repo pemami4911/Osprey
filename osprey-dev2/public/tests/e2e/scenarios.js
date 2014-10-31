@@ -77,5 +77,10 @@ describe('ospreyCoreApp', function() {
 
 	});
 
+	it('should logout and return to splash page', function() {
+		element(by.css('#logout-button')).click();
+		expect(browser.get('http://localhost:8080/#/'));
+	});
+
 });
 

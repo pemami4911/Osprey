@@ -21,7 +21,7 @@ angular.module('regPhysicianPageModule', ['splashPageService'])
 					.success(function(data) {
 						$scope.loading = false;
 						// console.log(data);
-						window.alert("User created");
+						//window.alert("User created");
 						$location.path('/dashboard');
 					}).error(function(response) {
 						$scope.error = response.message;

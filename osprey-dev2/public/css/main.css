@@ -1,3 +1,12 @@
+/*
+* PSD css edits
+*/
+
+.navbar-header h3 {
+	color: #8DD528;
+	text-align: center;
+}
+
 /*body {
 	color: #8DD528;
 	background-color: #FCF9E9;
