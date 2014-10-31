@@ -14,7 +14,28 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 		$scope.loggedUser = {};
 		$scope.tableSelections = [];
 		$scope.isLogged = false; 
+		// Toggles for Account Settings
+		$scope.passwordCollapsed = true;
+		$scope.emailCollapsed = true;
+		$scope.newAccountSettings = {}; 
 
+		$scope.checkLogged = function() {
+			splashFactory.isLoggedIn()
+			// if successful creation, call our get function to get all the new todos
+				.success(function(data) {
+					//console.log(data);
+					if (data == 'false' ) {
+						$scope.isLogged = false; 
+						$location.path('/');
+					} else {
+						$scope.loggedUser = data;
+						$scope.isLogged = true; 
+					}
+				}).error(function(response) {
+					console.log(response);
+					$scope.error = response.message; 
+				});
+		};
 		// $scope.$on is an event handler
 		// $routeChangeStart is an angular event that is called every time a route change begins
 		$scope.$on('$routeChangeStart', function () {
@@ -75,33 +96,12 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
         	};
   		});
 		
-		$scope.checkLogged = function() {
-			splashFactory.isLoggedIn()
-			// if successful creation, call our get function to get all the new todos
-				.success(function(data) {
-					//console.log(data);
-					if (data == 'false') {
-						window.alert("Please log in first!");
-						$scope.isLogged = false; 
-						$location.path('/');
-					} else {
-						$scope.loggedUser = data;
-						$scope.isLogged = true; 
-					}
-				}).error(function(response) {
-					console.log(response);
-					$scope.error = response.message; 
-				});
-		};
-
-		$scope.checkLogged();
-
 		$scope.switchTab = function( pageNumber ) {
 			$scope.activeTab = pageNumber;
 			if ($scope.activeTab == 1) {
 				$scope.contentUrl = 'views/dashPartials/dashMain.html';
 			} else if ($scope.activeTab == 2) {
-				$scope.contentUrl = 'views/dashPartials/dashTables.html';
+				$scope.contentUrl = 'views/dashPartials/dashMyPatients.html';
 			} else if ($scope.activeTab == 3) {
 				$scope.contentUrl = 'views/dashPartials/dashCharts.html';
 			} else if ($scope.activeTab == 4) {
@@ -136,13 +136,6 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 		}
 
 		// CODE FOR SETTINGS PAGE:
-
-		// Toggles for Account Settings
-		$scope.passwordCollapsed = true;
-		$scope.emailCollapsed = true;
-
-		$scope.newAccountSettings = {};
-
 		$scope.changeEmail = function() {
 			splashFactory.changeEmail( $scope.loggedUser, $scope.newAccountSettings.newEmail )
 				.success(function (data) {
@@ -168,7 +161,8 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 					console.log(response);
 				});
 		}
-
+	
+		$scope.checkLogged();
 
 	}]);
 
