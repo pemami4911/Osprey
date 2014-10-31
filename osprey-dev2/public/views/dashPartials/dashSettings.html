@@ -14,16 +14,40 @@
                         
                     </div>
                 </tab>
-                <tab heading="Customize Tables">
+                <tab heading="Customize">
+                    <accordion close-others="true">
+                        <accordion-group heading="Table">
+                            <form class="form-horizontal" role="form" ng-submit="changeTableSettings()">
+                                <div class="form-group">
+                                    <label>Columns</label>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" value="" ng-model="newTableSettings.email">E-mail Address
+                                        </label>
+                                    </div>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" value="" ng-model="newTableSettings.weight">Weight
+                                        </label>
+                                    </div>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" value="" ng-model="newTableSettings.age">Age
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-12 text-center">
+                                    <button type="submit" class="btn btn-default btn-lg">Change Table Settings</button>
+                                    </div>
+                                </div>
+                            </form>
 
-                    <br>
-                    <div class="panel panel-default">
-                        
-                    </div>
-
+                            {{tableSettings}}
+                        </accordion-group>
+                    </accordion>
                 </tab>
                 <tab heading="Account Settings">
-
                     <accordion close-others="true">
                         <accordion-group heading="Change E-mail">
                             <form class="form-horizontal" role="form" ng-submit="changeEmail()">

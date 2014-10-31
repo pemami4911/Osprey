@@ -59,6 +59,13 @@ angular.module('splashPageService', [])
 				return $http.post('/auth/changePassword', postBody);
 			},
 
+			changeTableSettings : function(user, newSettings) {
+				var postBody = {};
+				postBody.user = user;
+				postBody.newSettings = newSettings;
+				return $http.post('/auth/changeTableSettings', postBody);
+			},
+
 			set : set,
 
 			get : get
