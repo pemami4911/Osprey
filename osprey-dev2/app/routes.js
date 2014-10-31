@@ -100,6 +100,25 @@ module.exports = function(app) {
 			res.json(result);
 		});
 	});
+
+	app.post('/auth/changeTableSettings', function(req, res) {
+		// use mongoose to get all todos in the database
+		console.log(req.password);
+		console.log(req.body);
+		UserModel.update({email: req.body.user.email}, {
+			$set: {'tableSettings.showEmail':req.body.newSettings.email, 
+			'tableSettings.showAge':req.body.newSettings.age, 
+			'tableSettings.showWeight':req.body.newSettings.weight}
+
+			}, {}, function(err, result) {
+				if (err) {
+					console.log("error" + err);
+					res.send(err);
+				}
+
+				res.json(result);
+		});
+	});
 	
 };
 
