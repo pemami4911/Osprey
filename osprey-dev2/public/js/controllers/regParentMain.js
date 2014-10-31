@@ -23,9 +23,7 @@ angular.module('regParentPageModule', ['splashPageService'])
 						window.alert("User created");
 						$location.path('/dashboard');
 					}).error(function(response) {
-						console.log(response);
-						//$scope.error = response.message;
-						//window.alert("Input was rejected. Try a different e-mail"); 
+						$scope.error = response.message;
 					});
 			}
 		};

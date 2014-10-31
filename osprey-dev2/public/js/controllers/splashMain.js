@@ -6,19 +6,25 @@ angular.module('splashPageModule', ['splashPageService'])
 	.controller('splashController', ['$scope','$http', '$location', 'splashFactory', function($scope, $http, $location, splashFactory) {
 		$scope.loginData = {};
 		$scope.initRegData = {userType: "Parent"};
+		$scope.loading = false; 
+
+		// $scope.$on is an event handler
+		// $routeChangeStart is an angular event that is called every time a route change begins
+		$scope.$on('$routeChangeStart', function () {
+			if( $scope.loading === false )
+				$location.path('/'); 
+   		});
 
 		$scope.login = function() {
-			$scope.loading = true;
 			// validate the formData to make sure that something is there
 			// if form is empty, nothing will happen
 			if ($scope.loginData.email != undefined && $scope.loginData.email.trim() != '') {
-
+				$scope.loading = true;
 				// call the create function from our service (returns a promise object)
 				splashFactory.loginAttempt($scope.loginData)
 
 					// if successful creation, call our get function to get all the new todos
 					.success(function(data) {
-						$scope.loading = false;
 						if(data == "null") {
 							console.log("Invalid email or password");
 							$scope.addAlert("Invalid email or password!", "danger", true);
@@ -45,11 +51,11 @@ angular.module('splashPageModule', ['splashPageService'])
 
 		$scope.register = function() {
 			if ($scope.initRegData.email != undefined && $scope.initRegData.email.trim() != '') {
+				$scope.loading = true; 
 				// call the create function from our service (returns a promise object)
 				splashFactory.registerAttempt($scope.initRegData)
 					// if successful creation, call our get function to get all the new todos
 					.success(function(data) {
-						$scope.loading = false;
 						console.log(data + " user(s) with that e-mail");
 						if (data >= 1)
 							$scope.addAlert("E-mail already exists", "danger", false);

@@ -40,7 +40,6 @@ describe('dashboardController', function(){
       $httpBackend.expect('GET', '/auth/logout');
 
       scope.logoutAttempt(scope.loggedUser); 
-      $httpBackend.flush(); 
 
       expect(scope.error).toBe("Failed call to logoutAttempt()"); 
    });
@@ -50,7 +49,7 @@ describe('dashboardController', function(){
       scope.activeTab = 1;
       expect(scope.contentUrl).toBe('views/dashPartials/dashMain.html'); 
       scope.switchTab(2);
-      expect(scope.contentUrl).toBe('views/dashPartials/dashTables.html'); 
+      expect(scope.contentUrl).toBe('views/dashPartials/dashMyPatients.html'); 
       scope.switchTab(1);
       expect(scope.contentUrl).toBe('views/dashPartials/dashMain.html'); 
 
@@ -63,7 +62,7 @@ describe('dashboardController', function(){
       scope.switchTab(1);
           expect(scope.contentUrl).toBe('views/dashPartials/dashMain.html'); 
       scope.switchTab(2); 
-          expect(scope.contentUrl).toBe('views/dashPartials/dashTables.html'); 
+          expect(scope.contentUrl).toBe('views/dashPartials/dashMyPatients.html'); 
    });
 
 

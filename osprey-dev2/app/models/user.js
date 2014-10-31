@@ -4,11 +4,12 @@ var bcrypt   = require('bcrypt-nodejs');
 // model used for all properties unique to a parent or a physician
 // keys must begin with either "parent" or "physic", e.g. parentProperty or physicianPracticeName
 var property = mongoose.Schema({
-	key: {type: String}
-	, value: {type: String}
+    key: {type: String}
+    , value: {type: String}
 });
 
 var propModel = mongoose.model('Property', property);
+
 
 
 var userSchema = mongoose.Schema({
@@ -21,6 +22,11 @@ var userSchema = mongoose.Schema({
     , patients: [{type: mongoose.Schema.Types.ObjectId, ref:'userSchema'}]
     , physician: {type: mongoose.Schema.Types.ObjectId, ref:'userSchema'}
     , properties: {type: [property]}
+    , tableSettings: {
+        showEmail: {type: Boolean, default: true},
+        showAge: {type: Boolean, default:true},
+        showWeight: {type: Boolean, default: true}
+    }
 });
 
 
