@@ -9,7 +9,7 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 										'splashFactory', 
 										'ngReactGridCheckbox', 
 	function($scope, $http, $location, splashFactory, ngReactGridCheckbox) {
-		$scope.activeTab = 1;
+		$scope.activeTab = 2;
 		$scope.contentUrl = 'views/dashPartials/dashMyPatients.html';
 		$scope.loggedUser = {};
 		$scope.tableSelections = [];
@@ -19,6 +19,7 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 		$scope.emailCollapsed = true;
 		$scope.newAccountSettings = {}; 
 		$scope.newTableSettings = {}; 
+		$scope.tableSettingsChanged = {};
 
 		$scope.checkLogged = function() {
 			splashFactory.isLoggedIn()
@@ -102,8 +103,7 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
                 ]
         	};
 
-        	$scope.updateColumns();
-        	// console.log($scope.loggedUser);   	
+        	$scope.updateColumns();  	
   		});
 
 		$scope.switchTab = function( pageNumber ) {
@@ -112,6 +112,8 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 				$scope.contentUrl = 'views/dashPartials/dashMain.html';
 			} else if ($scope.activeTab == 2) {
 				$scope.contentUrl = 'views/dashPartials/dashMyPatients.html';
+				if ($scope.tableSettingsChanged)
+					window.location.reload();
 			} else if ($scope.activeTab == 3) {
 				$scope.contentUrl = 'views/dashPartials/dashCharts.html';
 			} else if ($scope.activeTab == 4) {
@@ -177,9 +179,10 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 				.success(function (data) {
 					console.log(data);
 					$scope.updateColumns();
+					
 					if (data == 1) {
-						
 						window.alert("You have successfully changed your table settings!");
+						$scope.tableSettingsChanged = true;
 					}
 				}).error(function (response){
 					console.log(response);
