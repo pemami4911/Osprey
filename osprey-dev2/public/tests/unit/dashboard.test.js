@@ -41,8 +41,19 @@ describe('dashboardController', function(){
       expect($location.url()).toBe('/'); 
    });
 
-   it('should allow the user to customize the columns of the table with scope.changeTableSettings()', function() {
+   it('should fail to allow the user to customize the columns of the table with when no table settings are provided', function() {
 
+      $httpBackend.flush(); 
+
+      scope.changeTableSettings(); 
+
+      $httpBackend.expect('POST', '/auth/changeTableSettings').respond(400, {
+        'message': 'No settings were provided'
+      }); 
+
+      $httpBackend.flush(); 
+
+      expect(scope.error).toEqual('No settings were provided'); 
    });
 
    it('should populate the tables with an http.GET request to our dummy backend', function() {
@@ -96,11 +107,4 @@ describe('dashboardController', function(){
       scope.switchTab(2); 
           expect(scope.contentUrl).toBe('views/dashPartials/dashMyPatients.html'); 
    });
-
-   it('should not allow a route change to complete unless the user has logged out', function() {
-
-   });
-
-
-
  }); 

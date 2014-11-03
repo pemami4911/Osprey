@@ -9,6 +9,7 @@ angular.module('regParentPageModule', ['splashPageService'])
 		$scope.loading = false;
 
 		// prevent the user from losing all of their input data if the page is refreshed or if they hit backspace
+		// also kick user out if they did not get here by "NEXT" on the splash page
 		$scope.$on('$routeChangeStart', function () {
 	        if( $scope.loading === false ) {
 

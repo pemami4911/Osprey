@@ -43,11 +43,9 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 		// $routeChangeStart is an angular event that is called every time a route change begins
 		$scope.$on('$routeChangeStart', function () {
 	        var userAuthenticated = function() {  	
-         		if( $scope.isLogged )
+         		if( $scope.isLogged ) 
          			$location.path('/dashboard'); 
-         		else
-         			$location.path('/');
-	         }
+	         } 
 	        userAuthenticated(); 
    		});
 
@@ -183,6 +181,7 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 					}
 				}).error(function (response){
 					console.log(response);
+					scope.error = response.message; 
 				});
 		}
 	}]);

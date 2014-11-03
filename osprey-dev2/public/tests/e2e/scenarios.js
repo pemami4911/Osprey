@@ -82,5 +82,9 @@ describe('ospreyCoreApp', function() {
 		expect(browser.get('http://localhost:8080/#/'));
 	});
 
+	it('should not allow a user to navigate between pages without following the correct process', function() {
+		// test browser navigation between pages
+	});
+
 });
 
