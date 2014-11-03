@@ -11,8 +11,9 @@ angular.module('splashPageModule', ['splashPageService'])
 		// $scope.$on is an event handler
 		// $routeChangeStart is an angular event that is called every time a route change begins
 		$scope.$on('$routeChangeStart', function () {
-			if( $scope.loading === false )
+			if( $scope.loading === false ) {
 				$location.path('/'); 
+			}
    		});
 
 		$scope.login = function() {

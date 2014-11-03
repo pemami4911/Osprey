@@ -10,7 +10,7 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 										'ngReactGridCheckbox', 
 	function($scope, $http, $location, splashFactory, ngReactGridCheckbox) {
 		$scope.activeTab = 1;
-		$scope.contentUrl = 'views/dashPartials/dashMain.html';
+		$scope.contentUrl = 'views/dashPartials/dashMyPatients.html';
 		$scope.loggedUser = {};
 		$scope.tableSelections = [];
 		$scope.isLogged = false; 
