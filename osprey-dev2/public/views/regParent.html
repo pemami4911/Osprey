@@ -17,12 +17,12 @@
                   <div class="form-group">
                      <label for="inputFirstName" class="col-sm-2 control-label">First Name</label>
                      <div class="col-sm-2">
-                        <input type="text" class="form-control" id="inputFirstName" placeholder="First Name" ng-model="regData.firstName">
+                        <input type="text" class="form-control" class="resetThis" id="inputFirstName" placeholder="First Name" ng-model="regData.firstName">
                      </div>
 
                      <label for="inputMI" class="col-sm-1 control-label">M.I.</label>
                      <div class="col-sm-2">
-                        <input type="text" class="form-control" id="inputFirstName" placeholder="M.I." ng-model="regData.mI">
+                        <input type="text" class="form-control" id="inputInitial" placeholder="M.I." ng-model="regData.mI">
                      </div>                     
 
                      <label for="inputLastName" class="col-sm-2 control-label">Last Name</label>
@@ -50,7 +50,10 @@
                   </div>
                   <div class="form-group">
                      <div class="col-sm-12 text-center">
-                        <button type="submit" class="btn btn-default btn-lg" id="regParent">Register</button>
+                        <div class="btn-group">                    
+                           <button ng-click="back()" class="btn btn-default btn-lg" id="back-button">Back</button>
+                           <button type="submit" class="btn btn-default btn-lg" id="regParent">Register</button>
+                        </div>
                      </div>
                   </div>
                </form>

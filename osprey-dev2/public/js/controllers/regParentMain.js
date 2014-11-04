@@ -8,17 +8,27 @@ angular.module('regParentPageModule', ['splashPageService'])
 		$scope.regData.userType = splashFactory.get('userType'); 
 		$scope.loading = false;
 
-		// prevent the user from losing all of their input data if the page is refreshed or if they hit backspace
-		// also kick user out if they did not get here by "NEXT" on the splash page
-		$scope.$on('$routeChangeStart', function () {
-	        if( $scope.loading === false ) {
+		// $scope.$on is an event handler
+		// $locationChangeStart is an angular event that is called every time a location change begins
+		$scope.$on('$locationChangeStart', function (event, newURL) {
+			var msg = "Are you sure you want to navigate away from this page? All input will be lost."; 
+			var check = "dashboard"; 
 
+			console.log(newURL); 
+
+	        if( $scope.loading === false ) {
+	        	if( newURL.indexOf(check) != (-1) ) {
+	        		event.preventDefault(); 
+	        	}
+	        	else {
+	        		if( !window.confirm(msg) )
+	        			event.preventDefault(); 
+	        	}
 	        }
-   		});
+   		})
 
 		$scope.registerFinal = function() {
 			$scope.loading = true;
-
 			// validate the formData to make sure that something is there
 			// if form is empty, nothing will happen
 			if ($scope.regData.email != undefined) {
@@ -28,11 +38,21 @@ angular.module('regParentPageModule', ['splashPageService'])
 					.success(function(data) {
 						//console.log(data);
 						//window.alert("User created");
-						$location.path('/dashboard');
+						if( data != 'null' )
+							$location.path('/dashboard');
+						else
+							window.alert("Failed to register!"); 
 					}).error(function(response) {
 						$scope.error = response.message;
+						$scope.loading = false;
 					});
 			}
-			$scope.loading = false;
+			else
+				$scope.loading = false;
 		};
+
+		$scope.back = function() {
+			$location.path('/');
+		};
+
 	}]);

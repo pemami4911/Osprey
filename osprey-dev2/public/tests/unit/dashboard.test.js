@@ -1,32 +1,24 @@
-describe('dashboardControllerLoggedIn', function(){
+describe('dashboardController', function(){
 
-  beforeEach(module('dashboardPageModule')); 
+	beforeEach(module('dashboardPageModule')); 
 
-   var ctrl, scope,
-    $httpBackend, 
-    $location, userResponse;
-   // inject the $controller and $rootScope services
-   // in the beforeEach block
-   beforeEach(inject(function($controller, $rootScope, _$httpBackend_, _$location_) {
-       // Create a new scope that's a child of the $rootScope
-       scope = $rootScope.$new();
+	 var ctrl, scope,
+	 	$httpBackend, 
+	 	$location;
+ 	 // inject the $controller and $rootScope services
+ 	 // in the beforeEach block
+ 	 beforeEach(inject(function($controller, $rootScope, _$httpBackend_, _$location_) {
+    	 // Create a new scope that's a child of the $rootScope
+   		 scope = $rootScope.$new();
        
-      // Create the controller
-       dashCtrl = $controller('dashboardController', {
-        $scope : scope
-      });
-       userResponse = { "email": "asd@asd.com", "password": "hash", "tableSettings" : {"showAge": true, "showWeight": true, "showEmail": true}};
-       $httpBackend = _$httpBackend_; 
-       $httpBackend.when('POST', '/auth/isLogged').respond( function() {
-            return [200, userResponse];
-          }
-        ); 
-       $httpBackend.when('GET', '../json/users.json').respond(200, {});
-       $httpBackend.when('POST', '/auth/changeEmail').respond(200, 1);
-       $httpBackend.when('POST', '/auth/changeTableSettings').respond(200, 1);
-       $httpBackend.flush();
-       $location = _$location_; 
-    }));
+    	// Create the controller
+    	 dashCtrl = $controller('dashboardController', {
+     	 	$scope : scope
+   	 	});
+
+    	 $httpBackend = _$httpBackend_; 
+    	 $location = _$location_; 
+  	}));
 
    it('should be able to instantiate a copy of the dashboardController', function() {
       expect(dashCtrl).toExist; 
@@ -42,11 +34,10 @@ describe('dashboardControllerLoggedIn', function(){
    });
 
    it('should successfully be able to log out a user', function() {
-      $httpBackend.when('GET', '/auth/logout').respond("Logged out successfully"); 
-      
-      scope.logoutAttempt(); 
-      $httpBackend.flush();
+      expect($location.url()).toBe('/'); 
+   });
 
+   it('should kick a user out of the dashboard if the controller is loaded and no one is logged in', function() {
       expect($location.url()).toBe('/'); 
    });
 
@@ -63,26 +54,14 @@ describe('dashboardControllerLoggedIn', function(){
       $httpBackend.flush(); 
 
       expect(scope.error).toEqual('No settings were provided'); 
-    });
-
-   it('should allow the user to customize the columns of the table with scope.changeTableSettings()', function() {
-      scope.newTableSettings = {age: true, email:false, weight:true};
-      scope.changeTableSettings();
-      userResponse = {"email": "a@a.com", "tableSettings": {"showAge": true, "showWeight": true, "showEmail": false}};
-      $httpBackend.flush();
-      expect(scope.loggedUser.tableSettings.showEmail).toBe(false);
    });
 
    it('should populate the tables with an http.GET request to our dummy backend', function() {
-
+      
    });
 
    it('should allow the user to successfully change their email', function() {
-      scope.newAccountSettings.newEmail = "a@a.com";
-      scope.changeEmail();
-      userResponse = {"email": "a@a.com"};
-      $httpBackend.flush();
-      expect(scope.loggedUser.email).toBe("a@a.com");
+    
    });
 
    it('should allow the user to change their password', function () {
@@ -99,19 +78,23 @@ describe('dashboardControllerLoggedIn', function(){
 
    it('should be fail to log out if scope.loggedUser is empty', function() {
 
-      scope.loggedUser = undefined; 
+      scope.loggedUser = {}; 
+
+      $httpBackend.expect('GET', '/auth/logout');
+
       scope.logoutAttempt(scope.loggedUser); 
+
       expect(scope.error).toBe("Failed call to logoutAttempt()"); 
    });
 
    it('should change the content url when a new tab is selected, and should be able to switch back', function() {
 
-      scope.activeTab = 2;
-      expect(scope.contentUrl).toBe('views/dashPartials/dashMyPatients.html'); 
-      scope.switchTab(3);
-      expect(scope.contentUrl).toBe('views/dashPartials/dashCharts.html'); 
+      scope.activeTab = 1;
+      expect(scope.contentUrl).toBe('views/dashPartials/dashMain.html'); 
       scope.switchTab(2);
       expect(scope.contentUrl).toBe('views/dashPartials/dashMyPatients.html'); 
+      scope.switchTab(1);
+      expect(scope.contentUrl).toBe('views/dashPartials/dashMain.html'); 
 
    }); 
 
@@ -125,33 +108,3 @@ describe('dashboardControllerLoggedIn', function(){
           expect(scope.contentUrl).toBe('views/dashPartials/dashMyPatients.html'); 
    });
  }); 
-
-describe('dashboardControllerNotLoggedIn', function(){
-
-  beforeEach(module('dashboardPageModule')); 
-
-   var ctrl, scope,
-    $httpBackend, 
-    $location;
-   // inject the $controller and $rootScope services
-   // in the beforeEach block
-   beforeEach(inject(function($controller, $rootScope, _$httpBackend_, _$location_) {
-       // Create a new scope that's a child of the $rootScope
-       scope = $rootScope.$new();
-       
-      // Create the controller
-       dashCtrl = $controller('dashboardController', {
-        $scope : scope
-      });
-
-       $httpBackend = _$httpBackend_; 
-       $httpBackend.when('POST', '/auth/isLogged').respond("false"); 
-       $location = _$location_; 
-    }));
-
-    it('should kick a user out of the dashboard if the controller is loaded and no one is logged in', function() {
-      $httpBackend.flush();
-      expect($location.url()).toBe('/'); 
-   });
-
- });

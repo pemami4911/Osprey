@@ -13,7 +13,7 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 		$scope.contentUrl = 'views/dashPartials/dashMyPatients.html';
 		$scope.loggedUser = {};
 		$scope.tableSelections = [];
-		$scope.isLogged = false; 
+		$scope.loading = false; 
 		// Toggles for Account Settings
 		$scope.passwordCollapsed = true;
 		$scope.emailCollapsed = true;
@@ -21,21 +21,21 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 		$scope.newTableSettings = {}; 
 
 		$scope.checkLogged = function() {
+			$scope.loading = true;
 			splashFactory.isLoggedIn()
 			// if successful creation, call our get function to get all the new todos
 				.success(function(data) {
-					if (data == "false") {
-						$scope.isLogged = false; 
+					if ( data === "false" ) {
 						$location.path('/');
 					} else {
 						$scope.loggedUser = data;
-						$scope.isLogged = true; 
 					}
 				}).error(function(response) {
 					//console.log(response);
 					$scope.error = response.message; 
 					$location.path('/');
 				});
+			$scope.loading = false; 
 		};
 
 		var reloadGrid = function() { 
@@ -100,12 +100,8 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 		// $scope.$on is an event handler
 		// $routeChangeStart is an angular event that is called every time a route change begins
 		$scope.$on('$locationChangeStart', function (event) {
-	        // var userAuthenticated = function() {  	
-         // 		if( $scope.isLogged ) 
-         // 			preventDefault(); 
-	        //  } 
-	        // userAuthenticated(); 
-	        event.preventDefault();
+	        if( !($scope.loading) )
+	        	event.preventDefault();
    		});
 
    	
@@ -129,22 +125,21 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 		}
 
 		$scope.logoutAttempt = function() {
-			$scope.loading = true;
-
 			// check if someone is currently logged in 
 			if( $scope.loggedUser != undefined ) {
 				// call the factory service function logoutAttempt
 				splashFactory.logoutAttempt($scope.loggedUser) 
 					// on successful logout
 					.success(function(data){
-						$scope.loading = false; 
 						if( data === "Logged out successfully") {
+							$scope.loading = true;
 							$scope.loggedUser = null;
 							$location.path('/'); 
 						}
 					}).error(function(response) {
 						$scope.error = response.message; 
 					});
+				$scope.loading = false;
 			}
 			else
 				$scope.error = "Failed call to logoutAttempt()"; 
