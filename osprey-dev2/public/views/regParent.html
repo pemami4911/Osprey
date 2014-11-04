@@ -17,7 +17,7 @@
                   <div class="form-group">
                      <label for="inputFirstName" class="col-sm-2 control-label">First Name</label>
                      <div class="col-sm-2">
-                        <input type="text" class="form-control" class="resetThis" id="inputFirstName" placeholder="First Name" ng-model="regData.firstName">
+                        <input type="text" class="form-control" id="inputFirstName" placeholder="First Name" ng-model="regData.firstName">
                      </div>
 
                      <label for="inputMI" class="col-sm-1 control-label">M.I.</label>
@@ -51,8 +51,8 @@
                   <div class="form-group">
                      <div class="col-sm-12 text-center">
                         <div class="btn-group">                    
-                           <button ng-click="back()" class="btn btn-default btn-lg" id="back-button">Back</button>
-                           <button ng-click="registerFinal()" class="btn btn-default btn-lg" id="regParent">Register</button>
+                           <button type="button" ng-click="back()" class="btn btn-default btn-lg" id="back-button">Back</button>
+                           <button type="button" ng-click="registerFinal()" class="btn btn-default btn-lg" id="regParent">Register</button>
                         </div>
                      </div>
                   </div>
