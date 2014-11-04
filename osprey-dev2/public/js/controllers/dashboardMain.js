@@ -99,12 +99,13 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 
 		// $scope.$on is an event handler
 		// $routeChangeStart is an angular event that is called every time a route change begins
-		$scope.$on('$routeChangeStart', function () {
-	        var userAuthenticated = function() {  	
-         		if( $scope.isLogged ) 
-         			$location.path('/dashboard'); 
-	         } 
-	        userAuthenticated(); 
+		$scope.$on('$locationChangeStart', function (event) {
+	        // var userAuthenticated = function() {  	
+         // 		if( $scope.isLogged ) 
+         // 			preventDefault(); 
+	        //  } 
+	        // userAuthenticated(); 
+	        event.preventDefault();
    		});
 
    	

@@ -64,7 +64,7 @@ describe('dashboardControllerLoggedIn', function(){
 
       expect(scope.error).toEqual('No settings were provided'); 
     });
-   
+
    it('should allow the user to customize the columns of the table with scope.changeTableSettings()', function() {
       scope.newTableSettings = {age: true, email:false, weight:true};
       scope.changeTableSettings();
@@ -145,12 +145,11 @@ describe('dashboardControllerNotLoggedIn', function(){
       });
 
        $httpBackend = _$httpBackend_; 
-       $httpBackend.when('POST', '/auth/isLogged').respond(false); 
+       $httpBackend.when('POST', '/auth/isLogged').respond("false"); 
        $location = _$location_; 
     }));
 
     it('should kick a user out of the dashboard if the controller is loaded and no one is logged in', function() {
-      $httpBackend.when('POST', '/auth/isLogged').respond(false);
       $httpBackend.flush();
       expect($location.url()).toBe('/'); 
    });
