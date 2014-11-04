@@ -9,7 +9,7 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 										'splashFactory', 
 										'ngReactGridCheckbox', 
 	function($scope, $http, $location, splashFactory, ngReactGridCheckbox) {
-		$scope.activeTab = 1;
+		$scope.activeTab = 2;
 		$scope.contentUrl = 'views/dashPartials/dashMyPatients.html';
 		$scope.loggedUser = {};
 		$scope.tableSelections = [];
@@ -24,8 +24,7 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 			splashFactory.isLoggedIn()
 			// if successful creation, call our get function to get all the new todos
 				.success(function(data) {
-					//console.log(data);
-					if (data == 'false') {
+					if (data == "false") {
 						$scope.isLogged = false; 
 						$location.path('/');
 					} else {
@@ -35,10 +34,69 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 				}).error(function(response) {
 					//console.log(response);
 					$scope.error = response.message; 
+					$location.path('/');
 				});
 		};
 
+		var reloadGrid = function() { 
+			$scope.grid = {
+	            data: [],
+	            columnDefs: [
+	            	new ngReactGridCheckbox($scope.tableSelections),
+	                {
+	                    field: "patientName",
+	                    displayName: "Patient Name",
+	                    render: function(row) {
+	                      return React.DOM.a({href:"javascript:", onClick: function() {
+	                      		$scope.switchTab(5);
+	                        	console.log(row);
+	                      }}, row.patientName);
+	                  	}
+	                },
+	                {
+	                    field: "parentName",
+	                    displayName: "Parent Name"
+	                }],
+	            localMode: false,
+	            getData: function() { $http.get('../json/users.json').success(function(data) {
+			    		$scope.tableData = data;
+
+			    		for (var i = 1; i <= 100; i++) {
+							$scope.tableData.push({	
+								"patientName" : "Patient " + i,
+							 	"parentName" : "Parent " + i,
+							 	"email" : "test@email.com" + i,
+							 	"weight" : i,
+							 	"age" : i * 2
+							})
+						}
+
+			        	$scope.grid.data = $scope.tableData;
+			        	$scope.updateColumns();
+			  		});
+				}
+	        };
+	    }
+	    reloadGrid();
+		
+		$scope.updateColumns = function() {
+            if ($scope.loggedUser.tableSettings != undefined) {
+	   			if ($scope.loggedUser.tableSettings.showEmail) {
+	        		$scope.grid.columnDefs.push({field: "email", displayName: "E-mail Address"});
+	        	}
+
+	        	if ($scope.loggedUser.tableSettings.showWeight) {
+	        		$scope.grid.columnDefs.push({field: "weight", displayName: "Weight"});
+	        	}
+
+	        	if ($scope.loggedUser.tableSettings.showAge) {
+	        		$scope.grid.columnDefs.push({field: "age", displayName: "Age"});
+	        	}
+	        }
+   		}
+   		
 		$scope.checkLogged();
+
 		// $scope.$on is an event handler
 		// $routeChangeStart is an angular event that is called every time a route change begins
 		$scope.$on('$routeChangeStart', function () {
@@ -49,67 +107,14 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 	        userAuthenticated(); 
    		});
 
-   		$scope.updateColumns = function() {
-   			$scope.grid.columnDefs = [
-   				new ngReactGridCheckbox($scope.tableSelections),
-                {
-                    field: "patientName",
-                    displayName: "Patient Name",
-                    render: function(row) {
-                      return React.DOM.a({href:"javascript:", onClick: function() {
-                      		$scope.switchTab(5);
-                        	console.log(row);
-                      }}, row.patientName);
-                  	}
-                },
-                {
-                    field: "parentName",
-                    displayName: "Parent Name"
-                }
-            ];
-   			if ($scope.loggedUser.tableSettings.showEmail) {
-        		$scope.grid.columnDefs.push({field: "email", displayName: "E-mail Address"});
-        	}
-
-        	if ($scope.loggedUser.tableSettings.showWeight) {
-        		$scope.grid.columnDefs.push({field: "weight", displayName: "Weight"});
-        	}
-
-        	if ($scope.loggedUser.tableSettings.showAge) {
-        		$scope.grid.columnDefs.push({field: "age", displayName: "Age"});
-        	}
-   		}
-   		
-		// Grab dummy data here
-		$http.get('../json/users.json').success(function(data) {
-    		$scope.tableData = data;
-
-    		for (var i = 1; i <= 100; i++) {
-				$scope.tableData.push({	
-					"patientName" : "Patient " + i,
-				 	"parentName" : "Parent " + i,
-				 	"email" : "test@email.com" + i,
-				 	"weight" : i,
-				 	"age" : i * 2
-				})
-			}
-
-        	$scope.grid = {
-                data: $scope.tableData,
-                columnDefs: [
-                ]
-        	};
-
-        	$scope.updateColumns();
-        	// console.log($scope.loggedUser);   	
-  		});
-
+   	
 		$scope.switchTab = function( pageNumber ) {
 			$scope.activeTab = pageNumber;
 			if ($scope.activeTab == 1) {
 				$scope.contentUrl = 'views/dashPartials/dashMain.html';
 			} else if ($scope.activeTab == 2) {
 				$scope.contentUrl = 'views/dashPartials/dashMyPatients.html';
+				reloadGrid();
 			} else if ($scope.activeTab == 3) {
 				$scope.contentUrl = 'views/dashPartials/dashCharts.html';
 			} else if ($scope.activeTab == 4) {
@@ -133,6 +138,7 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 					.success(function(data){
 						$scope.loading = false; 
 						if( data === "Logged out successfully") {
+							$scope.loggedUser = null;
 							$location.path('/'); 
 						}
 					}).error(function(response) {
@@ -147,7 +153,6 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 		$scope.changeEmail = function() {
 			splashFactory.changeEmail( $scope.loggedUser, $scope.newAccountSettings.newEmail )
 				.success(function (data) {
-					console.log(data);
 					if (data == 1) {
 						$scope.checkLogged();
 						window.alert("You have successfully changed your e-mail!");
@@ -160,7 +165,6 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 		$scope.changePassword = function() {
 			splashFactory.changePassword( $scope.loggedUser, $scope.newAccountSettings.newPassword )
 				.success(function (data) {
-					console.log(data);
 					if (data == 1) {
 						$scope.checkLogged();
 						window.alert("You have successfully changed your password!");
@@ -173,11 +177,10 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 		$scope.changeTableSettings = function() {
 			splashFactory.changeTableSettings( $scope.loggedUser, $scope.newTableSettings )
 				.success(function (data) {
-					console.log(data);
-					$scope.updateColumns();
+					
 					if (data == 1) {
-						
 						window.alert("You have successfully changed your table settings!");
+						$scope.checkLogged();
 					}
 				}).error(function (response){
 					console.log(response);

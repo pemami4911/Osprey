@@ -31,7 +31,6 @@ angular.module('splashPageModule', ['splashPageService'])
 							$scope.addAlert("Invalid email or password!", "danger", true);
 						}
 						else {
-							console.log(data);
 							$scope.addAlert("Successful login", "success", true);
 							$location.path('/dashboard');
 						}
@@ -57,7 +56,6 @@ angular.module('splashPageModule', ['splashPageService'])
 				splashFactory.registerAttempt($scope.initRegData)
 					// if successful creation, call our get function to get all the new todos
 					.success(function(data) {
-						console.log(data + " user(s) with that e-mail");
 						if (data >= 1)
 							$scope.addAlert("E-mail already exists", "danger", false);
 						else {
