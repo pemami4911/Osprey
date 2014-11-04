@@ -9,10 +9,20 @@ angular.module('regPhysicianPageModule', ['splashPageService'])
 		$scope.loading = false;
 
 		// $scope.$on is an event handler
-		// $routeChangeStart is an angular event that is called every time a route change begins
-		$scope.$on('$locationChangeStart', function (event) {
-	        if( !($scope.loading) )
-	        	event.preventDefault();
+		// $locationChangeStart is an angular event that is called every time a location change begins
+		$scope.$on('$locationChangeStart', function (event, newURL) {
+			var msg = "Are you sure you want to navigate away from this page? All input will be lost."; 
+			var check = "dashboard"; 
+
+	        if( $scope.loading === false ) {
+	        	if( newURL.indexOf(check) != (-1) ) {
+	        		event.preventDefault(); 
+	        	}
+	        	else {
+	        		if( !window.confirm(msg) )
+	        			event.preventDefault(); 
+	        	}
+	        }
    		})
 
 		$scope.registerFinal = function() {
@@ -28,8 +38,10 @@ angular.module('regPhysicianPageModule', ['splashPageService'])
 						//window.alert("User created");
 						if( data != 'null' )
 							$location.path('/dashboard');
-						else
+						else {
 							window.alert("Failed to register!");
+							$scope.loading = false;
+						}
 					}).error(function(response) {
 						$scope.error = response.message;
 						$scope.loading = false;
