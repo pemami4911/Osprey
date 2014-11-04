@@ -9,18 +9,17 @@ angular.module('splashPageModule', ['splashPageService'])
 		$scope.loading = false; 
 
 		// $scope.$on is an event handler
-		// $routeChangeStart is an angular event that is called every time a route change begins
-		$scope.$on('$routeChangeStart', function () {
-			if( $scope.loading === false ) {
-				$location.path('/'); 
-			}
-   		});
+		// $locationChangeStart is an angular event that is called every time a route change begins
+		$scope.$on('$locationChangeStart', function (event) {
+	        if( $scope.loading === false )
+	        	event.preventDefault();
+   		})
 
 		$scope.login = function() {
+			$scope.loading = true;
 			// validate the formData to make sure that something is there
 			// if form is empty, nothing will happen
 			if ($scope.loginData.email != undefined && $scope.loginData.email.trim() != '') {
-				$scope.loading = true;
 				// call the create function from our service (returns a promise object)
 				splashFactory.loginAttempt($scope.loginData)
 
@@ -34,9 +33,6 @@ angular.module('splashPageModule', ['splashPageService'])
 							$scope.addAlert("Successful login", "success", true);
 							$location.path('/dashboard');
 						}
-
-						//$scope.loginData = {}; // clear the form so our user is ready to enter another
-						//$scope.todos = data; // assign our new list of todos
 					}).error(function(response) {
 						$scope.error = response.message;
 						$scope.loading = false;
@@ -45,13 +41,14 @@ angular.module('splashPageModule', ['splashPageService'])
 			else {
 				$scope.error = "Email is undefined";
 				$scope.addAlert($scope.error, "danger", true); 
-				$scope.loginData.email = null; 
+				$scope.loginData.email = null;
+				$scope.loading = false;
 			}
 		};
 
 		$scope.register = function() {
+			$scope.loading = true; 
 			if ($scope.initRegData.email != undefined && $scope.initRegData.email.trim() != '') {
-				$scope.loading = true; 
 				// call the create function from our service (returns a promise object)
 				splashFactory.registerAttempt($scope.initRegData)
 					// if successful creation, call our get function to get all the new todos
@@ -68,15 +65,15 @@ angular.module('splashPageModule', ['splashPageService'])
 								$location.path('/regPhysician');
 						}
 					}).error(function(response) {
-						$scope.loading = false;
 						$scope.error = response.message;
-						//$scope.initRegData.email = {}; 
+						$scope.loading = false;
 					});
 			}
 			else {
 				$scope.error = "Email is undefined"; 
 				$scope.addAlert($scope.error, "danger", false); 
 				$scope.initRegData.email = {}; 
+				$scope.loading = false; 
 			}
 		};
 
