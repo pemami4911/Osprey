@@ -29,6 +29,7 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 						$location.path('/');
 					} else {
 						$scope.loggedUser = data;
+						reloadGrid();
 					}
 				}).error(function(response) {
 					//console.log(response);
@@ -37,6 +38,22 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 				});
 			$scope.loading = false; 
 		};
+
+		$scope.updateColumns = function() {
+            if ($scope.loggedUser.tableSettings != undefined) {
+	   			if ($scope.loggedUser.tableSettings.showEmail) {
+	        		$scope.grid.columnDefs.push({field: "email", displayName: "E-mail Address"});
+	        	}
+
+	        	if ($scope.loggedUser.tableSettings.showWeight) {
+	        		$scope.grid.columnDefs.push({field: "weight", displayName: "Weight"});
+	        	}
+
+	        	if ($scope.loggedUser.tableSettings.showAge) {
+	        		$scope.grid.columnDefs.push({field: "age", displayName: "Age"});
+	        	}
+	        }
+   		}
 
 		var reloadGrid = function() { 
 			$scope.grid = {
@@ -57,8 +74,10 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 	                    field: "parentName",
 	                    displayName: "Parent Name"
 	                }],
-	            localMode: false,
-	            getData: function() { $http.get('../json/users.json').success(function(data) {
+	            localMode: true,
+	        };
+
+	        $http.get('../json/users.json').success(function(data) {
 			    		$scope.tableData = data;
 
 			    		for (var i = 1; i <= 100; i++) {
@@ -72,28 +91,10 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 						}
 
 			        	$scope.grid.data = $scope.tableData;
-			        	$scope.updateColumns();
+			        	// $scope.updateColumns();
 			  		});
-				}
-	        };
+	        $scope.updateColumns();
 	    }
-	    reloadGrid();
-		
-		$scope.updateColumns = function() {
-            if ($scope.loggedUser.tableSettings != undefined) {
-	   			if ($scope.loggedUser.tableSettings.showEmail) {
-	        		$scope.grid.columnDefs.push({field: "email", displayName: "E-mail Address"});
-	        	}
-
-	        	if ($scope.loggedUser.tableSettings.showWeight) {
-	        		$scope.grid.columnDefs.push({field: "weight", displayName: "Weight"});
-	        	}
-
-	        	if ($scope.loggedUser.tableSettings.showAge) {
-	        		$scope.grid.columnDefs.push({field: "age", displayName: "Age"});
-	        	}
-	        }
-   		}
    		
 		$scope.checkLogged();
 
