@@ -16,18 +16,20 @@
         <div class="col-lg-5">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    John Smith
+                    {{selectedRow.patientName}}
                 </div>
                 <div class="panel-body">
                     <div class = "row">
-                        <div class="col-lg-6">
+                        <div class="col-lg-5">
                             <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xfp1/v/t1.0-1/c43.0.148.148/p148x148/10417584_10150004166814104_470499672042020938_n.png?oh=d3d3bea5567dfd8ea2ff62ed27de2768&oe=54E63C1E&__gda__=1425524590_b6dcd0b91983c94125edf57b4a87a9ea">
                             </img>
                         </div>
                         <div class="col-lg-6">
-                            <h4>Stuff 1</h4>
-                            <h4>Stuff 2</h4>
-                            <h4>Stuff 3</h4>
+                            <h4>Age: {{selectedRow.age}}</h4>
+                            <h4>Weight: {{selectedRow.weight}} lbs</h4>
+                            <br>
+                            <h5>Parent: {{selectedRow.parentName}}</h5>
+                            <h5>{{selectedRow.email}}</h5>
                         </div>
                     </div>
                 </div>

@@ -13,7 +13,8 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 		$scope.contentUrl = 'views/dashPartials/dashMyPatients.html';
 		$scope.loggedUser = {};
 		$scope.tableSelections = [];
-		$scope.loading = false; 
+		$scope.loading = false;
+		$scope.selectedRow = {};
 		// Toggles for Account Settings
 		$scope.passwordCollapsed = true;
 		$scope.emailCollapsed = true;
@@ -66,7 +67,7 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 	                    render: function(row) {
 	                      return React.DOM.a({href:"javascript:", onClick: function() {
 	                      		$scope.switchTab(5);
-	                        	console.log(row);
+	                      		$scope.selectedRow = row;
 	                      }}, row.patientName);
 	                  	}
 	                },
@@ -99,7 +100,6 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 		
 		$scope.updateColumns = function() {
             if ($scope.loggedUser.tableSettings != undefined) {
-            	console.log($scope.loggedUser.tableSettings); 
 	   			if ($scope.loggedUser.tableSettings.showEmail) {
 	        		$scope.grid.columnDefs.push({field: "email", displayName: "E-mail Address"});
 	        	}
