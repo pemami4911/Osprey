@@ -8,21 +8,30 @@ angular.module('regParentPageModule', ['splashPageService'])
 		$scope.regData.userType = splashFactory.get('userType'); 
 		$scope.loading = false;
 
+		$scope.back = function() {
+			$location.path('/');
+		};
+
+		if ($scope.regData.email == '') 
+			$scope.back();
+
 		// $scope.$on is an event handler
 		// $locationChangeStart is an angular event that is called every time a location change begins
 		$scope.$on('$locationChangeStart', function (event, newURL) {
-			var msg = "Are you sure you want to navigate away from this page? All input will be lost."; 
-			var check = "dashboard"; 
+			if ($scope.regData.email != '') {
+				var msg = "Are you sure you want to navigate away from this page? All input will be lost."; 
+				var check = "dashboard"; 
 
-	        if( $scope.loading === false ) {
-	        	if( newURL.indexOf(check) != (-1) ) {
-	        		event.preventDefault(); 
-	        	}
-	        	else {
-	        		if( !window.confirm(msg) )
-	        			event.preventDefault(); 
-	        	}
-	        }
+		        if( $scope.loading === false ) {
+		        	if( newURL.indexOf(check) != (-1) ) {
+		        		event.preventDefault(); 
+		        	}
+		        	else {
+		        		if( !window.confirm(msg) )
+		        			event.preventDefault(); 
+		        	}
+		        }
+		    }
    		})
 
 		$scope.registerFinal = function() {
@@ -51,8 +60,5 @@ angular.module('regParentPageModule', ['splashPageService'])
 				$scope.loading = false;
 		};
 
-		$scope.back = function() {
-			$location.path('/');
-		};
 
 	}]);

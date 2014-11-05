@@ -20,13 +20,14 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 		$scope.emailCollapsed = true;
 		$scope.newAccountSettings = {}; 
 		$scope.newTableSettings = {}; 
-
+		// $scope.tableData = [];
 		$scope.checkLogged = function() {
 			$scope.loading = true;
 			splashFactory.isLoggedIn()
 			// if successful creation, call our get function to get all the new todos
 				.success(function(data) {
-					if ( data === "false" ) {
+					if ( data == "false" ) {
+						$scope.loading = true;
 						$location.path('/');
 					} else {
 						$scope.loggedUser = data;
@@ -199,7 +200,7 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 					}
 				}).error(function (response){
 					console.log(response);
-					scope.error = response.message; 
+					$scope.error = response.message; 
 				});
 		}
 	}]);
