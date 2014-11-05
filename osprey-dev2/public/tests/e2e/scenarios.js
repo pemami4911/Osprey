@@ -10,12 +10,15 @@ describe('ospreyCoreApp', function() {
 	var logout = element(by.css('#logout-button'));
 
 	var alertMsg = element(by.binding('alert.msg'));
+	var patientName = element(by.binding('selectedRow.patientName'));
 
+	var next = element(by.css('#next-button'));
 	var tab1 = element(by.css('.tab1'));
 	var tab2 = element(by.css('.tab2'));
 	var tab3 = element(by.css('.tab3'));
 
 	var pageHeader = element(by.css('.page-header'));
+	var panelHeading = element(by.css('.panel-heading'));
 
 
 	//first e2e test
@@ -23,19 +26,17 @@ describe('ospreyCoreApp', function() {
 		expect(browser.getTitle()).toEqual('Osprey');
 	}); 
 
-	it('should automatically redirect to / when first opening', function() {
-		expect(browser.getLocationAbsUrl()).toMatch('/'); 
-	}); 
+	it('should prevent a user from navigating registration page directly, without entering an email', function() {
+		next.click();
+		expect(alertMsg.getText()).toEqual('Email is undefined');
+	});
 
+	/*
 	it('should prevent a user from navigating to the dashboard without logging in first', function() {
 		browser.get('http://localhost:8080/#/dashboard'); 
 		expect(browser.getLocationAbsUrl()).toMatch('/'); 
 	});
-
-	it('should prevent a user from navigating to /regParent directly, without entering an email', function() {
-		browser.get('http://localhost:8080/#/regParent'); 
-		expect(browser.getLocationAbsUrl()).toMatch('/'); 
-	});
+*/
 
 	//registers a parent
 	it('should register a parent and go to dashboard', function() {
@@ -45,7 +46,7 @@ describe('ospreyCoreApp', function() {
 		regEmail.sendKeys('psdpar@ent.com');
 
 		//next-button
-		element(by.css('#next-button')).click();
+		next.click();
 
 		element(by.model('regData.password')).sendKeys('ilovenick');
 		element(by.css('#regParent')).click();
@@ -54,7 +55,7 @@ describe('ospreyCoreApp', function() {
 
 	});
 
-		//logout test
+	//logout test
 	it('should logout and return to splash page', function() {
 		logout.click();
 		expect(browser.get('http://localhost:8080'));
@@ -76,7 +77,13 @@ describe('ospreyCoreApp', function() {
 
 	});
 
-	it('should prohibit user to go back to splash page without logging out', function() {
+	// the first thing a physician should see is a table of their patients
+	it('should allow physician to click on a patients name to navigate to their personal info page', function() {
+		expect(panelHeading.getText()).toEqual('Patients');
+		//element(by.css('')).click(); 
+	}); 
+
+	it('should prohibit user from returning to splash page without logging out', function() {
 		browser.navigate().back();
 		expect(browser.get('http://localhost:8080/#/dashboard'));
 		logout.click();
@@ -106,12 +113,6 @@ describe('ospreyCoreApp', function() {
 		expect(browser.get('http://localhost:8080/#/dashboard'));
 	});
 
-	it('should prevent the user from returning to the splash page if they haven\'t logged out', function() {
-		browser.get('http://localhost:8080/#/'); 
-		expect(browser.getLocationAbsUrl()).toMatch('/dashboard'); 
-	});
-
-<<<<<<< HEAD
 	it('should navigate through tabs smoothly', function() {
 		tab1.click();
 		expect(pageHeader.getText()).toEqual('My Patients');
@@ -126,6 +127,7 @@ describe('ospreyCoreApp', function() {
 		element(by.css('#recom')).click();
 		element(by.css('#custom')).click();
 		element(by.css('#accSettings')).click();
+	});
 		/*
 		element(by.css('#chEmail')).click();
 		element(by.model('newAccountSettings.newEmail')).sendKeys('psd@parent.com');
@@ -141,18 +143,18 @@ describe('ospreyCoreApp', function() {
 		//element(by.model('newAccountSettings.newPassword')).sendKeys('ionlylikenick');
 		//element(by.css('#submitNewPword')).click();
 
-		
-	});
 	
-	// the first thing a physician should see is a table of their patients
-	it('should allow the user to click on a patients name to navigate to their personal info page', function() {
-		element(by.css('')).click(); 
+	
+
+
+	it('should automatically redirect to / when first opening', function() {
+		expect(browser.getLocationAbsUrl()).toMatch('/'); 
 	}); 
 
-	it('should logout and return to splash page', function() {
-		element(by.css('#logout-button')).click();
-		expect(browser.get('http://localhost:8080/#/'));
-	});
+	
+
+
+
 
 */
 
