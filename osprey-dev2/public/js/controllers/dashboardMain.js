@@ -22,7 +22,7 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 		$scope.newTableSettings = {}; 
 		// $scope.tableData = [];
 		$scope.checkLogged = function() {
-			$scope.loading = true;
+			//$scope.loading = true;
 			splashFactory.isLoggedIn()
 			// if successful creation, call our get function to get all the new todos
 				.success(function(data) {
@@ -204,6 +204,8 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 				});
 		}
 
+		// in future, the pdf will contain the table and graphs, which should contain the customizations 
+		// that the user set 
 		$scope.pdfGenerator = function() {
 			var doc = new jsPDF();
             doc.text(20, 20, $scope.selectedRow.patientName );

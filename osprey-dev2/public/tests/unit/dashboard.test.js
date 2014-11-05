@@ -90,6 +90,27 @@ describe('dashboardControllerLoggedIn', function(){
       expect(scope.loggedUser.email).toBe("a@a.com");
    });
 
+   it('should populate the pdf with the selected patients data', function() {
+    var row = {
+      'patientName':'Mike', 
+      'parentName':'Judy', 
+      'email':'test@test.com', 
+      'age':20, 
+      'weight':120
+    };
+
+    scope.selectedRow = row; 
+
+    var doc = new jsPDF(); 
+
+    doc.text(20,20, scope.selectedRow.patientName); 
+    doc.text(20,30, scope.selectedRow.parentName); 
+    doc.text(20,40, scope.selectedRow.email ); 
+    doc.text(20,50, String(scope.selectedRow.age)); 
+    doc.text(20,60, String(scope.selectedRow.weight));  
+
+   });
+
    it('should allow the user to change their password', function () {
 
    });
