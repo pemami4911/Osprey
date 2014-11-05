@@ -111,7 +111,6 @@ describe('ospreyCoreApp', function() {
 		expect(browser.getLocationAbsUrl()).toMatch('/dashboard'); 
 	});
 
-<<<<<<< HEAD
 	it('should navigate through tabs smoothly', function() {
 		tab1.click();
 		expect(pageHeader.getText()).toEqual('My Patients');
