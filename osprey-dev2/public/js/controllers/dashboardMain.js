@@ -95,6 +95,24 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 			  		});
 	        $scope.updateColumns();
 	    }
+	    reloadGrid();
+		
+		$scope.updateColumns = function() {
+            if ($scope.loggedUser.tableSettings != undefined) {
+            	console.log($scope.loggedUser.tableSettings); 
+	   			if ($scope.loggedUser.tableSettings.showEmail) {
+	        		$scope.grid.columnDefs.push({field: "email", displayName: "E-mail Address"});
+	        	}
+
+	        	if ($scope.loggedUser.tableSettings.showWeight) {
+	        		$scope.grid.columnDefs.push({field: "weight", displayName: "Weight"});
+	        	}
+
+	        	if ($scope.loggedUser.tableSettings.showAge) {
+	        		$scope.grid.columnDefs.push({field: "age", displayName: "Age"});
+	        	}
+	        }
+   		}
    		
 		$scope.checkLogged();
 
