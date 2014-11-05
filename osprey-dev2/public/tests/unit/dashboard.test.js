@@ -21,7 +21,7 @@ describe('dashboardControllerLoggedIn', function(){
             return [200, userResponse];
           }
         ); 
-       $httpBackend.when('GET', '../json/users.json').respond(200, {});
+       $httpBackend.when('GET', '../json/users.json').respond(200, [{}]);
        $httpBackend.when('POST', '/auth/changeEmail').respond(200, 1);
        $httpBackend.when('POST', '/auth/changeTableSettings').respond(200, 1);
        $httpBackend.flush();
@@ -57,8 +57,6 @@ describe('dashboardControllerLoggedIn', function(){
 
    it('should fail to allow the user to customize the columns of the table with when no table settings are provided', function() {
 
-      $httpBackend.flush(); 
-
       scope.changeTableSettings(); 
 
       $httpBackend.expect('POST', '/auth/changeTableSettings').respond(400, {
@@ -76,10 +74,12 @@ describe('dashboardControllerLoggedIn', function(){
       userResponse = {"email": "a@a.com", "tableSettings": {"showAge": true, "showWeight": true, "showEmail": false}};
       $httpBackend.flush();
       expect(scope.loggedUser.tableSettings.showEmail).toBe(false);
+      expect(scope.grid.columnDefs.length).toBe(5);
    });
 
    it('should populate the tables with an http.GET request to our dummy backend', function() {
-
+      console.log(scope.grid.data.length);
+      expect(scope.grid.data.length).toBe(101);
    });
 
    it('should allow the user to successfully change their email', function() {
@@ -103,7 +103,6 @@ describe('dashboardControllerLoggedIn', function(){
    });
 
    it('should be fail to log out if scope.loggedUser is empty', function() {
-
       scope.loggedUser = undefined; 
       scope.logoutAttempt(scope.loggedUser); 
       expect(scope.error).toBe("Failed call to logoutAttempt()"); 
@@ -150,11 +149,13 @@ describe('dashboardControllerNotLoggedIn', function(){
       });
 
        $httpBackend = _$httpBackend_; 
-       $httpBackend.when('POST', '/auth/isLogged').respond("false"); 
+       $httpBackend.when('POST', '/auth/isLogged').respond(200, 'false'); 
+       $httpBackend.when('GET', '../json/users.json').respond(200, []);
        $location = _$location_; 
     }));
 
     it('should kick a user out of the dashboard if the controller is loaded and no one is logged in', function() {
+      scope.checkLogged();
       $httpBackend.flush();
       expect($location.url()).toBe('/'); 
    });

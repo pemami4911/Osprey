@@ -89,8 +89,6 @@ describe('ospreyCoreApp', function() {
 		logout.click();
 	});
 
-
-
 	//invalid login check
 	it('should catch invalid emails and passwords', function() {
 		loginEmail.sendKeys('cantwaitforthenbaseasontostart@letsgo.com');

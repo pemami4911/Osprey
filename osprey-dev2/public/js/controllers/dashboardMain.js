@@ -20,13 +20,14 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 		$scope.emailCollapsed = true;
 		$scope.newAccountSettings = {}; 
 		$scope.newTableSettings = {}; 
-
+		// $scope.tableData = [];
 		$scope.checkLogged = function() {
 			$scope.loading = true;
 			splashFactory.isLoggedIn()
 			// if successful creation, call our get function to get all the new todos
 				.success(function(data) {
-					if ( data === "false" ) {
+					if ( data == "false" ) {
+						$scope.loading = true;
 						$location.path('/');
 					} else {
 						$scope.loggedUser = data;
@@ -199,8 +200,18 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 					}
 				}).error(function (response){
 					console.log(response);
-					scope.error = response.message; 
+					$scope.error = response.message; 
 				});
 		}
+
+		$scope.pdfGenerator = function() {
+			var doc = new jsPDF();
+            doc.text(20, 20, $scope.selectedRow.patientName );
+            doc.text(20, 40, String($scope.selectedRow.age) ); 
+            doc.text(20, 60, $scope.selectedRow.email ); 
+            doc.text(20, 80, $scope.selectedRow.parentName ); 
+            doc.save($scope.selectedRow.patientName.concat('.pdf'));
+		}
+
 	}]);
 
