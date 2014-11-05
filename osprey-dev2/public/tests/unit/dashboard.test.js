@@ -37,6 +37,11 @@ describe('dashboardControllerLoggedIn', function(){
       expect(scope.tableData).toExist; 
    });
 
+   // the first thing a physician should see when they log in is a table of their patients
+   it('should display a table of the physicians patients immediately when they log in to the dashboard', function() {
+      expect(scope.contentUrl).toBe('views/dashPartials/dashMyPatients.html'); 
+   }); 
+
    it('should check the page number is active', function() {
       expect(scope.isActive).toBeTruthy(); 
    });
@@ -93,7 +98,7 @@ describe('dashboardControllerLoggedIn', function(){
 
    });
 
-   it('should send the user\'s new email and email when the old email has been changed', function () {
+   it('should send the user\'s new email an email when the old email has been changed', function () {
 
    });
 

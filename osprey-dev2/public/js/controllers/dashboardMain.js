@@ -81,6 +81,7 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 		
 		$scope.updateColumns = function() {
             if ($scope.loggedUser.tableSettings != undefined) {
+            	console.log($scope.loggedUser.tableSettings); 
 	   			if ($scope.loggedUser.tableSettings.showEmail) {
 	        		$scope.grid.columnDefs.push({field: "email", displayName: "E-mail Address"});
 	        	}
