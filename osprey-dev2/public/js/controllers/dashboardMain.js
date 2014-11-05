@@ -203,5 +203,15 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 					$scope.error = response.message; 
 				});
 		}
+
+		$scope.pdfGenerator = function() {
+			var doc = new jsPDF();
+            doc.text(20, 20, $scope.selectedRow.patientName );
+            doc.text(20, 40, String($scope.selectedRow.age) ); 
+            doc.text(20, 60, $scope.selectedRow.email ); 
+            doc.text(20, 80, $scope.selectedRow.parentName ); 
+            doc.save($scope.selectedRow.patientName.concat('.pdf'));
+		}
+
 	}]);
 
