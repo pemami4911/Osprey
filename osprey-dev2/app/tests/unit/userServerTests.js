@@ -17,6 +17,8 @@ var user, user2, user3;
  */
 describe('User Model Unit Tests:', function() {
 	before(function(done) {
+		User.remove().exec();
+
 		user = new User({
 			email: 'test@test.com',
 			password: 'password',

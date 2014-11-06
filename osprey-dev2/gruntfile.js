@@ -44,6 +44,11 @@ module.exports = function(grunt) {
 		files: ['<%= jshint.files %>'],
 		tasks: ['jshint', 'qunit']
 	    },
+	    env: {
+			test: {
+				NODE_ENV: 'test'
+			}
+		},
 	    mochaTest: {
 			src: watchFiles.mochaTests,
 			options: {
@@ -65,8 +70,9 @@ module.exports = function(grunt) {
     // grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-mocha-test');
     grunt.loadNpmTasks('grunt-karma');
+    grunt.loadNpmTasks('grunt-env');
 
-    grunt.registerTask('test', ['karma', 'mochaTest']);
+    grunt.registerTask('test', ['env:test', 'karma', 'mochaTest']);
    	grunt.registerTask('testmocha', ['mochaTest']);
     // grunt.registerTask('default', ['jshint', 'qunit', 'concat', 'uglify']);
 

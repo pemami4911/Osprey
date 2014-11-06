@@ -12,7 +12,8 @@ var session = require('express-session');
 var passport = require('passport');
 var flash = require('connect-flash');
 
-
+if (process.env.NODE_ENV == 'test')
+	database.url = 'mongodb://localhost/mean-test';
 // configuration ===============================================================
 mongoose.connect(database.url); 	// connect to mongoDB database on modulus.io
 
