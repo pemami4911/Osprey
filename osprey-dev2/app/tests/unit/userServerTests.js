@@ -17,8 +17,28 @@ var user, user2, user3;
  */
 describe('User Model Unit Tests:', function() {
 	before(function(done) {
-		User.remove().exec();
+		function clearDB() {
+		   for (var i in mongoose.connection.collections) {
+		     mongoose.connection.collections[i].remove(function() {});
+		   }
+		   return done();
+		 }
 
+		 if (mongoose.connection.readyState === 0) {
+		   mongoose.connect(config.db.test, function (err) {
+		     if (err) {
+		       throw err;
+		     }
+		     return clearDB();
+		   });
+		 } else {
+		   return clearDB();
+		 }
+
+		done();
+	});
+
+	beforeEach(function(done) {
 		user = new User({
 			email: 'test@test.com',
 			password: 'password',
@@ -38,7 +58,7 @@ describe('User Model Unit Tests:', function() {
 		}); 
 
 		done();
-	});
+	})
 
 	describe('Method Save', function() {
 
