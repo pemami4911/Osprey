@@ -8,8 +8,6 @@ module.exports = function(app) {
 	app.post('/auth/login', function(req, res, next) {
 	  	passport.authenticate('local-login', function(err, user, info) {
 
-		  	console.log(user);
-
 		    if (err) { return next(err); }
 		    if (!user) { 
 		    	return res.send("null"); 
@@ -103,8 +101,6 @@ module.exports = function(app) {
 
 	app.post('/auth/changeTableSettings', function(req, res) {
 		// use mongoose to get all todos in the database
-		console.log(req.password);
-		console.log(req.body);
 		UserModel.update({email: req.body.user.email}, {
 			$set: {'tableSettings.showEmail':req.body.newSettings.email, 
 			'tableSettings.showAge':req.body.newSettings.age, 

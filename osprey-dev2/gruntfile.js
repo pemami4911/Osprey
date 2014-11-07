@@ -85,11 +85,6 @@ module.exports = function(grunt) {
 	    }
 	});
 
-    // grunt.loadNpmTasks('grunt-contrib-uglify');
-    // grunt.loadNpmTasks('grunt-contrib-jshint');
-    // grunt.loadNpmTasks('grunt-contrib-qunit');
-    // grunt.loadNpmTasks('grunt-contrib-watch');
-    // grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-mocha-test');
     grunt.loadNpmTasks('grunt-karma');
     grunt.loadNpmTasks('grunt-env');
@@ -100,6 +95,5 @@ module.exports = function(grunt) {
     grunt.registerTask('test', ['env:test', 'karma', 'mochaTest', 'protractor_webdriver', 'protractor']);
     grunt.registerTask('default', ['nodemon']);
    	grunt.registerTask('testmocha', ['mochaTest']);
-    // grunt.registerTask('default', ['jshint', 'qunit', 'concat', 'uglify']);
 
 };
