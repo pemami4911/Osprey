@@ -125,12 +125,12 @@ describe('selenium-webdriver/http/util', function() {
       var isReady =  util.waitForServer(baseUrl, 200).
           then(function() { done('Did not expect to succeed'); }).
           then(null, function(e) {
-            assert.equal('cancelled!', e.message);
+            assert.equal(err, e);
           }).
           then(function() { done(); }, done);
 
       setTimeout(function() {
-        isReady.cancel('cancelled!');
+        isReady.cancel(err);
       }, 50);
     });
   });
@@ -165,15 +165,16 @@ describe('selenium-webdriver/http/util', function() {
 
     it('can cancel wait', function(done) {
       responseCode = 404;
+      var err = Error('cancelled!');
       var isReady =  util.waitForUrl(baseUrl, 200).
           then(function() { done('Did not expect to succeed'); }).
           then(null, function(e) {
-            assert.equal('cancelled!', e.message);
+            assert.equal(err, e);
           }).
           then(function() { done(); }, done);
 
       setTimeout(function() {
-        isReady.cancel('cancelled!');
+        isReady.cancel(err);
       }, 50);
     });
   });

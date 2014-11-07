@@ -28,19 +28,14 @@ var base = require('../_base'),
  * A {@link webdriver.http.Client} implementation using Node's built-in http
  * module.
  * @param {string} serverUrl URL for the WebDriver server to send commands to.
- * @param {http.Agent=} opt_agent The agent to use for each request.
- *     Defaults to {@code http.globalAgent}.
  * @constructor
  * @implements {webdriver.http.Client}
  */
-var HttpClient = function(serverUrl, opt_agent) {
+var HttpClient = function(serverUrl) {
   var parsedUrl = url.parse(serverUrl);
   if (!parsedUrl.hostname) {
     throw new Error('Invalid server URL: ' + serverUrl);
   }
-
-  /** @private {http.Agent} */
-  this.agent_ = opt_agent;
 
   /**
    * Base options for each request.
@@ -71,17 +66,13 @@ HttpClient.prototype.send = function(httpRequest, callback) {
     path += httpRequest.path;
   }
 
-  var options = {
+  sendRequest({
     method: httpRequest.method,
     host: this.options_.host,
     port: this.options_.port,
     path: path,
     headers: httpRequest.headers
-  };
-  if (this.agent_) {
-    options.agent = this.agent_;
-  }
-  sendRequest(options, callback, data);
+  }, callback, data);
 };
 
 

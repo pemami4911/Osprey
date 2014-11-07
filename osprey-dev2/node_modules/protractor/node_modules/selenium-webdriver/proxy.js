@@ -30,13 +30,28 @@
 var util = require('util');
 
 
+/**
+ * Proxy configuration object, as defined by the WebDriver wire protocol.
+ * @typedef {(
+ *     {proxyType: string}|
+ *     {proxyType: string,
+ *      proxyAutoconfigUrl: string}|
+ *     {proxyType: string,
+ *      ftpProxy: string,
+ *      httpProxy: string,
+ *      sslProxy: string,
+ *      noProxy: string})}
+ */
+var ProxyConfig;
+
+
 
 // PUBLIC API
 
 
 /**
  * Configures WebDriver to bypass all browser proxies.
- * @return {!webdriver.ProxyConfig} A new proxy configuration object.
+ * @return {!ProxyConfig} A new proxy configuration object.
  */
 exports.direct = function() {
   return {proxyType: 'direct'};
@@ -63,7 +78,7 @@ exports.direct = function() {
  *          https: (string|undefined),
  *          bypass: (string|!Array.<string>|undefined)}} options Proxy
  *     configuration options.
- * @return {!webdriver.ProxyConfig} A new proxy configuration object.
+ * @return {!ProxyConfig} A new proxy configuration object.
  */
 exports.manual = function(options) {
   return {
@@ -81,7 +96,7 @@ exports.manual = function(options) {
  * Configures WebDriver to configure the browser proxy using the PAC file at
  * the given URL.
  * @param {string} url URL for the PAC proxy to use.
- * @return {!webdriver.ProxyConfig} A new proxy configuration object.
+ * @return {!ProxyConfig} A new proxy configuration object.
  */
 exports.pac = function(url) {
   return {
@@ -93,7 +108,7 @@ exports.pac = function(url) {
 
 /**
  * Configures WebDriver to use the current system's proxy.
- * @return {!webdriver.ProxyConfig} A new proxy configuration object.
+ * @return {!ProxyConfig} A new proxy configuration object.
  */
 exports.system = function() {
   return {proxyType: 'system'};

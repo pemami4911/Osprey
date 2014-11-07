@@ -94,6 +94,6 @@ module.exports = function(grunt) {
 
     grunt.registerTask('test', ['env:test', 'karma', 'mochaTest', 'protractor_webdriver', 'protractor']);
     grunt.registerTask('default', ['nodemon']);
-   	grunt.registerTask('testmocha', ['mochaTest']);
+   	grunt.registerTask('testmocha', ['env:test', 'mochaTest']);
 
 };

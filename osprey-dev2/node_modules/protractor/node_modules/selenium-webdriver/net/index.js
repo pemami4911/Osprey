@@ -41,8 +41,7 @@ function getAddress(loopback, opt_family) {
 
   var interfaces;
   if (loopback) {
-    var lo = getLoInterface();
-    interfaces = lo ? [lo] : null;
+    interfaces = [getLoInterface()];
   }
   interfaces = interfaces || os.networkInterfaces();
   for (var key in interfaces) {
