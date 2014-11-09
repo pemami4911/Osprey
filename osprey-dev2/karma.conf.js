@@ -22,7 +22,9 @@ module.exports = function(config) {
            'public/lib/ngReactGrid/js/ngReactGrid.js',
            'public/lib/angular-bootstrap/*.js',
            'public/lib/jsPDF/dist/*.js',
+           'public/lib/d3/*.js',
            'public/js/*/*.js',
+           'public/js/*/*/*.js',
            // tests
            'public/tests/unit/*.js',
     ],

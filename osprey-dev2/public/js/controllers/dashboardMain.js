@@ -12,6 +12,7 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 		$scope.loggedUser = {};
 		$scope.loading = false;
 		$scope.selectedRow = {};
+		$scope.navItems = [];
 
 		$scope.checkLogged = function(callback) {
 			splashFactory.isLoggedIn()
@@ -79,8 +80,15 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 		}
 
 		var init = function() {
-			$scope.activeTab = 2;
-			$scope.contentUrl = 'views/dashPartials/dashMyPatients.html';
+			if ($scope.loggedUser.userType == 'Parent') {
+				$scope.navItems.push({name: "Home", num: 1})
+				$scope.switchTab(1);
+			} else {
+				$scope.switchTab(2);
+				$scope.navItems.push({name: "My Patients", num: 2})
+				$scope.navItems.push({name: "Reports", num: 3})
+				$scope.navItems.push({name: "Settings", num: 4})
+			}
 		};
 		$scope.checkLogged(init);
 
