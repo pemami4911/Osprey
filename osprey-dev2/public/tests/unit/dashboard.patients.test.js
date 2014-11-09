@@ -10,7 +10,7 @@ describe('dashboardPatientsController', function(){
 		scope = $rootScope.$new();
 
 		// establish parent controller
-		userResponse = { "userType": "Physician", "email": "asd@asd.com", "password": "hash", "tableSettings" : {"showAge": true, "showWeight": true, "showEmail": true}};
+		userResponse = { "userType": "Physician", "email": "asd@asd.com", "password": "hash", "tableSettings" : {"showAge": true, "showWeight": true, "showEmail": false}};
 		scope.loggedUser = userResponse;
 
 
@@ -35,5 +35,8 @@ describe('dashboardPatientsController', function(){
 
 	it('should populate the tables with an http.GET request to our dummy backend', function() {
 		expect(scope.grid.data.length).toBe(101);
+	});
+	it('should not display the email column if the user has that setting off', function() {
+		expect(scope.grid.columnDefs.length).toBe(5);
 	});
  }); 

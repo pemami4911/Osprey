@@ -22,6 +22,7 @@ describe('dashboardPatientsController', function(){
 		$httpBackend = _$httpBackend_; 
 		 
 		$httpBackend.when('POST', '/auth/changeEmail').respond(200, 1);
+		$httpBackend.when('POST', '/auth/changePassword').respond(200, 1);
 		$httpBackend.when('POST', '/auth/changeTableSettings').respond(200, 1);
 		 
 		$location = _$location_; 

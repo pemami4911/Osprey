@@ -2,6 +2,15 @@
 
 var passport = require('passport');
 var UserModel = require('./models/user');
+var EmailLogModel = require('./models/emaillog');
+var nodemailer = require('nodemailer');
+var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'ospreytester@gmail.com',
+        pass: 'mypasstest1'
+    }
+});
 
 module.exports = function(app) {
 	// api ---------------------------------------------------------------------
@@ -81,6 +90,7 @@ module.exports = function(app) {
 				console.log("error" + err);
 				res.send(err);
 			}
+			sendEmail(req.body.newEmail, "E-mail changed!", "You have changed your e-mail address!");
 			res.json(result);
 		});
 	});
@@ -94,7 +104,7 @@ module.exports = function(app) {
 				console.log("error" + err);
 				res.send(err);
 			}
-
+			sendEmail(req.body.user.email, "Password changed!", "You have changed your password!");
 			res.json(result);
 		});
 	});
@@ -118,12 +128,23 @@ module.exports = function(app) {
 	
 };
 
-function isLoggedIn(req, res, next) {
-	console.log(req.isAuthenticated());
-	// if user is authenticated in the session, carry on 
-	if (req.isAuthenticated())
-		return next();
-
-	// if they aren't redirect them to the home page
-	res.redirect('/');
+function sendEmail(recipient, subject, message) {
+	transporter.sendMail({
+	    from: 'ospreytester@gmail.com',
+	    to: recipient,
+	    subject: subject,
+	    text: message
+	}, function(err, info){
+		var newLog = new EmailLogModel();
+		newLog.timestamp = Date();
+		if (err)
+			newLog.data = err;
+		else
+			newLog.data = info;
+		newLog.save(function(err) {
+            if (err) {
+                console.log(err);
+            }
+        });
+	});
 }
