@@ -2,120 +2,36 @@
 
 angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.bootstrap'])
 
-	// inject the Todo service factory into our controller
+	// Controls authentication checks, navigation
 	.controller('dashboardController', ['$scope',
 										'$http', 
 										'$location', 
 										'splashFactory', 
 										'ngReactGridCheckbox', 
 	function($scope, $http, $location, splashFactory, ngReactGridCheckbox) {
-		$scope.activeTab = 2;
-		$scope.contentUrl = 'views/dashPartials/dashMyPatients.html';
 		$scope.loggedUser = {};
-		$scope.tableSelections = [];
 		$scope.loading = false;
 		$scope.selectedRow = {};
-		// Toggles for Account Settings
-		$scope.passwordCollapsed = true;
-		$scope.emailCollapsed = true;
-		$scope.newAccountSettings = {}; 
-		$scope.newTableSettings = {}; 
-		// $scope.tableData = [];
-		$scope.checkLogged = function() {
-			//$scope.loading = true;
+		$scope.navItems = [];
+
+		$scope.checkLogged = function(callback) {
 			splashFactory.isLoggedIn()
-			// if successful creation, call our get function to get all the new todos
 				.success(function(data) {
 					if ( data == "false" ) {
 						$scope.loading = true;
 						$location.path('/');
 					} else {
 						$scope.loggedUser = data;
-						reloadGrid();
+						if (callback)
+							callback();
+						
 					}
 				}).error(function(response) {
-					//console.log(response);
 					$scope.error = response.message; 
 					$location.path('/');
 				});
 			$scope.loading = false; 
 		};
-
-		$scope.updateColumns = function() {
-            if ($scope.loggedUser.tableSettings != undefined) {
-	   			if ($scope.loggedUser.tableSettings.showEmail) {
-	        		$scope.grid.columnDefs.push({field: "email", displayName: "E-mail Address"});
-	        	}
-
-	        	if ($scope.loggedUser.tableSettings.showWeight) {
-	        		$scope.grid.columnDefs.push({field: "weight", displayName: "Weight"});
-	        	}
-
-	        	if ($scope.loggedUser.tableSettings.showAge) {
-	        		$scope.grid.columnDefs.push({field: "age", displayName: "Age"});
-	        	}
-	        }
-   		}
-
-		var reloadGrid = function() { 
-			$scope.grid = {
-	            data: [],
-	            columnDefs: [
-	            	new ngReactGridCheckbox($scope.tableSelections),
-	                {
-	                    field: "patientName",
-	                    displayName: "Patient Name",
-	                    render: function(row) {
-	                      return React.DOM.a({href:"javascript:", onClick: function() {
-	                      		$scope.switchTab(5);
-	                      		$scope.selectedRow = row;
-	                      }}, row.patientName);
-	                  	}
-	                },
-	                {
-	                    field: "parentName",
-	                    displayName: "Parent Name"
-	                }],
-	            localMode: true,
-	        };
-
-	        $http.get('../json/users.json').success(function(data) {
-			    		$scope.tableData = data;
-
-			    		for (var i = 1; i <= 100; i++) {
-							$scope.tableData.push({	
-								"patientName" : "Patient " + i,
-							 	"parentName" : "Parent " + i,
-							 	"email" : "test@email.com" + i,
-							 	"weight" : i,
-							 	"age" : i * 2
-							})
-						}
-
-			        	$scope.grid.data = $scope.tableData;
-			        	// $scope.updateColumns();
-			  		});
-	        $scope.updateColumns();
-	    }
-	    reloadGrid();
-		
-		$scope.updateColumns = function() {
-            if ($scope.loggedUser.tableSettings != undefined) {
-	   			if ($scope.loggedUser.tableSettings.showEmail) {
-	        		$scope.grid.columnDefs.push({field: "email", displayName: "E-mail Address"});
-	        	}
-
-	        	if ($scope.loggedUser.tableSettings.showWeight) {
-	        		$scope.grid.columnDefs.push({field: "weight", displayName: "Weight"});
-	        	}
-
-	        	if ($scope.loggedUser.tableSettings.showAge) {
-	        		$scope.grid.columnDefs.push({field: "age", displayName: "Age"});
-	        	}
-	        }
-   		}
-   		
-		$scope.checkLogged();
 
 		// $scope.$on is an event handler
 		// $routeChangeStart is an angular event that is called every time a route change begins
@@ -124,14 +40,12 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 	        	event.preventDefault();
    		});
 
-   	
 		$scope.switchTab = function( pageNumber ) {
 			$scope.activeTab = pageNumber;
 			if ($scope.activeTab == 1) {
 				$scope.contentUrl = 'views/dashPartials/dashMain.html';
 			} else if ($scope.activeTab == 2) {
 				$scope.contentUrl = 'views/dashPartials/dashMyPatients.html';
-				reloadGrid();
 			} else if ($scope.activeTab == 3) {
 				$scope.contentUrl = 'views/dashPartials/dashCharts.html';
 			} else if ($scope.activeTab == 4) {
@@ -165,55 +79,19 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 				$scope.error = "Failed call to logoutAttempt()"; 
 		}
 
-		// CODE FOR SETTINGS PAGE:
-		$scope.changeEmail = function() {
-			splashFactory.changeEmail( $scope.loggedUser, $scope.newAccountSettings.newEmail )
-				.success(function (data) {
-					if (data == 1) {
-						$scope.checkLogged();
-						window.alert("You have successfully changed your e-mail!");
-					}
-				}).error(function (response){
-					console.log(response);
-				});
+		var init = function() {
+			if ($scope.loggedUser.userType == 'Parent') {
+				$scope.navItems.push({name: "Home", num: 1})
+				$scope.switchTab(1);
+			} else {
+				$scope.switchTab(2);
+				$scope.navItems.push({name: "My Patients", num: 2})
+				$scope.navItems.push({name: "Reports", num: 3})
+				$scope.navItems.push({name: "Settings", num: 4})
+			}
 		};
+		$scope.checkLogged(init);
 
-		$scope.changePassword = function() {
-			splashFactory.changePassword( $scope.loggedUser, $scope.newAccountSettings.newPassword )
-				.success(function (data) {
-					if (data == 1) {
-						$scope.checkLogged();
-						window.alert("You have successfully changed your password!");
-					}
-				}).error(function (response){
-					console.log(response);
-				});
-		}
-
-		$scope.changeTableSettings = function() {
-			splashFactory.changeTableSettings( $scope.loggedUser, $scope.newTableSettings )
-				.success(function (data) {
-					
-					if (data == 1) {
-						window.alert("You have successfully changed your table settings!");
-						$scope.checkLogged();
-					}
-				}).error(function (response){
-					console.log(response);
-					$scope.error = response.message; 
-				});
-		}
-
-		// in future, the pdf will contain the table and graphs, which should contain the customizations 
-		// that the user set 
-		$scope.pdfGenerator = function() {
-			var doc = new jsPDF();
-            doc.text(20, 20, $scope.selectedRow.patientName );
-            doc.text(20, 40, String($scope.selectedRow.age) ); 
-            doc.text(20, 60, $scope.selectedRow.email ); 
-            doc.text(20, 80, $scope.selectedRow.parentName ); 
-            doc.save($scope.selectedRow.patientName.concat('.pdf'));
-		}
 
 	}]);
 

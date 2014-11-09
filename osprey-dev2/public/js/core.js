@@ -5,6 +5,9 @@ var ospreyApp = angular.module('ospreyCoreApp', [
 	'regParentPageModule',
   'regPhysicianPageModule',
   'dashboardPageModule',
+  'dashboardSettingsModule',
+  'dashboardPatientsModule',
+  'dashboardMyPatientModule',
   'ui.bootstrap'
 ]);
 

@@ -2,14 +2,11 @@
 
 angular.module('splashPageService', [])
 
-	// super simple service
-	// each function returns a promise object 
 	.factory('splashFactory', ['$http',function($http) {
 
 		var regEmail = '';
 		var userType = ''; 
 
-		//window.alert(savedData);
 		var set = function (data, type) {
 			if (type === 'e-mail')
 				regEmail = data;
