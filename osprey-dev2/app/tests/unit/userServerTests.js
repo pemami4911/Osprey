@@ -17,25 +17,9 @@ var user, user2, user3;
  */
 describe('User Model Unit Tests:', function() {
 	before(function(done) {
-		function clearDB() {
-		   for (var i in mongoose.connection.collections) {
-		     mongoose.connection.collections[i].remove(function() {});
-		   }
-		   return done();
-		 }
-
-		 if (mongoose.connection.readyState === 0) {
-		   mongoose.connect(config.db.test, function (err) {
-		     if (err) {
-		       throw err;
-		     }
-		     return clearDB();
-		   });
-		 } else {
-		   return clearDB();
-		 }
-
-		done();
+		User.remove().exec(function(err) {
+			done();
+		});
 	});
 
 	beforeEach(function(done) {
