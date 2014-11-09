@@ -69,17 +69,15 @@ module.exports = function(app) {
 	});
 	
 	app.post('/auth/checkReg', function(req, res) {
-		// use mongoose to get all todos in the database
 		UserModel.count({email : req.body.email}, function(err, count) {
 			// if there is an error retrieving, send the error. nothing after res.send(err) will execute
 			if (err)
 				res.send(err);
-			res.json(count); // return all todos in JSON format
+			res.json(count);
 		});
 	});
 
 	app.post('/auth/isLogged', function(req, res) {
-		// use mongoose to get all todos in the database
 		if (req.isAuthenticated()) {
 			res.send(req.user);
 		} else {
@@ -87,8 +85,9 @@ module.exports = function(app) {
 		}
 	});
 
-	app.post('/auth/changeEmail', function(req, res) {
-		// use mongoose to get all todos in the database
+	app.post('/settings/changeEmail', function(req, res) {
+		if (!req.isAuthenticated())
+			res.send(false);
 		UserModel.update({email: req.body.user.email}, {email: req.body.newEmail}, {}, function(err, result) {
 			if (err) {
 				console.log("error" + err);
@@ -99,10 +98,9 @@ module.exports = function(app) {
 		});
 	});
 
-	app.post('/auth/changePassword', function(req, res) {
-		// use mongoose to get all todos in the database
-		console.log(req.password);
-		console.log(req.body);
+	app.post('/settings/changePassword', function(req, res) {
+		if (!req.isAuthenticated())
+			res.send(false);
 		UserModel.update({email: req.body.user.email}, {password: UserModel.generateHash(req.body.newPassword)}, {}, function(err, result) {
 			if (err) {
 				console.log("error" + err);
@@ -113,8 +111,9 @@ module.exports = function(app) {
 		});
 	});
 
-	app.post('/auth/changeTableSettings', function(req, res) {
-		// use mongoose to get all todos in the database
+	app.post('/settings/changeTableSettings', function(req, res) {
+		if (!req.isAuthenticated())
+			res.send(false);
 		UserModel.update({email: req.body.user.email}, {
 			$set: {'tableSettings.showEmail':req.body.newSettings.email, 
 			'tableSettings.showAge':req.body.newSettings.age, 
@@ -131,6 +130,8 @@ module.exports = function(app) {
 	});
 
 	app.get('/nvd3css', function(req, res){
+		if (!req.isAuthenticated())
+			res.send(false);
 		fs.readFile(path.resolve('./public/lib/d3/nv.d3.css'), 'utf8', function(err, data){
 			var obj = css.parse(data);
 			res.send(obj.stylesheet.rules);

@@ -21,9 +21,9 @@ describe('dashboardPatientsController', function(){
 
 		$httpBackend = _$httpBackend_; 
 		 
-		$httpBackend.when('POST', '/auth/changeEmail').respond(200, 1);
-		$httpBackend.when('POST', '/auth/changePassword').respond(200, 1);
-		$httpBackend.when('POST', '/auth/changeTableSettings').respond(200, 1);
+		$httpBackend.when('POST', '/settings/changeEmail').respond(200, 1);
+		$httpBackend.when('POST', '/settings/changePassword').respond(200, 1);
+		$httpBackend.when('POST', '/settings/changeTableSettings').respond(200, 1);
 		 
 		$location = _$location_; 
 
@@ -41,7 +41,7 @@ describe('dashboardPatientsController', function(){
 
 		scope.changeTableSettings(); 
 
-		$httpBackend.expect('POST', '/auth/changeTableSettings').respond(400, {
+		$httpBackend.expect('POST', '/settings/changeTableSettings').respond(400, {
 		  'message': 'No settings were provided'
 		}); 
 

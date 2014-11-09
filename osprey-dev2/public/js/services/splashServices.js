@@ -46,21 +46,21 @@ angular.module('splashPageService', [])
 				var postBody = {};
 				postBody.user = user;
 				postBody.newEmail = newEmail;
-				return $http.post('/auth/changeEmail', postBody);
+				return $http.post('/settings/changeEmail', postBody);
 			},
 
 			changePassword : function(user, newPassword) {
 				var postBody = {};
 				postBody.user = user;
 				postBody.newPassword = newPassword;
-				return $http.post('/auth/changePassword', postBody);
+				return $http.post('/settings/changePassword', postBody);
 			},
 
 			changeTableSettings : function(user, newSettings) {
 				var postBody = {};
 				postBody.user = user;
 				postBody.newSettings = newSettings;
-				return $http.post('/auth/changeTableSettings', postBody);
+				return $http.post('/settings/changeTableSettings', postBody);
 			},
 
 			set : set,
