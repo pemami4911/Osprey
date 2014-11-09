@@ -4,6 +4,10 @@ var passport = require('passport');
 var UserModel = require('./models/user');
 var EmailLogModel = require('./models/emaillog');
 var nodemailer = require('nodemailer');
+var path = require('path');
+var fs = require('fs');
+var css = require('css');
+
 var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -123,6 +127,13 @@ module.exports = function(app) {
 				}
 
 				res.json(result);
+		});
+	});
+
+	app.get('/nvd3css', function(req, res){
+		fs.readFile(path.resolve('./public/lib/d3/nv.d3.css'), 'utf8', function(err, data){
+			var obj = css.parse(data);
+			res.send(obj.stylesheet.rules);
 		});
 	});
 	
