@@ -204,8 +204,6 @@ describe('User Model Unit Tests:', function() {
 		});
 
 	});
-
-
 	//this deletes all users !!! so comment out if you dont want this 2 happen
 	// after(function(done) {
 	// 	User.remove().exec();

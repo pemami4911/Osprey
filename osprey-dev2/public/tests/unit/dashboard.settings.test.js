@@ -21,8 +21,6 @@ describe('dashboardPatientsController', function(){
 
 		$httpBackend = _$httpBackend_; 
 		 
-		$httpBackend.when('POST', '/auth/changeEmail').respond(200, 1);
-		$httpBackend.when('POST', '/auth/changePassword').respond(200, 1);
 		$httpBackend.when('POST', '/auth/changeTableSettings').respond(200, 1);
 		 
 		$location = _$location_; 
@@ -58,23 +56,65 @@ describe('dashboardPatientsController', function(){
 	});
 
 	it('should allow the user to successfully change their email', function() {
-		scope.newAccountSettings.newEmail = "a@a.com";
+
+		$httpBackend.when('POST', '/auth/checkReg').respond(200, 0); 
+		$httpBackend.when('POST', '/auth/changeEmail').respond(200, 1);
+
+		scope.newAccountSettings.changeEmail.email = "newEmail@newEmail.com";
+		scope.newAccountSettings.changeEmail.password = "hash"; 
 		scope.changeEmail();
-		userResponse = {"email": "a@a.com"};
+		userResponse = {"email": "newEmail@newEmail.com"};
 		$httpBackend.flush();
-		expect(scope.loggedUser.email).toBe("a@a.com");
+		expect(scope.loggedUser.email).toBe("newEmail@newEmail.com");
 	});
+
+	it('should prevent a user from changing their email if they provide an email already in use', function() {
+
+		$httpBackend.when('POST', '/auth/checkReg').respond(200, 1); 
+		$httpBackend.when('POST', '/auth/changeEmail').respond(200, "err1"); 
+		
+		scope.newAccountSettings.changeEmail.password = "hash"; 
+		scope.newAccountSettings.changeEmail.email = "asd@asd.com"; 
+		scope.changeEmail(); 
+		userResponse = {"email": "asd@asd.com"}; 
+		$httpBackend.flush(); 
+		expect(scope.loggedUser.email).toBe("asd@asd.com"); 
+	});
+
+	it('should prevent a user from changing their email if they provide an incorrect password', function() {
+
+		$httpBackend.when('POST', '/auth/checkReg').respond(200, 0); 
+		$httpBackend.when('POST', '/auth/changeEmail').respond(200, "err2"); 
+
+		scope.newAccountSettings.changeEmail.email = "a@a.com";
+		scope.newAccountSettings.changeEmail.password = " "; 
+		scope.changeEmail();
+		userResponse = {"email": "a@a.com"}; 
+		$httpBackend.flush();
+		expect(scope.loggedUser.email).toBe("asd@asd.com");
+	}); 
 
 	it('should allow the user to change their password', function () {
 
+		$httpBackend.when('POST', '/auth/changePassword').respond(200, 1); 
+		scope.newAccountSettings.changePassword.currentPassword = "hash"; 
+		scope.newAccountSettings.changePassword.newPassword = "hash2"; 
+		scope.changePassword(); 
+		userResponse = {"password": "hash2"};
+		$httpBackend.flush(); 
+		expect(scope.loggedUser.password).toBe("hash2"); 
+
 	});
 
-	it('should send the user an email to notify them when their password has changed', function() {
+	it('should not allow a user to change their password if they enter an incorrect email', function() {
 
-	});
-
-	it('should send the user\'s new email an email when the old email has been changed', function () {
-
-	});
+		$httpBackend.when('POST', '/auth/changePassword').respond(200, "err2"); 
+		scope.newAccountSettings.changePassword.currentPassword = ""; 
+		scope.newAccountSettings.changePassword.newPassword = "hackerzRus"; 
+		scope.changePassword(); 
+		userResponse = {"password": "hackerzRus"};
+		$httpBackend.flush(); 
+		expect(scope.loggedUser.password).toBe("hash"); 
+	}); 
 
 }); 
