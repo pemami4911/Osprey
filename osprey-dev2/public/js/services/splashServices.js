@@ -42,16 +42,18 @@ angular.module('splashPageService', [])
 				return $http.get('/auth/logout', userData); 
 			},
 
-			changeEmail : function(user, newEmail) {
+			changeEmail : function(currentEmail, password, newEmail) {
 				var postBody = {};
-				postBody.user = user;
+				postBody.currentEmail = currentEmail;
+				postBody.password = password;
 				postBody.newEmail = newEmail;
 				return $http.post('/auth/changeEmail', postBody);
 			},
 
-			changePassword : function(user, newPassword) {
+			changePassword : function(user, currentPassword, newPassword) {
 				var postBody = {};
 				postBody.user = user;
+				postBody.currentPassword = currentPassword; 
 				postBody.newPassword = newPassword;
 				return $http.post('/auth/changePassword', postBody);
 			},

@@ -70,6 +70,7 @@ module.exports = function(app) {
 			// if there is an error retrieving, send the error. nothing after res.send(err) will execute
 			if (err)
 				res.send(err);
+
 			res.json(count); // return all todos in JSON format
 		});
 	});
@@ -84,29 +85,53 @@ module.exports = function(app) {
 	});
 
 	app.post('/auth/changeEmail', function(req, res) {
-		// use mongoose to get all todos in the database
-		UserModel.update({email: req.body.user.email}, {email: req.body.newEmail}, {}, function(err, result) {
-			if (err) {
-				console.log("error" + err);
-				res.send(err);
+		UserModel.findOne({ email : req.body.currentEmail }, function(err, user) {
+			if(err) res.send(err); 
+			else { 
+				if( !user )	// if the email was not found, return null
+					res.send("err1"); 
+				else {
+					if ( !user.validPassword(req.body.password) ) // if the email is correct but the password is not, return false
+						res.send("err2"); 
+					else {
+						// use mongoose to get all todos in the database
+						UserModel.update({email: req.body.currentEmail}, {email: req.body.newEmail}, {}, function(err, result) {
+							if (err) {
+								console.log("error" + err);
+								res.send(err);
+							}
+							sendEmail(req.body.newEmail, "E-mail changed!", "You have changed your e-mail address!");
+							sendEmail(req.body.currentEmail, "E-mail changed!", "This is no longer the e-mail address registered with your Osprey account!"); 
+							res.json(result);
+						});
+					}
+				}
 			}
-			sendEmail(req.body.newEmail, "E-mail changed!", "You have changed your e-mail address!");
-			res.json(result);
-		});
+		}); 	
 	});
 
 	app.post('/auth/changePassword', function(req, res) {
-		// use mongoose to get all todos in the database
-		console.log(req.password);
-		console.log(req.body);
-		UserModel.update({email: req.body.user.email}, {password: UserModel.generateHash(req.body.newPassword)}, {}, function(err, result) {
-			if (err) {
-				console.log("error" + err);
-				res.send(err);
+	
+		UserModel.findOne({ email : req.body.user.email }, function(err, user) {
+			if(err) res.send(err); 
+			else { 
+				if( !user )	res.send("err1"); // should never get thrown - if loggedUser was not found in database
+				else {
+					if ( !user.validPassword(req.body.currentPassword) ) res.send("err2"); // validate passed password
+					else {
+							// use mongoose to get all todos in the database
+						UserModel.update({email: req.body.user.email}, {password: UserModel.generateHash(req.body.newPassword)}, {}, function(err, result) {
+							if (err) {
+								console.log("error" + err);
+								res.send(err);
+							}
+							sendEmail(req.body.user.email, "Password changed!", "You have changed your password!");
+							res.json(result);
+						});
+					}
+				}
 			}
-			sendEmail(req.body.user.email, "Password changed!", "You have changed your password!");
-			res.json(result);
-		});
+		}); 
 	});
 
 	app.post('/auth/changeTableSettings', function(req, res) {
