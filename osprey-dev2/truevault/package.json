@@ -1,0 +1,57 @@
+{
+  "author": {
+    "name": "Kerry Liu"
+  },
+  "name": "truevault",
+  "license": "MIT",
+  "description": "An Unofficial TrueVault API wrapper",
+  "version": "0.0.3",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/gwwar/truevault-node.git"
+  },
+  "main": "lib/truevault.js",
+  "dependencies": {
+    "q": "^1.0.1"
+  },
+  "devDependencies": {
+    "chai": "^1.9.1",
+    "mocha": "^1.21.1",
+    "nock": "^0.42.2"
+  },
+  "optionalDependencies": {},
+  "engines": {
+    "node": ">= v0.10.29"
+  },
+  "bugs": {
+    "url": "https://github.com/gwwar/truevault-node/issues"
+  },
+  "homepage": "https://github.com/gwwar/truevault-node",
+  "scripts": {
+    "test": "make test"
+  },
+  "keywords": [
+    "truevault"
+  ],
+  "gitHead": "59996d856c607d1c0ba7c32eef56f41f5731dad4",
+  "_id": "truevault@0.0.3",
+  "_shasum": "ced569d91bc7216166ce5eff77919f33eb1a4ecb",
+  "_from": "truevault@",
+  "_npmVersion": "1.4.14",
+  "_npmUser": {
+    "name": "gwwar",
+    "email": "kerryliu@gmail.com"
+  },
+  "maintainers": [
+    {
+      "name": "gwwar",
+      "email": "kerryliu@gmail.com"
+    }
+  ],
+  "dist": {
+    "shasum": "ced569d91bc7216166ce5eff77919f33eb1a4ecb",
+    "tarball": "http://registry.npmjs.org/truevault/-/truevault-0.0.3.tgz"
+  },
+  "directories": {},
+  "_resolved": "https://registry.npmjs.org/truevault/-/truevault-0.0.3.tgz"
+}
