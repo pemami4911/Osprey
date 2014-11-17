@@ -8,6 +8,9 @@ var path = require('path');
 var fs = require('fs');
 var css = require('css');
 
+var truevault = require('../truevault/lib/truevault.js')('9fea34bb-e1e6-4e26-a061-3ed2aac0000e');
+var vaultid = '2d56e58f-65f7-4302-a9aa-0afb162de187';
+
 var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -18,21 +21,58 @@ var transporter = nodemailer.createTransport({
 
 module.exports = function(app) {
 	// api ---------------------------------------------------------------------
+	app.post('/auth/checkSchemas', function (req, res) {
+		var schema = {
+		   "name": "user",
+		   "fields": [
+		      {
+		         "name": "first_name",
+		         "index": true,
+		         "type": "string"
+		      },
+		      {
+		         "name": "street",
+		         "index": false,
+		         "type": "string"
+
+		      },
+		      {
+		         "name": "internal_id",
+		         "index": true,
+		         "type": "integer"
+		      },
+		      {
+		         "name": "created_date",
+		         "index": true,
+		         "type": "date"
+		      }
+		   ]
+		};
+
+		truevault.users.list(function myCallback(err, value){
+		    if (err)
+		    	console.log(err);
+		    else
+		    	console.log(value);
+		});
+
+	});
+
 	app.post('/auth/login', function(req, res, next) {
-	  	passport.authenticate('local-login', function(err, user, info) {
-
-		    if (err) { return next(err); }
-		    if (!user) { 
-		    	return res.send("null"); 
-		    }
-
-		    req.logIn(user, function(err) {
-			    if (err) { 
-			    	return next(err); 
-			    }
-		    	return res.send(user);
-		    });
-	  })(req, res, next);
+		var options = {
+			"username": 'abc@abc.com',
+			"password": "abc",
+			"attributes": {
+				"stuff1": "1stuff",
+				"stuff2": "2stuff"
+			}
+		};
+		truevault.users.create(options, function(err, value){
+		    if (err)
+		    	console.log(err);
+		    else
+		    	console.log(value);
+		});
 	});
 
 	// adding log-out functionality 
@@ -47,33 +87,40 @@ module.exports = function(app) {
 	});
 
 	app.post('/auth/register', function(req, res, next) {
-		passport.authenticate('local-signup', function(err, user, info) {
-		    if (err) { 
-		    	console.log("sending error");
+		console.log(req.body);
+		var options = {
+			"username": req.body.email;,
+			"password": req.body.password,
+			"attributes": {
+				"userType": req.body.userType,
+				"firstName": req.body.userType,
+				"midInit": req.body.mI,
+				"lastName": req.body.lastName
+			}
+		};
+		truevault.users.create(options, function(err, value){
+		    if (err)
 		    	console.log(err);
-		    	return next(err); 
-		    }
-		    if (!user) { 
-		    	return res.send("null"); 
-		    }
-
-		    req.logIn(user, function(err) {
-
-			    if (err) { 
-			    	return next(err); 
-			    }
-		    	return res.send(user);
-		    });
-
-		})(req, res, next);
+		    else
+		    	console.log(value);
+		});
 	});
 	
 	app.post('/auth/checkReg', function(req, res) {
-		UserModel.count({email : req.body.email}, function(err, count) {
-			// if there is an error retrieving, send the error. nothing after res.send(err) will execute
-			if (err)
-				res.send(err);
-			res.json(count); // return all todos in JSON format
+		truevault.users.list(function(err, value){
+		    if (err)
+		    	res.send(err);
+		    else {
+		    	console.log(value);
+		    	for (var i = 0; i < value.users.length; i++) {
+		    		if (req.body.email == value.users[i].username) {
+		    			res.json(1);
+		    			console.log("sending 1");
+		    		}
+		    	}
+		    	res.json(0);
+		    	console.log("sending 0");
+		    }
 		});
 	});
 
