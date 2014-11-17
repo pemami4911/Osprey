@@ -85,6 +85,16 @@ module.exports = function(app) {
 		}
 	});
 
+	app.post('/users/unassignedParents', function(req, res) {
+		if (!req.isAuthenticated())
+			res.send(false);
+		
+		UserModel.find({ $and: [{userType : "Parent"}, {physician: null}] }, function(err, data) {
+			console.log(data);
+			res.send(data);
+		});
+	});
+
 	app.post('/settings/changeEmail', function(req, res) {
 		if (!req.isAuthenticated())
 			res.send(false);
@@ -137,6 +147,7 @@ module.exports = function(app) {
 			res.send(obj.stylesheet.rules);
 		});
 	});
+	
 	
 };
 

@@ -63,6 +63,10 @@ angular.module('splashPageService', [])
 				return $http.post('/settings/changeTableSettings', postBody);
 			},
 
+			getUnassignedParents : function() {
+				return $http.post('users/unassignedParents');
+			},
+
 			set : set,
 
 			get : get
