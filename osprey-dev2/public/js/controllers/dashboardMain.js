@@ -65,12 +65,15 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 				splashFactory.logoutAttempt($scope.loggedUser) 
 					// on successful logout
 					.success(function(data){
-						if( data === "Logged out successfully") {
+						if( data === "OK") {
 							$scope.loading = true;
 							$scope.loggedUser = null;
 							$location.path('/'); 
 						}
-					}).error(function(response) {
+						else 
+							console.log(data); 
+					}).error( function (response) {
+						console.log( response ); 
 						$scope.error = response.message; 
 					});
 				$scope.loading = false;

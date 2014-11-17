@@ -8,6 +8,12 @@ angular.module('regPhysicianPageModule', ['splashPageService'])
 		$scope.regData.userType = splashFactory.get('userType'); 
 		$scope.loading = false;
 
+		$scope.back = function() {
+			$location.path('/'); 
+		};
+
+		if ($scope.regData.email == '') 
+			$scope.back();
 		// $scope.$on is an event handler
 		// $locationChangeStart is an angular event that is called every time a location change begins
 		$scope.$on('$locationChangeStart', function (event, newURL) {
@@ -50,8 +56,4 @@ angular.module('regPhysicianPageModule', ['splashPageService'])
 			else
 				$scope.loading = false; 
 		};
-
-		$scope.back = function() {
-			$location.path('/'); 
-		}
 	}]);
