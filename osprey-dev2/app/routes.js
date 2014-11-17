@@ -9,7 +9,9 @@ var fs = require('fs');
 var css = require('css');
 
 var truevault = require('../truevault/lib/truevault.js')('9fea34bb-e1e6-4e26-a061-3ed2aac0000e');
-var vaultid = '2d56e58f-65f7-4302-a9aa-0afb162de187';
+var vaultid = '2d56e58f-65f7-4302-a9aa-0afb162de187'; //osprey-dev
+var userSchemaId;
+var emailLogSchemaId;
 
 var transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -19,63 +21,123 @@ var transporter = nodemailer.createTransport({
     }
 });
 
+
+// checks for user schemas and email schemas to be present in the vault upon initialization
+var checkSchemas = function() {
+	var options = {
+		"vault_id" : vaultid
+	};
+	truevault.schemas.list(options, function(err, value) {
+		if (err)
+			console.log(err);
+		else {
+			console.log(value);
+			var foundUser = false;
+			var foundEmailLog = false;
+			for (var i = 0; i < value.schemas.length; i++){
+				if (value.schemas[i].name == "user") {
+					userSchemaId = value.schemas[i].id;
+					foundUser = true;
+				}
+				if (value.schemas[i].name = "emailLog") {
+					emailLogSchemaId = value.schemas[i].id;
+					foundEmailLog = true;
+				}
+			}
+			if (!foundUser) {
+				var schema = {
+				   "name": "user",
+				   "fields": [
+				      {
+				         "name": "firstName",
+				         "index": true,
+				         "type": "string"
+				      },
+				      {
+				         "name": "lastName",
+				         "index": true,
+				         "type": "string"
+
+				      },
+				      {
+				         "name": "midInit",
+				         "index": false,
+				         "type": "string"
+				      },
+				      {
+				         "name": "userType",
+				         "index": true,
+				         "type": "string"
+				      }
+				   ]
+				};
+				var newOptions = {
+					"vault_id" : vaultid,
+					"schema" : schema
+				};
+				truevault.schemas.create (newOptions, function (err, value){
+					if (err)
+						console.log(err);
+					else {
+						console.log(value);
+					}
+				});
+			}
+
+			if (!foundEmailLog) {
+				var schema = {
+				   "name": "emailLog",
+				   "fields": [
+				      {
+				         "name": "timestamp",
+				         "index": false,
+				         "type": "date"
+				      },
+				      {
+				         "name": "data",
+				         "index": true,
+				         "type": "string"
+
+				      }
+				   ]
+				};
+				var newOptions = {
+					"vault_id" : vaultid,
+					"schema" : schema
+				};
+				truevault.schemas.create (newOptions, function (err, value){
+					if (err)
+						console.log(err);
+					else {
+						console.log(value);
+					}
+				});
+			}
+			
+		}
+	})
+}
+
+checkSchemas();
+
 module.exports = function(app) {
 	// api ---------------------------------------------------------------------
-	app.post('/auth/checkSchemas', function (req, res) {
-		var schema = {
-		   "name": "user",
-		   "fields": [
-		      {
-		         "name": "first_name",
-		         "index": true,
-		         "type": "string"
-		      },
-		      {
-		         "name": "street",
-		         "index": false,
-		         "type": "string"
 
-		      },
-		      {
-		         "name": "internal_id",
-		         "index": true,
-		         "type": "integer"
-		      },
-		      {
-		         "name": "created_date",
-		         "index": true,
-		         "type": "date"
-		      }
-		   ]
-		};
-
-		truevault.users.list(function myCallback(err, value){
-		    if (err)
-		    	console.log(err);
-		    else
-		    	console.log(value);
-		});
-
-	});
-
+	// temporarily using this to test out new api calls
 	app.post('/auth/login', function(req, res, next) {
 		var options = {
-			"username": 'abc@abc.com',
-			"password": "abc",
-			"attributes": {
-				"stuff1": "1stuff",
-				"stuff2": "2stuff"
-			}
+			"vault_id": vaultid,
+			'per_page':50, 
+			'page':1, 
+			'full_document': true
 		};
-		truevault.users.create(options, function(err, value){
-		    if (err)
-		    	console.log(err);
-		    else
-		    	console.log(value);
+
+		truevault.documents.list(options, function(err, value) {
+			console.log(err);
+			console.log(value.data.items);
 		});
 	});
 
-	// adding log-out functionality 
 	app.get('/auth/logout', function(req, res) {
 		if (req.isAuthenticated()) {
   				req.logout();	
@@ -87,22 +149,26 @@ module.exports = function(app) {
 	});
 
 	app.post('/auth/register', function(req, res, next) {
-		console.log(req.body);
 		var options = {
-			"username": req.body.email;,
+			"username": req.body.email,
 			"password": req.body.password,
+			"schema_id": userSchemaId,
 			"attributes": {
 				"userType": req.body.userType,
-				"firstName": req.body.userType,
+				"firstName": req.body.firstName,
 				"midInit": req.body.mI,
 				"lastName": req.body.lastName
 			}
 		};
 		truevault.users.create(options, function(err, value){
-		    if (err)
+		    if (err) {
 		    	console.log(err);
-		    else
+		    	res.send(err);
+			}
+		    else {
 		    	console.log(value);
+		    	res.send(value);
+		    }
 		});
 	});
 	

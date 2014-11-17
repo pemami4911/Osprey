@@ -41,7 +41,8 @@ Users.prototype.create = function(options, callback) {
   var data = {
     attributes : encodedAttributes,
     username : options.username,
-    password: options.password
+    password: options.password,
+    schema_id: options.schema_id
   };
 
   return this.httpsRequest({
