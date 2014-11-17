@@ -21,8 +21,8 @@ describe('dashboardPatientsController', function(){
 
 		$httpBackend = _$httpBackend_; 
 		 
-		$httpBackend.when('POST', '/auth/changeTableSettings').respond(200, 1);
-		 
+		$httpBackend.when('POST', '/settings/changeTableSettings').respond(200, 1);
+	 
 		$location = _$location_; 
 
 	}));
@@ -39,7 +39,7 @@ describe('dashboardPatientsController', function(){
 
 		scope.changeTableSettings(); 
 
-		$httpBackend.expect('POST', '/auth/changeTableSettings').respond(400, {
+		$httpBackend.expect('POST', '/settings/changeTableSettings').respond(400, {
 		  'message': 'No settings were provided'
 		}); 
 
@@ -58,7 +58,7 @@ describe('dashboardPatientsController', function(){
 	it('should allow the user to successfully change their email', function() {
 
 		$httpBackend.when('POST', '/auth/checkReg').respond(200, 0); 
-		$httpBackend.when('POST', '/auth/changeEmail').respond(200, 1);
+		$httpBackend.when('POST', '/settings/changeEmail').respond(200, 1);
 
 		scope.newAccountSettings.changeEmail.email = "newEmail@newEmail.com";
 		scope.newAccountSettings.changeEmail.password = "hash"; 
@@ -71,7 +71,7 @@ describe('dashboardPatientsController', function(){
 	it('should prevent a user from changing their email if they provide an email already in use', function() {
 
 		$httpBackend.when('POST', '/auth/checkReg').respond(200, 1); 
-		$httpBackend.when('POST', '/auth/changeEmail').respond(200, "err1"); 
+		$httpBackend.when('POST', '/settings/changeEmail').respond(200, "err1"); 
 		
 		scope.newAccountSettings.changeEmail.password = "hash"; 
 		scope.newAccountSettings.changeEmail.email = "asd@asd.com"; 
@@ -84,7 +84,7 @@ describe('dashboardPatientsController', function(){
 	it('should prevent a user from changing their email if they provide an incorrect password', function() {
 
 		$httpBackend.when('POST', '/auth/checkReg').respond(200, 0); 
-		$httpBackend.when('POST', '/auth/changeEmail').respond(200, "err2"); 
+		$httpBackend.when('POST', '/settings/changeEmail').respond(200, "err2"); 
 
 		scope.newAccountSettings.changeEmail.email = "a@a.com";
 		scope.newAccountSettings.changeEmail.password = " "; 
@@ -96,7 +96,7 @@ describe('dashboardPatientsController', function(){
 
 	it('should allow the user to change their password', function () {
 
-		$httpBackend.when('POST', '/auth/changePassword').respond(200, 1); 
+		$httpBackend.when('POST', '/settings/changePassword').respond(200, 1); 
 		scope.newAccountSettings.changePassword.currentPassword = "hash"; 
 		scope.newAccountSettings.changePassword.newPassword = "hash2"; 
 		scope.changePassword(); 
@@ -108,7 +108,7 @@ describe('dashboardPatientsController', function(){
 
 	it('should not allow a user to change their password if they enter an incorrect email', function() {
 
-		$httpBackend.when('POST', '/auth/changePassword').respond(200, "err2"); 
+		$httpBackend.when('POST', '/settings/changePassword').respond(200, "err2"); 
 		scope.newAccountSettings.changePassword.currentPassword = ""; 
 		scope.newAccountSettings.changePassword.newPassword = "hackerzRus"; 
 		scope.changePassword(); 

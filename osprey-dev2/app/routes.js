@@ -4,6 +4,10 @@ var passport = require('passport');
 var UserModel = require('./models/user');
 var EmailLogModel = require('./models/emaillog');
 var nodemailer = require('nodemailer');
+var path = require('path');
+var fs = require('fs');
+var css = require('css');
+
 var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -65,18 +69,15 @@ module.exports = function(app) {
 	});
 	
 	app.post('/auth/checkReg', function(req, res) {
-		// use mongoose to get all todos in the database
 		UserModel.count({email : req.body.email}, function(err, count) {
 			// if there is an error retrieving, send the error. nothing after res.send(err) will execute
 			if (err)
 				res.send(err);
-
 			res.json(count); // return all todos in JSON format
 		});
 	});
 
 	app.post('/auth/isLogged', function(req, res) {
-		// use mongoose to get all todos in the database
 		if (req.isAuthenticated()) {
 			res.send(req.user);
 		} else {
@@ -109,6 +110,15 @@ module.exports = function(app) {
 			}
 		}); 	
 	});
+	app.post('/users/unassignedParents', function(req, res) {
+		if (!req.isAuthenticated())
+			res.send(false);
+		
+		UserModel.find({ $and: [{userType : "Parent"}, {physician: null}] }, function(err, data) {
+			console.log(data);
+			res.send(data);
+		});
+	});
 
 	app.post('/auth/changePassword', function(req, res) {
 	
@@ -134,8 +144,9 @@ module.exports = function(app) {
 		}); 
 	});
 
-	app.post('/auth/changeTableSettings', function(req, res) {
-		// use mongoose to get all todos in the database
+	app.post('/settings/changeTableSettings', function(req, res) {
+		if (!req.isAuthenticated())
+			res.send(false);
 		UserModel.update({email: req.body.user.email}, {
 			$set: {'tableSettings.showEmail':req.body.newSettings.email, 
 			'tableSettings.showAge':req.body.newSettings.age, 
@@ -150,6 +161,16 @@ module.exports = function(app) {
 				res.json(result);
 		});
 	});
+
+	app.get('/nvd3css', function(req, res){
+		if (!req.isAuthenticated())
+			res.send(false);
+		fs.readFile(path.resolve('./public/lib/d3/nv.d3.css'), 'utf8', function(err, data){
+			var obj = css.parse(data);
+			res.send(obj.stylesheet.rules);
+		});
+	});
+	
 	
 };
 
