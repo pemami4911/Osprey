@@ -3,7 +3,6 @@ var express  = require('express');
 var app      = express(); 								// create our app w/ express
 var mongoose = require('mongoose'); 					// mongoose for mongodb
 var port  	 = process.env.PORT || 8080; 				// set the port
-var database = require('./config/database'); 			// load the database config
 var morgan   = require('morgan');
 var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
@@ -12,8 +11,12 @@ var session = require('express-session');
 var passport = require('passport');
 var flash = require('connect-flash');
 
+var database = require('./config/database'); 			// load the database config
 if (process.env.NODE_ENV == 'test')
 	database.url = 'mongodb://localhost/mean-test';
+
+
+
 // configuration ===============================================================
 mongoose.connect(database.url); 	// connect to mongoDB database on modulus.io
 
