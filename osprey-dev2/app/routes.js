@@ -239,17 +239,17 @@ module.exports = function(app) {
 			temp.auth.logout(function(err, value){
 				if (err) {
 					console.log("Logout failure: API");
-					return res.send("Failed to log out successfully");
+					return res.send(500);
 				} else {
 					console.log("Logout success");
 					req.session.access_token = null;	
-					return res.send("Logged out successfully");
+					return res.send(200);
 				}
 			});
   		}
   		else {
   			console.log("Logout failure: token")
-  			return res.send("Failed to log out successfully");
+  			return res.send(500);
   		}
 	});
 
