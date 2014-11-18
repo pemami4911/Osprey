@@ -48,7 +48,7 @@ TrueVault.prototype.setBasicAuth = function(key) {
 
 };
 
-var RESOURCES = ['documents', 'schemas', 'blobs', 'users'];
+var RESOURCES = ['documents', 'schemas', 'blobs', 'users', 'auth'];
 
 TrueVault.prototype.loadResources = function() {
 
