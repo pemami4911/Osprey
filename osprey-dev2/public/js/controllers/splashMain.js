@@ -25,7 +25,7 @@ angular.module('splashPageModule', ['splashPageService'])
 
 					// if successful creation, call our get function to get all the new todos
 					.success(function(data) {
-						if(data == "null") {
+						if(data == "false") {
 							console.log("Invalid email or password");
 							$scope.addAlert("Invalid email or password!", "danger", true);
 						}
@@ -98,5 +98,9 @@ angular.module('splashPageModule', ['splashPageService'])
 			else
 				$scope.regAlerts.splice(index, 1);
 		};
+
+		$scope.test = function() {
+			splashFactory.test();
+		}
 	}]);
 

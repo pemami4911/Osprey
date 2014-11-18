@@ -36,7 +36,7 @@ angular.module('regPhysicianPageModule', ['splashPageService'])
 					.success(function(data) {
 						//console.log(data);
 						//window.alert("User created");
-						if( data != 'null' )
+						if( data != 'false' )
 							$location.path('/dashboard');
 						else {
 							window.alert("Failed to register!");
