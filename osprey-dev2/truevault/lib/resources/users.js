@@ -36,19 +36,37 @@ Users.prototype.create = function(options, callback) {
   var path = util.format("/%s/users",
     this.truevault.getOption('api_version')
   );
-  var attributes = JSON.stringify(options.attributes);
-  var encodedAttributes = new Buffer(attributes, 'utf8').toString('base64');
+
   var data = {
-    attributes : encodedAttributes,
     username : options.username,
     password: options.password,
-    schema_id: options.schema_id
   };
 
   return this.httpsRequest({
     path : path,
     method : 'POST',
     data : data,
+    callback : callback
+  });
+
+};
+
+
+// Retrieves a schema from the specified vault
+//
+// options.vault_id - vault uuid
+// options.id - schema uuid
+// callback is optional, this method returns a q promise
+Users.prototype.retrieve = function(options, callback) {
+
+  var path = util.format("/%s/users/%s",
+    this.truevault.getOption('api_version'),
+    options.user_id
+  );
+
+  return this.httpsRequest({
+    path : path,
+    method : 'GET',
     callback : callback
   });
 

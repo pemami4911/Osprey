@@ -66,7 +66,11 @@ angular.module('splashPageService', [])
 			},
 
 			getUnassignedParents : function() {
-				return $http.post('users/unassignedParents');
+				return $http.post('/users/unassignedParents');
+			},
+
+			test: function() {
+				return $http.post('/debug/test');
 			},
 
 			set : set,

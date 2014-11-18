@@ -8,10 +8,18 @@ var path = require('path');
 var fs = require('fs');
 var css = require('css');
 
-var truevault = require('../truevault/lib/truevault.js')('9fea34bb-e1e6-4e26-a061-3ed2aac0000e');
-var vaultid = '2d56e58f-65f7-4302-a9aa-0afb162de187'; //osprey-dev
+var truevault = require('../truevault/lib/truevault.js')('6e27a879-fc15-4c80-8165-c84b5579abb9');
+var vaultid = '8631f1d8-70bb-47dd-95c8-f4926772a00d'; //osprey_dev vault
+
+// global variables used to store uuids of schemas
 var userSchemaId;
 var emailLogSchemaId;
+
+// stores account id
+var accountId;
+
+
+var tempid;
 
 var transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -23,15 +31,14 @@ var transporter = nodemailer.createTransport({
 
 
 // checks for user schemas and email schemas to be present in the vault upon initialization
-var checkSchemas = function() {
+var initialize = function() {
 	var options = {
 		"vault_id" : vaultid
 	};
 	truevault.schemas.list(options, function(err, value) {
-		if (err)
-			console.log(err);
-		else {
-			console.log(value);
+		if (err){
+			console.log("initialize error:");
+		} else {
 			var foundUser = false;
 			var foundEmailLog = false;
 			for (var i = 0; i < value.schemas.length; i++){
@@ -48,6 +55,11 @@ var checkSchemas = function() {
 				var schema = {
 				   "name": "user",
 				   "fields": [
+				   	  {
+				   	  	 "name": "user_id",
+				   	  	 "index": true,
+				   	  	 "type": "string"
+				   	  },
 				      {
 				         "name": "firstName",
 				         "index": true,
@@ -79,9 +91,11 @@ var checkSchemas = function() {
 					if (err)
 						console.log(err);
 					else {
-						console.log(value);
+						console.log("User Schema created");
 					}
 				});
+			} else {
+				console.log("User schema loaded");
 			}
 
 			if (!foundEmailLog) {
@@ -109,75 +123,100 @@ var checkSchemas = function() {
 					if (err)
 						console.log(err);
 					else {
-						console.log(value);
+						console.log("Email Log Schema created");
 					}
 				});
+			} else {
+				console.log("Email Log schema loaded");
 			}
 			
+		}
+	});
+
+	truevault.users.list(function(err, value) {
+		if (err)
+			console.log(err);
+		else {
+			accountId = value.users[0].account_id;
+			console.log("AccountID: " + accountId);
 		}
 	})
 }
 
-checkSchemas();
+initialize();
 
 module.exports = function(app) {
 	// api ---------------------------------------------------------------------
 
-	// temporarily using this to test out new api calls
+	// used to test new functionality
+	app.post('/debug/test', function(req, res, next) {
+		
+	});
+
+	// takes email and password in request body
+	// returns true or false, sets session variable to access token
 	app.post('/auth/login', function(req, res, next) {
 		var options = {
-			"vault_id": vaultid,
-			'per_page':50, 
-			'page':1, 
-			'full_document': true
+			"username": req.body.email,
+			'password': req.body.password, 
+			'account_id': accountId
 		};
-
-		truevault.documents.list(options, function(err, value) {
-			console.log(err);
-			console.log(value.data.items);
+		truevault.auth.login(options, function(err, value) {
+			if (err) {
+				console.log("login failed");
+				res.send(false);
+			} else {
+				console.log("login successful");
+				req.session.access_token = value.user.access_token;
+				res.send(true);
+			}
 		});
 	});
 
-	app.get('/auth/logout', function(req, res) {
-		if (req.isAuthenticated()) {
-  				req.logout();	
-   				return res.send("Logged out successfully");
-  		}
-  		else {
-  			return res.send("Failed to log out successfully");
-  		}
-	});
-
+	// takes username, password, user attributes in request body
+	// returns true or false, sets session variable to access token
 	app.post('/auth/register', function(req, res, next) {
 		var options = {
 			"username": req.body.email,
 			"password": req.body.password,
-			"schema_id": userSchemaId,
-			"attributes": {
-				"userType": req.body.userType,
-				"firstName": req.body.firstName,
-				"midInit": req.body.mI,
-				"lastName": req.body.lastName
-			}
 		};
+
 		truevault.users.create(options, function(err, value){
 		    if (err) {
-		    	console.log(err);
-		    	res.send(err);
+		    	console.log("registration error at user creation");
+		    	res.send(false);
 			}
 		    else {
-		    	console.log(value);
-		    	res.send(value);
+		    	var options2 = {
+				    "schema_id": userSchemaId,
+				    "vault_id": vaultid,
+					"document": {
+						"user_id" : value.user.id,
+						"userType": req.body.userType,
+						"firstName": req.body.firstName,
+						"midInit": req.body.mI,
+						"lastName": req.body.lastName
+					}
+		    	};
+		    	truevault.documents.create(options2, function(err2, value2) {
+		    		if (err2) {
+		    			console.log("registration error at document creation");
+		    			res.send(false);
+		    		}
+		    		req.session.access_token = value.user.access_token;
+		    		res.send(true);
+		    	});
 		    }
 		});
 	});
-	
+
+	// takes email in request body
+	// returns 1 if that user is found in list of all users, 0 otherwise
 	app.post('/auth/checkReg', function(req, res) {
 		truevault.users.list(function(err, value){
 		    if (err)
 		    	res.send(err);
 		    else {
-		    	console.log(value);
 		    	for (var i = 0; i < value.users.length; i++) {
 		    		if (req.body.email == value.users[i].username) {
 		    			res.json(1);
@@ -190,12 +229,64 @@ module.exports = function(app) {
 		});
 	});
 
+	// checks access token stored in session
+	// attempts to logout, sends appropriate message 
+	app.get('/auth/logout', function(req, res) {
+		console.log(req.session.access_token);
+
+		if (req.session.access_token != null) {
+			var temp = require('../truevault/lib/truevault.js')(req.session.access_token);
+			temp.auth.logout(function(err, value){
+				if (err) {
+					console.log("Logout failure: API");
+					return res.send("Failed to log out successfully");
+				} else {
+					console.log("Logout success");
+					req.session.access_token = null;	
+					return res.send("Logged out successfully");
+				}
+			});
+  		}
+  		else {
+  			console.log("Logout failure: token")
+  			return res.send("Failed to log out successfully");
+  		}
+	});
+
+	// checks access token stored in session 
+	// returns false if verification fails, the user object if successful
 	app.post('/auth/isLogged', function(req, res) {
-		if (req.isAuthenticated()) {
-			res.send(req.user);
-		} else {
-			res.send(false);
-		}
+		var temp = require('../truevault/lib/truevault.js')(req.session.access_token);
+
+		temp.auth.verify(function(err, value){
+			if (err) {
+				console.log("verification error");
+				res.send(false);
+			} else {
+				truevault.documents.list({
+				 	'vault_id':vaultid,
+				  	'per_page':50, 
+				  	'page':1, 
+				  	'full_document': false //true to return full documents vs uuids
+				}, function (err, document){
+					if (err)
+						console.log(err);
+
+					for (var i = 0; i < document.data.items.length; i++) {
+						truevault.documents.retrieve({
+						   'vault_id' : vaultid,
+						   'id' : document.data.items[i].id
+						}, function (err, document){
+							if (document.user_id == value.user.user_id) {
+								console.log("User found:");
+								document.email = value.user.username;
+								res.send(document);
+							}
+						});
+					}
+				});
+			}
+		});
 	});
 
 	app.post('/auth/changeEmail', function(req, res) {
@@ -307,3 +398,33 @@ function sendEmail(recipient, subject, message) {
         });
 	});
 }
+
+
+
+// Code for searching: not working
+
+// Searching API not working
+// var options = {
+// 	'vault_id' : vaultid,
+// 	'schema_id' : userSchemaId,
+//   	'filter' : { 
+//   		'user_id': {
+// 	    	"type": "eq",
+// 	    	"value": value.user.user_id
+// 	    }
+// 	}
+// };
+// console.log("===OPTIONS===");
+// console.log(options);
+
+// truevault.documents.search(options, function (err2, value2) {
+// 	if (err) {
+// 		console.log(err2);
+// 		res.send(err2);
+// 	}
+// 	else {
+// 		console.log("===VALUE===");
+// 		console.log(value2);
+// 		res.send(value2);
+// 	}
+// });

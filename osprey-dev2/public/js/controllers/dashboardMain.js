@@ -60,7 +60,7 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 
 		$scope.logoutAttempt = function() {
 			// check if someone is currently logged in 
-			if( $scope.loggedUser != undefined ) {
+			// if( $scope.loggedUser != undefined ) {
 				// call the factory service function logoutAttempt
 				splashFactory.logoutAttempt($scope.loggedUser) 
 					// on successful logout
@@ -77,9 +77,9 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 						$scope.error = response.message; 
 					});
 				$scope.loading = false;
-			}
-			else
-				$scope.error = "Failed call to logoutAttempt()"; 
+			// }
+			// else
+			//	$scope.error = "Failed call to logoutAttempt()"; 
 		}
 
 		var init = function() {
