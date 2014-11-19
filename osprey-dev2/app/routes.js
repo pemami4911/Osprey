@@ -9,7 +9,7 @@ var fs = require('fs');
 var css = require('css');
 
 var api_key = '6e27a879-fc15-4c80-8165-c84b5579abb9';
-var vaultid = '8631f1d8-70bb-47dd-95c8-f4926772a00d'; //osprey_dev vault
+var vaultid = '7444ece4-5266-49ad-a8c8-453af7ebf2e2'; //osprey_dev vault
 
 var config = require('./config/init'); 
 var truevault = require('../truevault/lib/truevault.js')(api_key);
@@ -165,20 +165,22 @@ module.exports = function(app) {
 					    	"type": "eq",
 					    	"value": value.user.user_id
 					    }
-					}
+					},
+					'full_document' : true
 				};
-				console.log("===OPTIONS===");
-				console.log(options);
-
 				truevault.documents.search(options, function (err2, value2) {
 					if (err) {
-						console.log(err2);
 						res.send(err2);
 					}
 					else {
-						console.log("===VALUE===");
-						console.log(value2);
-						res.send(value2);
+						truevault.documents.retrieve({
+						   'vault_id' : vaultid,
+						   'id' : value2.data.documents[0].document_id
+						}, function (err, document){
+							console.log("User found:");
+							document.email = value.user.username;
+							res.send(document);
+						});
 					}
 				});
 
