@@ -11,7 +11,8 @@ var session = require('express-session');
 var passport = require('passport');
 var flash = require('connect-flash');
 
-var database = require('./config/database'); 			// load the database config
+var database = require('./config/database'); 
+			// load the database config
 if (process.env.NODE_ENV == 'test')
 	database.url = 'mongodb://localhost/mean-test';
 
