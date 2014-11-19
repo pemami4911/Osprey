@@ -7,18 +7,19 @@ var nodemailer = require('nodemailer');
 var path = require('path');
 var fs = require('fs');
 var css = require('css');
+var config = require('./config/init'); 
 
 var truevault = require('../truevault/lib/truevault.js')('6e27a879-fc15-4c80-8165-c84b5579abb9');
 var vaultid = '8631f1d8-70bb-47dd-95c8-f4926772a00d'; //osprey_dev vault
 
 // global variables used to store uuids of schemas
-var userSchemaId;
-var emailLogSchemaId;
+// default value of 0
+var userSchemaId = 0 ;
+var emailLogSchemaId = 0;
+var emailConfirmationId = 0; 
 
 // stores account id
 var accountId;
-
-
 var tempid;
 
 var transporter = nodemailer.createTransport({
@@ -29,124 +30,13 @@ var transporter = nodemailer.createTransport({
     }
 });
 
+// -----------------------------------------------------------------------------
 
-// checks for user schemas and email schemas to be present in the vault upon initialization
-var initialize = function() {
-	var options = {
-		"vault_id" : vaultid
-	};
-	truevault.schemas.list(options, function(err, value) {
-		if (err){
-			console.log("initialize error:");
-		} else {
-			var foundUser = false;
-			var foundEmailLog = false;
-			for (var i = 0; i < value.schemas.length; i++){
-				if (value.schemas[i].name == "user") {
-					userSchemaId = value.schemas[i].id;
-					foundUser = true;
-				}
-				if (value.schemas[i].name = "emailLog") {
-					emailLogSchemaId = value.schemas[i].id;
-					foundEmailLog = true;
-				}
-			}
-			if (!foundUser) {
-				var schema = {
-				   "name": "user",
-				   "fields": [
-				   	  {
-				   	  	 "name": "user_id",
-				   	  	 "index": true,
-				   	  	 "type": "string"
-				   	  },
-				      {
-				         "name": "firstName",
-				         "index": true,
-				         "type": "string"
-				      },
-				      {
-				         "name": "lastName",
-				         "index": true,
-				         "type": "string"
+config.initialize();  
 
-				      },
-				      {
-				         "name": "midInit",
-				         "index": false,
-				         "type": "string"
-				      },
-				      {
-				         "name": "userType",
-				         "index": true,
-				         "type": "string"
-				      }
-				   ]
-				};
-				var newOptions = {
-					"vault_id" : vaultid,
-					"schema" : schema
-				};
-				truevault.schemas.create (newOptions, function (err, value){
-					if (err)
-						console.log(err);
-					else {
-						console.log("User Schema created");
-					}
-				});
-			} else {
-				console.log("User schema loaded");
-			}
-
-			if (!foundEmailLog) {
-				var schema = {
-				   "name": "emailLog",
-				   "fields": [
-				      {
-				         "name": "timestamp",
-				         "index": false,
-				         "type": "date"
-				      },
-				      {
-				         "name": "data",
-				         "index": true,
-				         "type": "string"
-
-				      }
-				   ]
-				};
-				var newOptions = {
-					"vault_id" : vaultid,
-					"schema" : schema
-				};
-				truevault.schemas.create (newOptions, function (err, value){
-					if (err)
-						console.log(err);
-					else {
-						console.log("Email Log Schema created");
-					}
-				});
-			} else {
-				console.log("Email Log schema loaded");
-			}
-			
-		}
-	});
-
-	truevault.users.list(function(err, value) {
-		if (err)
-			console.log(err);
-		else {
-			accountId = value.users[0].account_id;
-			console.log("AccountID: " + accountId);
-		}
-	})
-}
-
-initialize();
+// -----------------------------------------------------------------------------
 
 module.exports = function(app) {
-	// api ---------------------------------------------------------------------
 
 	// used to test new functionality
 	app.post('/debug/test', function(req, res, next) {
@@ -397,6 +287,11 @@ function sendEmail(recipient, subject, message) {
             }
         });
 	});
+
+	// require('crypto').randomBytes(48, function(ex, buf) {
+ //  		var token = buf.toString('hex');
+	// });
+
 }
 
 
