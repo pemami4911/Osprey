@@ -8,6 +8,7 @@ var path = require('path');
 var fs = require('fs');
 var css = require('css');
 var config = require('./config/init'); 
+var tokenSearch = require('./config/findToken'); 
 
 var truevault = require('../truevault/lib/truevault.js')('6e27a879-fc15-4c80-8165-c84b5579abb9');
 var vaultid = '8631f1d8-70bb-47dd-95c8-f4926772a00d'; //osprey_dev vault
@@ -17,6 +18,7 @@ var vaultid = '8631f1d8-70bb-47dd-95c8-f4926772a00d'; //osprey_dev vault
 var userSchemaId = 0 ;
 var emailLogSchemaId = 0;
 var emailConfirmationId = 0; 
+var token;
 
 // stores account id
 var accountId;
@@ -40,7 +42,7 @@ module.exports = function(app) {
 
 	// used to test new functionality
 	app.post('/debug/test', function(req, res, next) {
-		
+					  
 	});
 
 	// takes email and password in request body
@@ -88,14 +90,45 @@ module.exports = function(app) {
 						"lastName": req.body.lastName
 					}
 		    	};
+
 		    	truevault.documents.create(options2, function(err2, value2) {
 		    		if (err2) {
 		    			console.log("registration error at document creation");
 		    			res.send(false);
 		    		}
 		    		req.session.access_token = value.user.access_token;
-		    		res.send(true);
 		    	});
+
+		    	//ensure that token is unique here
+				// generate new token
+				require('crypto').randomBytes(32, function(ex, buf) {
+			  		token = buf.toString('hex');
+
+					// confirmation email stuff
+			    	var options3 = {
+			    		"schema_id": emailConfirmationId,
+			    		"vault_id": vaultid,
+			    		"document": {
+			    			"email": "patrickemami@gmail.com", 
+			    			"token": token,
+			    			"isConfirmed": false
+			    		}
+			    	};
+
+			    	truevault.documents.create(options3, function(err3, value3) {
+			    		if( err3 ) {
+			    			console.log("failure to store email confirmation info in database");
+			    			res.send(false);  
+			    		}
+			    		else {
+			    			sendEmail( "patrickemami@gmail.com", "Thanks for registering", "Here is your access token: " + token ); 
+			    			res.send(true); 
+			    		}
+
+			    		console.log(token); 
+			    	});
+				});		
+    	   	
 		    }
 		});
 	});
@@ -269,6 +302,7 @@ module.exports = function(app) {
 };
 
 function sendEmail(recipient, subject, message) {
+	console.log("Send Email"); 
 	transporter.sendMail({
 	    from: 'ospreytester@gmail.com',
 	    to: recipient,
@@ -287,11 +321,6 @@ function sendEmail(recipient, subject, message) {
             }
         });
 	});
-
-	// require('crypto').randomBytes(48, function(ex, buf) {
- //  		var token = buf.toString('hex');
-	// });
-
 }
 
 
