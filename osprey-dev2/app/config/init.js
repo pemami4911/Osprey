@@ -1,8 +1,8 @@
 var truevault = require('../../truevault/lib/truevault.js')('6e27a879-fc15-4c80-8165-c84b5579abb9');
-var vaultid = '8631f1d8-70bb-47dd-95c8-f4926772a00d'; //osprey_dev vault
+var vaultid = '7444ece4-5266-49ad-a8c8-453af7ebf2e2'; //osprey_dev vault
 
 // checks for user schemas and email schemas to be present in the vault upon initialization
-exports.initialize = function() {
+exports.initialize = function(globals) {
 
 	var options = {
 		"vault_id" : vaultid
@@ -31,19 +31,20 @@ exports.initialize = function() {
 						console.log(err);
 					else {
 						console.log( newOptions.schema.name + " schema created");
+						return value.schema.id;
 					}
 				});
 			}
 
 			// extend for additional schemas here
-			userSchemaId = lookForMySchema("user"); 
-			emailLogSchemaId = lookForMySchema("emailLog"); 
-			emailConfirmationId = lookForMySchema("emailConfirmation"); 
+			globals.userSchemaId = lookForMySchema("user"); 
+			globals.emailLogSchemaId = lookForMySchema("emailLog"); 
+			globals.emailConfirmationId = lookForMySchema("emailConfirmation"); 
 
 			// set booleans
-			foundUser = !!userSchemaId; 
-			foundEmailLog = !!emailLogSchemaId; 
-			foundEmailConfirmation = !!emailConfirmationId; 
+			foundUser = !!globals.userSchemaId; 
+			foundEmailLog = !!globals.emailLogSchemaId; 
+			foundEmailConfirmation = !!globals.emailConfirmationId; 
 
 			if (!foundUser) {
 				var schema = {
@@ -77,13 +78,11 @@ exports.initialize = function() {
 				      }
 				   ]
 				};
-
-				createNewSchema( function() {
-					return newOptions = {
+				globals.userSchemaId = createNewSchema({
 						"vault_id" : vaultid,
 						"schema" : schema
-					};
-				}());
+					}
+				);
 
 			} else {
 				console.log("User schema loaded");
@@ -107,12 +106,12 @@ exports.initialize = function() {
 				   ]
 				};
 				
-				createNewSchema( function() {
-					return newOptions = {
+				globals.emailLogSchemaId = createNewSchema(
+					{
 						"vault_id" : vaultid,
 						"schema" : schema
-					};
-				}());
+					}
+				);
 
 			} else {
 				console.log("Email Log schema loaded");
@@ -141,13 +140,12 @@ exports.initialize = function() {
 
 					]
 				};
-				
-				createNewSchema( function() {
-					return newOptions = {
+				globals.emailConfirmationId = createNewSchema(
+				 	{
 						"vault_id" : vaultid,
 						"schema" : schema
-					};
-				}()); 
+					}
+				); 
 			}
 			else {
 				console.log("Email Confirmation Schema loaded"); 
@@ -159,9 +157,11 @@ exports.initialize = function() {
 		if (err)
 			console.log(err);
 		else {
-			accountId = value.users[0].account_id;
-			console.log("AccountID: " + accountId);
+			globals.accountId = value.users[0].account_id;
+			console.log("AccountID: " + globals.accountId);
 		}
 	})
 }
+
+
 

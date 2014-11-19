@@ -1,62 +1,94 @@
-      <div class="container" style="height:100%">
-         <div class="jumbotron">
-            <img class="img-responsive" src="img/Osprey-Logo-Small.png"></img>
-         </div>
+<div class="container" style="height:100%">
+   <div class="jumbotron">
+      <img class="img-responsive" src="img/Osprey-Logo-Small.png"></img>
+   </div>
 
-         <div class="row marketing" style ="outline: 1px solid #ddd">
-            <h2 class="text-center">REGISTRATION</h1>
-            <h3 class="text-center" style="background-color:black; color:white">PARENT</h2>
-            <div class="col-md-12">
-               <form class="form-horizontal" role="form">
-                  <div class="form-group">
-                     <label for="inputEmail" class="col-sm-2 control-label" >Email</label>
-                     <div class="col-sm-9">
-                        <input type="email" class="form-control" id="inputEmail" placeholder="Email" disabled ng-model="regData.email">
-                     </div>
-                  </div>
-                  <div class="form-group">
-                     <label for="inputFirstName" class="col-sm-2 control-label">First Name</label>
-                     <div class="col-sm-2">
-                        <input type="text" class="form-control" id="inputFirstName" placeholder="First Name" ng-model="regData.firstName">
-                     </div>
+   <div class="row marketing" style ="outline: 1px solid #ddd">
+      <h2 class="text-center">REGISTRATION</h1>
+      <h3 class="text-center" style="background-color:black; color:white">PARENT</h2>
+      <div class="col-md-12">
+         <form class="form-horizontal" role="form">
+            <div class="form-group">
+               <label for="inputEmail" class="col-sm-2 control-label" >Email</label>
+               <div class="col-sm-9">
+                  <input type="email" class="form-control" id="inputEmail" placeholder="Email" disabled ng-model="regData.email">
+               </div>
+            </div>
+            <div class="form-group">
+               <label for="inputFirstName" class="col-sm-2 control-label">First Name</label>
+               <div class="col-sm-2">
+                  <input type="text" class="form-control" id="inputFirstName" placeholder="First Name" ng-model="regData.firstName">
+               </div>
 
-                     <label for="inputMI" class="col-sm-1 control-label">M.I.</label>
-                     <div class="col-sm-2">
-                        <input type="text" class="form-control" id="inputInitial" placeholder="M.I." ng-model="regData.mI">
-                     </div>                     
+               <label for="inputMI" class="col-sm-1 control-label">M.I.</label>
+               <div class="col-sm-2">
+                  <input type="text" class="form-control" id="inputInitial" placeholder="M.I." ng-model="regData.mI">
+               </div>                     
 
-                     <label for="inputLastName" class="col-sm-2 control-label">Last Name</label>
-                     <div class="col-sm-2">
-                        <input type="text" class="form-control" id="inputLastName" placeholder="Last Name" ng-model="regData.lastName">
-                     </div>                     
+               <label for="inputLastName" class="col-sm-2 control-label">Last Name</label>
+               <div class="col-sm-2">
+                  <input type="text" class="form-control" id="inputLastName" placeholder="Last Name" ng-model="regData.lastName">
+               </div>                     
+            </div>
+            <div class="form-group">
+               <label for="inputField1" class="col-sm-2 control-label">Password</label>
+               <div class="col-sm-9">
+                  <input type="password" class="form-control" id="inputField1" placeholder="Password" ng-model="regData.password">
+               </div>
+            </div>     
+            <div class="form-group">
+               <label for="inputField2" class="col-sm-2 control-label">Parent Field 1</label>
+               <div class="col-sm-9">
+                  <input type="text" class="form-control" id="inputField2" placeholder="Field 1" ng-model="regData.parentField1">
+               </div>
+            </div>     
+            <div class="form-group">
+               <label for="inputField3" class="col-sm-2 control-label">Parent Field 2</label>
+               <div class="col-sm-9">
+                  <input type="text" class="form-control" id="inputField3" placeholder="Field 2" ng-model="regData.parentField2">
+               </div>
+            </div>
+            <div class="form-group">
+               <label for="inputField3" class="col-sm-2 control-label">Number of children</label>
+               <div class="col-sm-9">
+                  <select class="form-control" ng-model="regData.numChildren" ng-options="option for option in options">
+                  </select>
+               </div>
+            </div>
+            <div ng-repeat="i in getNumber(regData.numChildren) track by $index">
+               <div class="form-group">
+                  <label for="inputField2" class="col-sm-2 control-label">Child {{index}} Name</label>
+                  <div class="col-sm-9">
+                     <input type="text" class="form-control" placeholder="Name" ng-model="regData.children[$index].childName">
                   </div>
-                  <div class="form-group">
-                     <label for="inputField1" class="col-sm-2 control-label">Password</label>
-                     <div class="col-sm-9">
-                        <input type="password" class="form-control" id="inputField1" placeholder="Password" ng-model="regData.password">
-                     </div>
-                  </div>     
-                  <div class="form-group">
-                     <label for="inputField2" class="col-sm-2 control-label">Parent Field 1</label>
-                     <div class="col-sm-9">
-                        <input type="text" class="form-control" id="inputField2" placeholder="Field 1" ng-model="regData.parentField1">
-                     </div>
-                  </div>     
-                  <div class="form-group">
-                     <label for="inputField3" class="col-sm-2 control-label">Parent Field 2</label>
-                     <div class="col-sm-9">
-                        <input type="text" class="form-control" id="inputField3" placeholder="Field 2" ng-model="regData.parentField2">
-                     </div>
+               </div>     
+               <div class="form-group">
+                  <label for="inputField3" class="col-sm-2 control-label">Child {{index}} Birthday</label>
+                  <div class="col-sm-9">
+                     <input type="text" class="form-control" placeholder="Birthday" ng-model="regData.children[$index].childBirthday">
                   </div>
-                  <div class="form-group">
-                     <div class="col-sm-12 text-center">
-                        <div class="btn-group">                    
-                           <button type="button" ng-click="back()" class="btn btn-default btn-lg" id="back-button">Back</button>
-                           <button type="button" ng-click="registerFinal()" class="btn btn-default btn-lg" id="regParent">Register</button>
-                        </div>
-                     </div>
+               </div>
+               <div class="form-group">
+                  <label for="inputField3" class="col-sm-2 control-label">Child {{index}} Gender</label>
+                  <div class="col-sm-9">
+                     <select class="form-control" ng-model="regData.children[$index].childGender">
+                        <option value="" disabled selected>Select gender</option>
+                        <option value="m">Male</option>
+                        <option value="f">Female</option>
+                     </select>
                   </div>
-               </form>
-            </div>        
-         </div>
-      </div>
+               </div>
+            </div>
+
+            <div class="form-group">
+               <div class="col-sm-12 text-center">
+                  <div class="btn-group">                    
+                     <button type="button" ng-click="back()" class="btn btn-default btn-lg" id="back-button">Back</button>
+                     <button type="button" ng-click="registerFinal()" class="btn btn-default btn-lg" id="regParent">Register</button>
+                  </div>
+               </div>
+            </div>
+         </form>
+      </div>        
+   </div>
+</div>

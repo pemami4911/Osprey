@@ -7,22 +7,26 @@ var nodemailer = require('nodemailer');
 var path = require('path');
 var fs = require('fs');
 var css = require('css');
+
+var api_key = '6e27a879-fc15-4c80-8165-c84b5579abb9';
+var vaultid = '7444ece4-5266-49ad-a8c8-453af7ebf2e2'; //osprey_dev vault
+
 var config = require('./config/init'); 
+
 var tokenSearch = require('./config/findToken'); 
 
-var truevault = require('../truevault/lib/truevault.js')('6e27a879-fc15-4c80-8165-c84b5579abb9');
-var vaultid = '8631f1d8-70bb-47dd-95c8-f4926772a00d'; //osprey_dev vault
+var truevault = require('../truevault/lib/truevault.js')(api_key);
+
 
 // global variables used to store uuids of schemas
 // default value of 0
-var userSchemaId = 0 ;
-var emailLogSchemaId = 0;
-var emailConfirmationId = 0; 
-var token;
+var globals = {
+	userSchemaId: 0,
+	emailLogSchemaId: 0,
+	emailConfirmationId: 0,
+	accountId: 0			// stores account id
+}
 
-// stores account id
-var accountId;
-var tempid;
 
 var transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -34,7 +38,7 @@ var transporter = nodemailer.createTransport({
 
 // -----------------------------------------------------------------------------
 
-config.initialize();  
+config.initialize(globals);
 
 // -----------------------------------------------------------------------------
 
@@ -42,7 +46,9 @@ module.exports = function(app) {
 
 	// used to test new functionality
 	app.post('/debug/test', function(req, res, next) {
-					  
+
+		console.log(globals.userSchemaId);
+		console.log(globals.accountId);
 	});
 
 	// takes email and password in request body
@@ -51,7 +57,7 @@ module.exports = function(app) {
 		var options = {
 			"username": req.body.email,
 			'password': req.body.password, 
-			'account_id': accountId
+			'account_id': globals.accountId
 		};
 		truevault.auth.login(options, function(err, value) {
 			if (err) {
@@ -80,7 +86,7 @@ module.exports = function(app) {
 			}
 		    else {
 		    	var options2 = {
-				    "schema_id": userSchemaId,
+				    "schema_id": globals.userSchemaId,
 				    "vault_id": vaultid,
 					"document": {
 						"user_id" : value.user.id,
@@ -186,28 +192,55 @@ module.exports = function(app) {
 				console.log("verification error");
 				res.send(false);
 			} else {
-				truevault.documents.list({
-				 	'vault_id':vaultid,
-				  	'per_page':50, 
-				  	'page':1, 
-				  	'full_document': false //true to return full documents vs uuids
-				}, function (err, document){
-					if (err)
-						console.log(err);
-
-					for (var i = 0; i < document.data.items.length; i++) {
+				var options = {
+					'vault_id' : vaultid,
+					'schema_id' : globals.userSchemaId,
+				  	'filter' : { 
+				  		'user_id': {
+					    	"type": "eq",
+					    	"value": value.user.user_id
+					    }
+					},
+					'full_document' : true
+				};
+				truevault.documents.search(options, function (err2, value2) {
+					if (err) {
+						res.send(err2);
+					}
+					else {
 						truevault.documents.retrieve({
 						   'vault_id' : vaultid,
-						   'id' : document.data.items[i].id
+						   'id' : value2.data.documents[0].document_id
 						}, function (err, document){
-							if (document.user_id == value.user.user_id) {
-								console.log("User found:");
-								document.email = value.user.username;
-								res.send(document);
-							}
+							console.log("User found:");
+							document.email = value.user.username;
+							res.send(document);
 						});
 					}
 				});
+
+				// truevault.documents.list({
+				//  	'vault_id':vaultid,
+				//   	'per_page':50, 
+				//   	'page':1, 
+				//   	'full_document': false //true to return full documents vs uuids
+				// }, function (err, document){
+				// 	if (err)
+				// 		console.log(err);
+
+				// 	for (var i = 0; i < document.data.items.length; i++) {
+				// 		truevault.documents.retrieve({
+				// 		   'vault_id' : vaultid,
+				// 		   'id' : document.data.items[i].id
+				// 		}, function (err, document){
+				// 			if (document.user_id == value.user.user_id) {
+				// 				console.log("User found:");
+				// 				document.email = value.user.username;
+				// 				res.send(document);
+				// 			}
+				// 		});
+				// 	}
+				// });
 			}
 		});
 	});
