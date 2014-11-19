@@ -6,6 +6,7 @@ angular.module('regParentPageModule', ['splashPageService'])
 		$scope.regData = {};
 		$scope.regData.email = splashFactory.get('e-mail');
 		$scope.regData.userType = splashFactory.get('userType'); 
+		$scope.regData.numChildren = 1;
 		$scope.loading = false;
 
 		$scope.back = function() {
@@ -59,6 +60,12 @@ angular.module('regParentPageModule', ['splashPageService'])
 			else
 				$scope.loading = false;
 		};
+
+		$scope.options = [1, 2, 3, 4, 5];
+
+		$scope.getNumber = function(num) {
+		    return new Array(num);   
+		}
 
 
 	}]);

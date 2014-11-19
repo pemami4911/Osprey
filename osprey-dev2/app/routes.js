@@ -7,20 +7,23 @@ var nodemailer = require('nodemailer');
 var path = require('path');
 var fs = require('fs');
 var css = require('css');
-var config = require('./config/init'); 
 
-var truevault = require('../truevault/lib/truevault.js')('6e27a879-fc15-4c80-8165-c84b5579abb9');
+var api_key = '6e27a879-fc15-4c80-8165-c84b5579abb9';
 var vaultid = '8631f1d8-70bb-47dd-95c8-f4926772a00d'; //osprey_dev vault
+
+var config = require('./config/init'); 
+var truevault = require('../truevault/lib/truevault.js')(api_key);
+
 
 // global variables used to store uuids of schemas
 // default value of 0
-var userSchemaId = 0 ;
-var emailLogSchemaId = 0;
-var emailConfirmationId = 0; 
+var globals = {
+	userSchemaId: 0,
+	emailLogSchemaId: 0,
+	emailConfirmationId: 0,
+	accountId: 0			// stores account id
+}
 
-// stores account id
-var accountId;
-var tempid;
 
 var transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -32,7 +35,7 @@ var transporter = nodemailer.createTransport({
 
 // -----------------------------------------------------------------------------
 
-config.initialize();  
+config.initialize(globals);
 
 // -----------------------------------------------------------------------------
 
@@ -40,7 +43,8 @@ module.exports = function(app) {
 
 	// used to test new functionality
 	app.post('/debug/test', function(req, res, next) {
-		
+		console.log(globals.userSchemaId);
+		console.log(globals.accountId);
 	});
 
 	// takes email and password in request body
