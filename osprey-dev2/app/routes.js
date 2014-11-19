@@ -53,7 +53,7 @@ module.exports = function(app) {
 		var options = {
 			"username": req.body.email,
 			'password': req.body.password, 
-			'account_id': accountId
+			'account_id': globals.accountId
 		};
 		truevault.auth.login(options, function(err, value) {
 			if (err) {
@@ -82,7 +82,7 @@ module.exports = function(app) {
 			}
 		    else {
 		    	var options2 = {
-				    "schema_id": userSchemaId,
+				    "schema_id": globals.userSchemaId,
 				    "vault_id": vaultid,
 					"document": {
 						"user_id" : value.user.id,
@@ -157,28 +157,53 @@ module.exports = function(app) {
 				console.log("verification error");
 				res.send(false);
 			} else {
-				truevault.documents.list({
-				 	'vault_id':vaultid,
-				  	'per_page':50, 
-				  	'page':1, 
-				  	'full_document': false //true to return full documents vs uuids
-				}, function (err, document){
-					if (err)
-						console.log(err);
+				var options = {
+					'vault_id' : vaultid,
+					'schema_id' : globals.userSchemaId,
+				  	'filter' : { 
+				  		'user_id': {
+					    	"type": "eq",
+					    	"value": value.user.user_id
+					    }
+					}
+				};
+				console.log("===OPTIONS===");
+				console.log(options);
 
-					for (var i = 0; i < document.data.items.length; i++) {
-						truevault.documents.retrieve({
-						   'vault_id' : vaultid,
-						   'id' : document.data.items[i].id
-						}, function (err, document){
-							if (document.user_id == value.user.user_id) {
-								console.log("User found:");
-								document.email = value.user.username;
-								res.send(document);
-							}
-						});
+				truevault.documents.search(options, function (err2, value2) {
+					if (err) {
+						console.log(err2);
+						res.send(err2);
+					}
+					else {
+						console.log("===VALUE===");
+						console.log(value2);
+						res.send(value2);
 					}
 				});
+
+				// truevault.documents.list({
+				//  	'vault_id':vaultid,
+				//   	'per_page':50, 
+				//   	'page':1, 
+				//   	'full_document': false //true to return full documents vs uuids
+				// }, function (err, document){
+				// 	if (err)
+				// 		console.log(err);
+
+				// 	for (var i = 0; i < document.data.items.length; i++) {
+				// 		truevault.documents.retrieve({
+				// 		   'vault_id' : vaultid,
+				// 		   'id' : document.data.items[i].id
+				// 		}, function (err, document){
+				// 			if (document.user_id == value.user.user_id) {
+				// 				console.log("User found:");
+				// 				document.email = value.user.username;
+				// 				res.send(document);
+				// 			}
+				// 		});
+				// 	}
+				// });
 			}
 		});
 	});
