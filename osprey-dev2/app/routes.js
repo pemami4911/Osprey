@@ -9,7 +9,7 @@ var fs = require('fs');
 var css = require('css');
 
 var api_key = '6e27a879-fc15-4c80-8165-c84b5579abb9';
-var vaultid = '7444ece4-5266-49ad-a8c8-453af7ebf2e2'; //osprey_dev vault
+var vaultid = '7b55edbd-a907-4569-947c-726c215c0eee'; //osprey_dev vault
 
 var config = require('./config/init'); 
 var truevault = require('../truevault/lib/truevault.js')(api_key);
@@ -43,8 +43,7 @@ module.exports = function(app) {
 
 	// used to test new functionality
 	app.post('/debug/test', function(req, res, next) {
-		console.log(globals.userSchemaId);
-		console.log(globals.accountId);
+		clearVault();
 	});
 
 	// takes email and password in request body
@@ -322,35 +321,48 @@ function sendEmail(recipient, subject, message) {
 	// require('crypto').randomBytes(48, function(ex, buf) {
  //  		var token = buf.toString('hex');
 	// });
-
 }
 
+function clearVault() {
+	truevault.documents.list({
+	 	'vault_id':vaultid,
+	  	'per_page':50, 
+	  	'page':1, 
+	  	'full_document': false //true to return full documents vs uuids
+	}, function (err, document){
+		if (err)
+			console.log(err);
 
+		for (var i = 0; i < document.data.items.length; i++) {
+			console.log("Deleting document: " + document.data.items[i].id)
+			truevault.documents.del({
+			   'vault_id' : vaultid,
+			   'id' : document.data.items[i].id
+			}, function (err, document){
+				if (err)
+					console.log("Error deleting document");
+				else
+					console.log("Document deleted");
+			});
+		}
+	});
 
-// Code for searching: not working
+	var options = {
+		"vault_id" : vaultid
+	};
 
-// Searching API not working
-// var options = {
-// 	'vault_id' : vaultid,
-// 	'schema_id' : userSchemaId,
-//   	'filter' : { 
-//   		'user_id': {
-// 	    	"type": "eq",
-// 	    	"value": value.user.user_id
-// 	    }
-// 	}
-// };
-// console.log("===OPTIONS===");
-// console.log(options);
-
-// truevault.documents.search(options, function (err2, value2) {
-// 	if (err) {
-// 		console.log(err2);
-// 		res.send(err2);
-// 	}
-// 	else {
-// 		console.log("===VALUE===");
-// 		console.log(value2);
-// 		res.send(value2);
-// 	}
-// });
+	truevault.schemas.list(options, function (err, document){
+		for (var i = 0; i < document.schemas.length; i++) {
+			console.log("Deleting schema: " + document.schemas[i].id)
+			truevault.schemas.del({
+			   'vault_id' : vaultid,
+			   'id' : document.schemas[i].id
+			}, function (err, document){
+				if (err)
+					console.log("Error deleting schema");
+				else
+					console.log("Schema deleted");
+			});
+		}
+	})
+}
