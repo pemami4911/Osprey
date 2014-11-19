@@ -19,6 +19,7 @@ var truevault = require('../truevault/lib/truevault.js')(api_key);
 // default value of 0
 var globals = {
 	userSchemaId: 0,
+	childSchemaId: 0,
 	emailLogSchemaId: 0,
 	emailConfirmationId: 0,
 	accountId: 0			// stores account id
@@ -43,7 +44,18 @@ module.exports = function(app) {
 
 	// used to test new functionality
 	app.post('/debug/test', function(req, res, next) {
-		clearVault();
+		console.log(globals);
+		// clearVault();
+		// truevault.documents.list({
+		//  	'vault_id':vaultid,
+		//   	'per_page':50, 
+		//   	'page':1, 
+		//   	'full_document': false //true to return full documents vs uuids
+		// }, function (err, document){
+		// 	if (err)
+		// 		console.log(err);
+		// 	console.log(document.data);
+		// });
 	});
 
 	// takes email and password in request body
@@ -73,7 +85,6 @@ module.exports = function(app) {
 			"username": req.body.email,
 			"password": req.body.password,
 		};
-
 		truevault.users.create(options, function(err, value){
 		    if (err) {
 		    	console.log("registration error at user creation");
@@ -91,6 +102,7 @@ module.exports = function(app) {
 						"lastName": req.body.lastName
 					}
 		    	};
+		    	console.log(options2);
 		    	truevault.documents.create(options2, function(err2, value2) {
 		    		if (err2) {
 		    			console.log("registration error at document creation");
@@ -167,19 +179,25 @@ module.exports = function(app) {
 					},
 					'full_document' : true
 				};
+				console.log(options);
 				truevault.documents.search(options, function (err2, value2) {
 					if (err) {
+						console.log('search error');
 						res.send(err2);
 					}
 					else {
-						truevault.documents.retrieve({
-						   'vault_id' : vaultid,
-						   'id' : value2.data.documents[0].document_id
-						}, function (err, document){
-							console.log("User found:");
-							document.email = value.user.username;
-							res.send(document);
-						});
+						if (value2.data.documents.length == 0)
+							console.log("no matching user document found");
+						else {
+							truevault.documents.retrieve({
+							   'vault_id' : vaultid,
+							   'id' : value2.data.documents[0].document_id
+							}, function (err, document){
+								console.log("User found:");
+								document.email = value.user.username;
+								res.send(document);
+							});
+						}
 					}
 				});
 
