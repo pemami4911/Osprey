@@ -29,10 +29,11 @@ angular.module('splashPageModule', ['splashPageService'])
 							console.log("Invalid email or password");
 							$scope.addAlert("Invalid email or password!", "danger", true);
 						}
-						else {
-							$scope.addAlert("Successful login", "success", true);
-							$location.path('/dashboard');
+						else if(data == "unconfirmed") {
+							$scope.addAlert("Please confirm your email first!", "danger", true); 
 						}
+						else 
+							$location.path('/dashboard');
 					}).error(function(response) {
 						$scope.error = response.message;
 						$scope.loading = false;

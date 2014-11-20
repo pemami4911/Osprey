@@ -9,11 +9,14 @@ var fs = require('fs');
 var css = require('css');
 
 var api_key = '6e27a879-fc15-4c80-8165-c84b5579abb9';
+
 var vaultid = 'b51db608-3321-41dd-9531-bfc40c1f5c27'; //osprey_dev vault
 
 var config = require('./config/init'); 
 var truevault = require('../truevault/lib/truevault.js')(api_key);
 
+// set this to our domain for security 
+var host = 'localhost:8080'; 
 
 // global variables used to store uuids of schemas
 // default value of 0
@@ -25,7 +28,6 @@ var globals = {
 	emailConfirmationId: 0,
 	accountId: 0			// stores account id
 }
-
 
 var transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -45,6 +47,7 @@ module.exports = function(app) {
 
 	// used to test new functionality
 	app.post('/debug/test', function(req, res, next) {
+
 		// console.log(globals);
 		clearVault();
 		// truevault.documents.list({
@@ -62,21 +65,46 @@ module.exports = function(app) {
 	// takes email and password in request body
 	// returns true or false, sets session variable to access token
 	app.post('/auth/login', function(req, res, next) {
+
 		var options = {
-			"username": req.body.email,
-			'password': req.body.password, 
-			'account_id': globals.accountId
-		};
-		truevault.auth.login(options, function(err, value) {
-			if (err) {
-				console.log("login failed");
-				res.send(false);
-			} else {
-				console.log("login successful");
-				req.session.access_token = value.user.access_token;
-				res.send(true);
+			'vault_id' : vaultid,
+			'schema_id' : globals.emailConfirmationId,
+		  	'filter' : { 
+		  		'email': {
+			    	"type": "eq",
+			    	"value": req.body.email
+			    }
+			},
+			'full_document' : true
+		}
+		// check if the email has been confirmed
+		isConfirmed( options, function ( result ) {
+			if( result === -1 ) 
+				return res.send(false); 
+			else {
+				if( result === 500 )
+					return res.send('unconfirmed'); 
+				else if( result === 200 ) {
+					var options = {
+						"username": req.body.email,
+						'password': req.body.password, 
+						'account_id': globals.accountId
+					};
+					truevault.auth.login(options, function(err, value) {
+						if (err) {
+							console.log("login failed");
+							return res.send(false);
+						} else {
+							console.log("login successful");
+							req.session.access_token = value.user.access_token;
+							return res.send(true);
+						}
+					});	
+				}
 			}
-		});
+			
+		}); 
+								
 	});
 
 	// takes username, password, user attributes in request body
@@ -92,6 +120,7 @@ module.exports = function(app) {
 		    	res.send(false);
 			}
 		    else {
+
 		    	// User attributes object creation
 		    	var options2 = {
 				    "schema_id": globals.userSchemaId,
@@ -104,6 +133,7 @@ module.exports = function(app) {
 						"lastName": req.body.lastName
 					}
 		    	};
+
 		    	if (req.body.userType == "Physician") {
 			    	options2.document.phyShowEmail = true;
 					options2.document.phyShowAge = true;
@@ -115,13 +145,105 @@ module.exports = function(app) {
 		    	truevault.documents.create(options2, function(err2, value2) {
 		    		if (err2) {
 		    			console.log("registration error at document creation");
+		    			console.log(err); 
 		    			res.send(false);
 		    		}
 		    		req.session.access_token = value.user.access_token;
-		    		res.send(true);
 		    	});
+
+				// generate new token
+				require('crypto').randomBytes(32, function(ex, buf) {
+			  		var token = buf.toString('hex');
+					// confirmation email stuff
+			    	var options = {
+			    		"schema_id": globals.emailConfirmationId,
+			    		"vault_id": vaultid,
+			    		"document": {
+			    			"email": req.body.email, 
+			    			"token": token,
+			    			"isConfirmed": false
+			    		}
+			    	};
+			    	truevault.documents.create(options, function(err, value) {
+			    		if( err ) {
+			    			console.log("failure to store email confirmation info in database");
+			    			console.log(err); 
+			    			res.send(false);  
+			    		}
+			    		else {
+			    			var link, mailOptions; 
+			    			link = "http://"+req.get('host')+"/verify?id="+token; 
+			    			mailOptions={
+			    				to : req.body.email,
+			    				subject : "Email confirmation", 
+			    				html : "Hello,<br> Please Click on the link to verify your email.<br><a href="+link+">Click Here to Verify</a>"
+			    			}
+			    			console.log( mailOptions); 
+
+			    			sendEmail( mailOptions.to, mailOptions.subject, mailOptions.html ); 
+			    			res.send(true); 
+			    		}
+			    	});
+				});		
+    	   	
 		    }
 		});
+	});
+
+	app.get('/verify',function(req,res){
+		console.log(req.protocol+"://"+req.get('host'));
+		console.log("http://"+host); 
+		if((req.protocol+"://"+req.get('host'))==("http://"+host))
+		{
+			console.log("Domain is matched. Information is from Authentic email");
+
+			var options = {
+				'vault_id' : vaultid,
+				'schema_id' : globals.emailConfirmationId,
+			  	'filter' : { 
+			  		'token': {
+				    	"type": "eq",
+				    	"value": req.query.id
+				    }
+				},
+				'full_document' : true
+			};
+			
+			isConfirmed( options, function ( result, email, id ) {
+
+				if( result === -1 ) 
+					return res.send("<h1> An error occurred while verifying your email. Please contact the Osprey Team</h1>"); 
+				else {
+					if( result === 500 ) {
+						var options = {
+							'vault_id' : vaultid,
+							'id' : id,
+							'document' : {
+				    			"email": email, 
+				    			"token": null,
+				    			"isConfirmed": true
+					    	},
+							'schema_id' : globals.emailConfirmationId,		
+						};
+
+						truevault.documents.update( options, function ( err, value ) {
+							if( err ) {
+								console.log( err ); 
+								res.send("<h1> An error occurred while verifying your email. Please contact the Osprey Team</h1>"); 
+							}
+							else {
+								console.log("Successfully updated email confirmation in database");
+								res.redirect('http://'+host+'/#/'); 
+							}				
+						});
+					}	 
+					else if( result === 200 ) 
+						res.send("<h1>User has already been updated</h1>"); 
+				}
+			});
+		}
+		else 
+			res.send("<h1>Request is from unknown source");
 	});
 
 	// takes email in request body
@@ -169,7 +291,7 @@ module.exports = function(app) {
 
 	// checks access token stored in session 
 	// returns false if verification fails, the user object if successful
-	app.post('/auth/isLogged', function(req, res) {
+	app.post('/auth/isLogged', function(req, res) {	
 		var temp = require('../truevault/lib/truevault.js')(req.session.access_token);
 
 		temp.auth.verify(function(err, value){
@@ -197,22 +319,43 @@ module.exports = function(app) {
 					else {
 						if (value2.data.documents.length == 0)
 							console.log("no matching user document found");
-						else {
-							truevault.documents.retrieve({
-							   'vault_id' : vaultid,
-							   'id' : value2.data.documents[0].document_id
-							}, function (err, document){
-								console.log("User found:");
-								document.email = value.user.username;
-								res.send(document);
 
+						truevault.documents.retrieve({
+						   'vault_id' : vaultid,
+						   'id' : value2.data.documents[0].document_id
+						}, function (err, document){
+							console.log("User found:");
+							document.email = value.user.username;
+							console.log(document.email); 
 
+							// check if the email has been confirmed
+							isConfirmed({
+								'vault_id' : vaultid,
+								'schema_id' : globals.emailConfirmationId,
+							  	'filter' : { 
+							  		'email': {
+								    	"type": "eq",
+								    	"value": document.email
+								    }					
+								},
+								'full_document' : true
+								}, function ( result ) {
+								if( result === -1 ) 
+									return res.send(false); 
+								else {
+									if( result === 500 )
+										return res.send(false); 
+									else if( result === 200 ) 
+										res.send( document ); 
+								}
 							});
-						}
+						}); 
+
 					}
 				});
 			}
-		});
+		}); 
+	
 	});
 
 	app.post('/auth/changeEmail', function(req, res) {
@@ -344,12 +487,47 @@ module.exports = function(app) {
 	
 };
 
+function isConfirmed( options, callback) {
+	truevault.documents.search( options, function (err, value) {
+		if (err) {
+			console.log( err ); 
+			callback(-1); 
+		}	
+		else {
+			if( value.data.info.total_result_count != 0) {	// if it is found
+				
+				var doc_id = value.data.documents[0].document_id; 
+					
+				truevault.documents.retrieve({	// retrieve the document
+					   'vault_id' : vaultid,
+					   'id' : doc_id
+				}, function ( err, data ) {
+					if( err ) {
+						console.log( err );
+						callback(-1); 
+					} 
+					else {
+						if( data.isConfirmed === false ) {	// if the email has not been confirmed yet
+							callback(500, data.email, doc_id);  // send back an error message
+						}
+						else 
+							callback(200);  
+					}
+				}); 
+			}
+			else
+				callback(-1); 
+		}
+	}); 
+}
+
 function sendEmail(recipient, subject, message) {
+	console.log("Send Email"); 
 	transporter.sendMail({
 	    from: 'ospreytester@gmail.com',
 	    to: recipient,
 	    subject: subject,
-	    text: message
+	    html: message
 	}, function(err, info){
 		var newLog = new EmailLogModel();
 		newLog.timestamp = Date();
@@ -364,9 +542,6 @@ function sendEmail(recipient, subject, message) {
         });
 	});
 
-	// require('crypto').randomBytes(48, function(ex, buf) {
- //  		var token = buf.toString('hex');
-	// });
 }
 
 function clearVault() {
