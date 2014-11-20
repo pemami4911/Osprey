@@ -8,7 +8,7 @@ var path = require('path');
 var fs = require('fs');
 var css = require('css');
 
-var api_key = '6e27a879-fc15-4c80-8165-c84b5579abb9';
+var api_key = '24099371-9eb8-4c1d-8a39-5f64b6a52c1b';
 
 var vaultid = 'b51db608-3321-41dd-9531-bfc40c1f5c27'; //osprey_dev vault
 
