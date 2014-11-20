@@ -74,7 +74,6 @@ angular.module('dashboardSettingsModule', ['splashPageService', 'ngReactGrid', '
 		$scope.changeTableSettings = function() {
 			splashFactory.changeTableSettings( $scope.loggedUser, $scope.newTableSettings )
 				.success(function (data) {
-					
 					if (data == 1) {
 						window.alert("You have successfully changed your table settings!");
 						$scope.checkLogged();

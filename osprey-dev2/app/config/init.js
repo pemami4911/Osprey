@@ -1,8 +1,9 @@
-var truevault = require('../../truevault/lib/truevault.js')('6e27a879-fc15-4c80-8165-c84b5579abb9');
-var vaultid = '7b55edbd-a907-4569-947c-726c215c0eee'; //osprey_dev vault
+
 
 // checks for user schemas and email schemas to be present in the vault upon initialization
-exports.initialize = function(globals) {
+exports.initialize = function(globals, apikey, vaultid) {
+
+	var truevault = require('../../truevault/lib/truevault.js')(apikey);
 
 	var options = {
 		"vault_id" : vaultid
@@ -166,6 +167,11 @@ exports.initialize = function(globals) {
 					"name" : "child",
 					"fields" : [
 						{
+					   	  	"name": "parentId",
+					   	  	"index": true,
+					   	  	"type": "string"
+					   	},
+						{
 							"name": "name", 
 							"index": true,
 							"type": "string"
@@ -179,8 +185,22 @@ exports.initialize = function(globals) {
 							"name": "gender",
 							"index": false,
 							"type": "string"
+						}, 
+						{
+							"name": "phyShowEmail", 
+							"index": false,
+							"type": "boolean"
+						},
+						{
+							"name": "phyShowAge",
+							"index": true,
+							"type": "date"
+						},
+						{
+							"name": "phyShowWeight",
+							"index": false,
+							"type": "string"
 						}
-
 					]
 				};
 				createNewSchema(
