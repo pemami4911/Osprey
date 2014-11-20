@@ -79,16 +79,17 @@ module.exports = function(app) {
 				'full_document' : true
 			};
 			
-			isConfirmed( options, function ( result ) {
+			isConfirmed( options, function ( result, email, id ) {
+
 				if( result === -1 ) 
 					return res.send("<h1> An error occurred while verifying your email. Please contact the Osprey Team</h1>"); 
 				else {
 					if( result === 500 ) {
 						var options = {
 							'vault_id' : vaultid,
-							'id' : doc_id,
+							'id' : id,
 							'document' : {
-				    			"email": data.email, 
+				    			"email": email, 
 				    			"token": null,
 				    			"isConfirmed": true
 					    	},
@@ -273,7 +274,7 @@ function isConfirmed( options, callback) {
 					} 
 					else {
 						if( data.isConfirmed === false ) {	// if the email has not been confirmed yet
-							callback(500);  // send back an error message
+							callback(500, data.email, doc_id);  // send back an error message
 						}
 						else 
 							callback(200);  
