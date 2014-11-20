@@ -18,7 +18,7 @@ describe('dashboardControllerLoggedInPhysician', function(){
         $httpBackend.when('POST', '/auth/isLogged').respond( function() {
             return [200, userResponse];
         }); 
-        $httpBackend.when('GET', '/auth/logout').respond("Logged out successfully"); 
+        $httpBackend.when('GET', '/auth/logout').respond(200, "OK"); 
         $httpBackend.flush();
         $location = _$location_; 
     }));
@@ -47,7 +47,7 @@ describe('dashboardControllerLoggedInPhysician', function(){
         expect($location.url()).toBe('/'); 
     });
 
-    it('should be fail to log out if scope.loggedUser is empty', function() {
+    it('should fail to log out if scope.loggedUser is empty', function() {
         scope.loggedUser = undefined; 
         scope.logoutAttempt(scope.loggedUser); 
         expect(scope.error).toBe("Failed call to logoutAttempt()"); 

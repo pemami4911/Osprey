@@ -7,6 +7,12 @@ var should = require('should'),
 	mongoose = require('mongoose'),
 	User = require('../../models/user');
 
+var api_key = '6e27a879-fc15-4c80-8165-c84b5579abb9';
+var vaultid = '7b55edbd-a907-4569-947c-726c215c0eee'; //osprey_dev vault
+
+var config = require('./config/init'); 
+var truevault = require('../truevault/lib/truevault.js')(api_key);
+
 /**
  * Globals
  */

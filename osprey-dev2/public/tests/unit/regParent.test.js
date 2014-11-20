@@ -58,6 +58,18 @@ describe('regParentController', function(){
       expect(scope.error).toEqual('Invalid email'); 
    });
 
+   it('should initialize children to 1', function () {
+      expect(scope.regData.numChildren).toBe(1);
+   });
+
+   it('should create the correct number of children forms', function () {
+      expect(scope.getNumber(1).length).toBe(1);
+      expect(scope.getNumber(2).length).toBe(2);
+      expect(scope.getNumber(3).length).toBe(3);
+      expect(scope.getNumber(4).length).toBe(4);
+      expect(scope.getNumber(5).length).toBe(5);
+   });
+
    it('should ask the user if they are sure that they want to change pages on route-change-start, unless they have filled out all required input boxes and hit "register" button', function () {
 
    });

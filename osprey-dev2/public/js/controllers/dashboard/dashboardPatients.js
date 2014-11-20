@@ -11,19 +11,20 @@ angular.module('dashboardPatientsModule', ['splashPageService', 'ngReactGrid', '
 		$scope.tableSelections = [];
 
 		$scope.updateColumns = function() {
-            if ($scope.loggedUser.tableSettings != undefined) {
-	   			if ($scope.loggedUser.tableSettings.showEmail) {
+            // if ($scope.loggedUser.tableSettings != undefined) {
+            console.log($scope.loggedUser);
+	   			if ($scope.loggedUser.phyShowEmail) {
 	        		$scope.grid.columnDefs.push({field: "email", displayName: "E-mail Address"});
 	        	}
 
-	        	if ($scope.loggedUser.tableSettings.showWeight) {
+	        	if ($scope.loggedUser.phyShowWeight) {
 	        		$scope.grid.columnDefs.push({field: "weight", displayName: "Weight"});
 	        	}
 
-	        	if ($scope.loggedUser.tableSettings.showAge) {
+	        	if ($scope.loggedUser.phyShowAge) {
 	        		$scope.grid.columnDefs.push({field: "age", displayName: "Age"});
 	        	}
-	        }
+	        // }
    		}
 
 		var reloadGrid = function() {
