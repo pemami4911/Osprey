@@ -1,5 +1,4 @@
 
-
 // checks for user schemas and email schemas to be present in the vault upon initialization
 exports.initialize = function(globals, apikey, vaultid) {
 

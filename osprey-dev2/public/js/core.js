@@ -31,6 +31,9 @@ ospreyApp.config(['$routeProvider',
         templateUrl: 'views/dashboard.html',
         controller: 'dashboardController'
       }).
+      when('/verify', {
+         templateUrl: 'views/verify.html' 
+      }).
       otherwise({
         redirectTo: '/'
       });

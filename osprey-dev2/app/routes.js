@@ -11,9 +11,12 @@ var css = require('css');
 var api_key = '6e27a879-fc15-4c80-8165-c84b5579abb9';
 var vaultid = 'b51db608-3321-41dd-9531-bfc40c1f5c27'; //nick-dev vault
 
+
 var config = require('./config/init'); 
 var truevault = require('../truevault/lib/truevault.js')(api_key);
 
+// set this to our domain for security 
+var host = 'localhost:8080'; 
 
 // global variables used to store uuids of schemas
 // default value of 0
@@ -44,11 +47,11 @@ config.initialize(globals, api_key, vaultid);
 // -----------------------------------------------------------------------------
 
 module.exports = function(app) {
-
 	// used to test new functionality
 	app.post('/debug/test', function(req, res, next) {
 		// console.log(globals);
 		clearVault();
+		res.send(true);
 	});
 
 	app.post('/auth/login', function(req, res, next) {
@@ -57,6 +60,61 @@ module.exports = function(app) {
 	app.post('/auth/register', function(req, res, next) {
 		auth.register(req, res);
 	});
+	app.get('/verify',function(req,res){
+		console.log(req.protocol+"://"+req.get('host'));
+		console.log("http://"+host); 
+		if((req.protocol+"://"+req.get('host'))==("http://"+host))
+		{
+			console.log("Domain is matched. Information is from Authentic email");
+
+			var options = {
+				'vault_id' : vaultid,
+				'schema_id' : globals.emailConfirmationId,
+			  	'filter' : { 
+			  		'token': {
+				    	"type": "eq",
+				    	"value": req.query.id
+				    }
+				},
+				'full_document' : true
+			};
+			
+			isConfirmed( options, function ( result ) {
+				if( result === -1 ) 
+					return res.send("<h1> An error occurred while verifying your email. Please contact the Osprey Team</h1>"); 
+				else {
+					if( result === 500 ) {
+						var options = {
+							'vault_id' : vaultid,
+							'id' : doc_id,
+							'document' : {
+				    			"email": data.email, 
+				    			"token": null,
+				    			"isConfirmed": true
+					    	},
+							'schema_id' : globals.emailConfirmationId,		
+						};
+
+						truevault.documents.update( options, function ( err, value ) {
+							if( err ) {
+								console.log( err ); 
+								res.send("<h1> An error occurred while verifying your email. Please contact the Osprey Team</h1>"); 
+							}
+							else {
+								console.log("Successfully updated email confirmation in database");
+								res.redirect('http://'+host+'/#/'); 
+							}				
+						});
+					}	 
+					else if( result === 200 ) 
+						res.send("<h1>User has already been updated</h1>"); 
+				}
+			});
+		}
+		else 
+			res.send("<h1>Request is from unknown source");
+	});
+
 	app.post('/auth/checkReg', function(req, res) {
 		auth.checkReg(req, res);
 	});
@@ -194,12 +252,47 @@ module.exports = function(app) {
 	
 };
 
+function isConfirmed( options, callback) {
+	truevault.documents.search( options, function (err, value) {
+		if (err) {
+			console.log( err ); 
+			callback(-1); 
+		}	
+		else {
+			if( value.data.info.total_result_count != 0) {	// if it is found
+				
+				var doc_id = value.data.documents[0].document_id; 
+					
+				truevault.documents.retrieve({	// retrieve the document
+					   'vault_id' : vaultid,
+					   'id' : doc_id
+				}, function ( err, data ) {
+					if( err ) {
+						console.log( err );
+						callback(-1); 
+					} 
+					else {
+						if( data.isConfirmed === false ) {	// if the email has not been confirmed yet
+							callback(500);  // send back an error message
+						}
+						else 
+							callback(200);  
+					}
+				}); 
+			}
+			else
+				callback(-1); 
+		}
+	}); 
+}
+
 function sendEmail(recipient, subject, message) {
+	console.log("Send Email"); 
 	transporter.sendMail({
 	    from: 'ospreytester@gmail.com',
 	    to: recipient,
 	    subject: subject,
-	    text: message
+	    html: message
 	}, function(err, info){
 		var newLog = new EmailLogModel();
 		newLog.timestamp = Date();
@@ -214,9 +307,6 @@ function sendEmail(recipient, subject, message) {
         });
 	});
 
-	// require('crypto').randomBytes(48, function(ex, buf) {
- //  		var token = buf.toString('hex');
-	// });
 }
 
 function clearVault() {

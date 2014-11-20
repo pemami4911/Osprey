@@ -43,6 +43,7 @@ Auth.prototype.register = function(req, res){
 	    	res.send(false);
 		}
 	    else {
+
 	    	// User attributes object creation
 	    	var options2 = {
 			    "schema_id": globals.userSchemaId,
@@ -55,6 +56,7 @@ Auth.prototype.register = function(req, res){
 					"lastName": req.body.lastName
 				}
 	    	};
+
 	    	if (req.body.userType == "Physician") {
 		    	options2.document.phyShowEmail = true;
 				options2.document.phyShowAge = true;
@@ -66,11 +68,46 @@ Auth.prototype.register = function(req, res){
 	    	truevault.documents.create(options2, function(err2, value2) {
 	    		if (err2) {
 	    			console.log("registration error at document creation");
+	    			console.log(err); 
 	    			res.send(false);
 	    		}
 	    		req.session.access_token = value.user.access_token;
-	    		res.send(true);
 	    	});
+
+			// generate new token
+			require('crypto').randomBytes(32, function(ex, buf) {
+		  		var token = buf.toString('hex');
+				// confirmation email stuff
+		    	var options = {
+		    		"schema_id": globals.emailConfirmationId,
+		    		"vault_id": vaultid,
+		    		"document": {
+		    			"email": req.body.email, 
+		    			"token": token,
+		    			"isConfirmed": false
+		    		}
+		    	};
+		    	truevault.documents.create(options, function(err, value) {
+		    		if( err ) {
+		    			console.log("failure to store email confirmation info in database");
+		    			console.log(err); 
+		    			res.send(false);  
+		    		}
+		    		else {
+		    			var link, mailOptions; 
+		    			link = "http://"+req.get('host')+"/verify?id="+token; 
+		    			mailOptions={
+		    				to : req.body.email,
+		    				subject : "Email confirmation", 
+		    				html : "Hello,<br> Please Click on the link to verify your email.<br><a href="+link+">Click Here to Verify</a>"
+		    			}
+		    			console.log( mailOptions); 
+
+		    			sendEmail( mailOptions.to, mailOptions.subject, mailOptions.html ); 
+		    			res.send(true); 
+		    		}
+		    	});
+			});		
 	    }
 	});
 }
@@ -122,6 +159,7 @@ Auth.prototype.logout = function(req, res){
 	// returns false if verification fails, the user object if successful
 Auth.prototype.isLogged = function(req, res) {
 	var temp = require('../truevault/lib/truevault.js')(req.session.access_token);
+
 	temp.auth.verify(function(err, value){
 		if (err) {
 			console.log("verification error");
@@ -147,22 +185,42 @@ Auth.prototype.isLogged = function(req, res) {
 				else {
 					if (value2.data.documents.length == 0)
 						console.log("no matching user document found");
-					else {
-						truevault.documents.retrieve({
-						   'vault_id' : vaultid,
-						   'id' : value2.data.documents[0].document_id
-						}, function (err, document){
-							console.log("User found:");
-							document.email = value.user.username;
-							res.send(document);
 
+					truevault.documents.retrieve({
+					   'vault_id' : vaultid,
+					   'id' : value2.data.documents[0].document_id
+					}, function (err, document){
+						console.log("User found:");
+						document.email = value.user.username;
+						console.log(document.email); 
 
+						// check if the email has been confirmed
+						isConfirmed({
+							'vault_id' : vaultid,
+							'schema_id' : globals.emailConfirmationId,
+						  	'filter' : { 
+						  		'email': {
+							    	"type": "eq",
+							    	"value": document.email
+							    }					
+							},
+							'full_document' : true
+							}, function ( result ) {
+							if( result === -1 ) 
+								return res.send(false); 
+							else {
+								if( result === 500 )
+									return res.send(false); 
+								else if( result === 200 ) 
+									res.send( document ); 
+							}
 						});
-					}
+					}); 
+
 				}
 			});
 		}
-	});
+	}); 
 }
 
 
