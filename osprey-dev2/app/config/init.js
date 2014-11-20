@@ -1,5 +1,5 @@
 var truevault = require('../../truevault/lib/truevault.js')('6e27a879-fc15-4c80-8165-c84b5579abb9');
-var vaultid = '7444ece4-5266-49ad-a8c8-453af7ebf2e2'; //osprey_dev vault
+var vaultid = '7b55edbd-a907-4569-947c-726c215c0eee'; //osprey_dev vault
 
 // checks for user schemas and email schemas to be present in the vault upon initialization
 exports.initialize = function(globals) {

@@ -47,7 +47,7 @@ angular.module('regParentPageModule', ['splashPageService'])
 						//console.log(data);
 						//window.alert("User created");
 						if( data != 'false' )
-							$location.path('/dashboard');
+							$location.path('/verify');
 						else {
 							window.alert("Failed to register!"); 
 							$scope.loading = false;
