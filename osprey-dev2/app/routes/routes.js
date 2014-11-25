@@ -9,7 +9,7 @@ var fs = require('fs');
 var css = require('css');
 
 var api_key = '24099371-9eb8-4c1d-8a39-5f64b6a52c1b';
-var vaultid = '3ff57a92-b0ba-4972-b518-7b584c667809'; 
+var vaultid = 'b51db608-3321-41dd-9531-bfc40c1f5c27'; //nick-dev
 
 var config = require('../config/init'); 
 var truevault = require('../../truevault/lib/truevault.js')(api_key);
@@ -33,6 +33,8 @@ var AuthModule = require('./auth');
 var Auth = new AuthModule(globals, api_key, vaultid);
 var SettingsModule = require('./settings'); 
 var Settings = new SettingsModule(globals, api_key, vaultid); 
+var UsersModule = require('./users'); 
+var Users = new UsersModule(globals, api_key, vaultid); 
 
 // -----------------------------------------------------------------------------
 
@@ -45,7 +47,7 @@ module.exports = function(app) {
 	// used to test new functionality
 	app.post('/debug/test', function(req, res, next) {
 		// console.log(globals);
-		//clearVault();
+		clearVault();
 	});
 	app.post('/auth/login', function(req, res, next) {
 		Auth.login(req, res);						
@@ -83,14 +85,16 @@ module.exports = function(app) {
 	});
 
 	app.get('/users/unassignedParents', function(req, res) {
-	// 	if (!req.isAuthenticated())
-	// 		res.send(false);
-		
-	// 	UserModel.find({ $and: [{userType : "Parent"}, {physician: null}] }, function(err, data) {
-	// 		console.log(data);
-	// 		res.send(data);
-	// 	});
+		Users.unassignedParents(req, res);
 	 });
+
+	app.post('/users/childrenOfParent', function(req, res) {
+		Users.childrenOfParent(req, res);
+	});
+
+	app.post('/users/childrenOfPhysician', function(req, res) {
+		Users.childrenOfPhysician(req, res);
+	});
 
 	app.get('/nvd3css', function(req, res){
 		// if (!req.isAuthenticated())

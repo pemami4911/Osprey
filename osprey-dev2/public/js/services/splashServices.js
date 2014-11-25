@@ -13,6 +13,7 @@ angular.module('splashPageService', [])
 			},
 
 			registerFinal : function(regData) {
+				console.log(regData);
 				return $http.post('/auth/register', regData);
 			},
 
@@ -62,6 +63,12 @@ angular.module('splashPageService', [])
 			test: function() {
 				return $http.post('/debug/test');
 			},
+
+			getChildrenOfParent: function(parentId) {
+				var postBody = {};
+				postBody.parentId = parentId;
+				return $http.post('/users/childrenOfParent', postBody);
+			}
 		}
 	}]);
 

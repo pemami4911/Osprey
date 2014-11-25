@@ -54,35 +54,58 @@ exports.initialize = function(globals, apikey, vaultid) {
 
 			if (!foundUser) {
 				var schema = {
-				   "name": "user",
-				   "fields": [
-				   	  {
-				   	  	 "name": "user_id",
-				   	  	 "index": true,
-				   	  	 "type": "string"
-				   	  },
-				      {
-				         "name": "firstName",
-				         "index": true,
-				         "type": "string"
-				      },
-				      {
-				         "name": "lastName",
-				         "index": true,
-				         "type": "string"
+				   	"name": "user",
+				   	"fields": [
+				   	  	{
+				   	  	 	"name": "user_id",
+				   	  	 	"index": true,
+				   	  	 	"type": "string"
+				   	  	},
+				      	{
+				         	"name": "firstName",
+				         	"index": true,
+				         	"type": "string"
+				      	},
+				      	{
+				         	"name": "lastName",
+				         	"index": true,
+				        	"type": "string"
 
-				      },
-				      {
-				         "name": "midInit",
-				         "index": false,
-				         "type": "string"
-				      },
-				      {
-				         "name": "userType",
-				         "index": true,
-				         "type": "string"
-				      }
-				   ]
+				      	},
+				      	{
+				         	"name": "midInit",
+				         	"index": false,
+				         	"type": "string"
+				      	},
+				      	{
+				        	"name": "userType",
+				        	"index": true,
+				        	"type": "string"
+				      	},
+				      	// parent only fields
+				      	{ 
+				      		"name": "parPhysicianId", // user id of physician
+				      		"index": "true",
+				      		"type": "string"
+				      	},
+
+				      	// physician only fields
+						{
+							"name": "phyShowEmail", 
+							"index": false,
+							"type": "boolean"
+						},
+						{
+							"name": "phyShowAge",
+							"index": false,
+							"type": "boolean"
+						},
+						{
+							"name": "phyShowWeight",
+							"index": false,
+							"type": "boolean"
+						}
+				   	]
 				};
 				createNewSchema({
 						"vault_id" : vaultid,
@@ -169,7 +192,7 @@ exports.initialize = function(globals, apikey, vaultid) {
 					"name" : "child",
 					"fields" : [
 						{
-					   	  	"name": "parentId",
+					   	  	"name": "parentId", //user id of parent
 					   	  	"index": true,
 					   	  	"type": "string"
 					   	},
@@ -185,21 +208,6 @@ exports.initialize = function(globals, apikey, vaultid) {
 						},
 						{
 							"name": "gender",
-							"index": false,
-							"type": "string"
-						}, 
-						{
-							"name": "phyShowEmail", 
-							"index": false,
-							"type": "boolean"
-						},
-						{
-							"name": "phyShowAge",
-							"index": true,
-							"type": "date"
-						},
-						{
-							"name": "phyShowWeight",
 							"index": false,
 							"type": "string"
 						}

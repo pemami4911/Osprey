@@ -39,7 +39,7 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 		$scope.switchTab = function( pageNumber ) {
 			$scope.activeTab = pageNumber;
 			if ($scope.activeTab == 1) {
-				$scope.contentUrl = 'views/dashPartials/dashMain.html';
+				$scope.contentUrl = 'views/dashPartials/dashParent.html';
 			} else if ($scope.activeTab == 2) {
 				$scope.contentUrl = 'views/dashPartials/dashMyPatients.html';
 			} else if ($scope.activeTab == 3) {
@@ -77,7 +77,9 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 		}
 
 		var init = function() {
-			if ($scope.loggedUser.userType === 'Parent') {
+			console.log($scope.loggedUser);
+			if ($scope.loggedUser.userType == 'Parent') {
+				console.log($scope.loggedUser);
 				$scope.navItems.push({name: "Home", num: 1})
 				$scope.switchTab(1);
 			} else {
