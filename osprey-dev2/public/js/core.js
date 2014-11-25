@@ -9,6 +9,7 @@ var ospreyApp = angular.module('ospreyCoreApp', [
   'dashboardPatientsModule',
   'dashboardMyPatientModule',
   'ngCookies',
+  'dashboardParentModule',
   'ui.bootstrap'
 ]);
 
