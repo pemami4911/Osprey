@@ -3,7 +3,7 @@ angular.module('splashPageModule', ['splashPageService'])
 
 	
 	// inject the Todo service factory into our controller
-	.controller('splashController', ['$scope','$http', '$location', 'splashFactory', function($scope, $http, $location, splashFactory) {
+	.controller('splashController', ['$scope','$http', '$location', 'splashFactory', '$cookieStore', function($scope, $http, $location, splashFactory, $cookieStore) {
 		$scope.loginData = {};
 		$scope.initRegData = {userType: "Parent"};
 		$scope.loading = false; 
@@ -16,67 +16,43 @@ angular.module('splashPageModule', ['splashPageService'])
    		})
 
 		$scope.login = function() {
-			$scope.loading = true;
-			// validate the formData to make sure that something is there
-			// if form is empty, nothing will happen
-			if ($scope.loginData.email != undefined && $scope.loginData.email.trim() != '') {
 				// call the create function from our service (returns a promise object)
-				splashFactory.loginAttempt($scope.loginData)
-
+				splashFactory.loginAttempt( $scope.loginData )
 					// if successful creation, call our get function to get all the new todos
-					.success(function(data) {
-						if(data == "false") {
-							console.log("Invalid email or password");
-							$scope.addAlert("Invalid email or password!", "danger", true);
-						}
-						else if(data == "unconfirmed") {
-							$scope.addAlert("Please confirm your email first!", "danger", true); 
-						}
-						else 
-							$location.path('/dashboard');
+					.success( function() {
+						$scope.loading = true; 
+						$location.path('/dashboard');
 					}).error(function(response) {
+						console.log( response.message ); 
+						$scope.addAlert( response.message, "danger", true)
 						$scope.error = response.message;
 						$scope.loading = false;
-					});
-			}
-			else {
-				$scope.error = "Email is undefined";
-				$scope.addAlert($scope.error, "danger", true); 
-				$scope.loginData.email = null;
-				$scope.loading = false;
-			}
-		};
+					});		
+		}
 
 		$scope.register = function() {
-			$scope.loading = true; 
-			if ($scope.initRegData.email != undefined && $scope.initRegData.email.trim() != '') {
-				// call the create function from our service (returns a promise object)
-				splashFactory.registerAttempt($scope.initRegData)
-					// if successful creation, call our get function to get all the new todos
-					.success(function(data) {
-						if (data >= 1)
-							$scope.addAlert("E-mail already exists", "danger", false);
-						else {
-							splashFactory.set($scope.initRegData.email, 'e-mail');
-							splashFactory.set($scope.initRegData.userType, 'userType');
 
-							if ($scope.initRegData.userType == 'Parent')
-								$location.path('/regParent');
-							else
-								$location.path('/regPhysician');
-						}
-					}).error(function(response) {
+				// call the create function from our service (returns a promise object)
+				splashFactory.registerAttempt( $scope.initRegData )
+					// if successful creation, call our get function to get all the new todos
+					.success( function( data ) {
+						$scope.loading = true; 
+
+						$cookieStore.put( 'userType', $scope.initRegData.userType ); 
+						$cookieStore.put( $scope.initRegData.userType, $scope.initRegData.email ); 
+
+						if ($scope.initRegData.userType === 'Parent')
+							$location.path('/regParent');
+						else
+							$location.path('/regPhysician');
+						
+					}).error(function (response) {
+						console.log( response.message ); 
+						$scope.addAlert( response.message, "danger", false); 
 						$scope.error = response.message;
 						$scope.loading = false;
 					});
-			}
-			else {
-				$scope.error = "Email is undefined"; 
-				$scope.addAlert($scope.error, "danger", false); 
-				$scope.initRegData.email = {}; 
-				$scope.loading = false; 
-			}
-		};
+		}
 
 		$scope.loginAlerts = [];
 		$scope.regAlerts = [];
@@ -103,5 +79,10 @@ angular.module('splashPageModule', ['splashPageService'])
 		$scope.test = function() {
 			splashFactory.test();
 		}
+
+		$scope.isPhysician = function() {
+			return ($scope.initRegData.userType === "Parent") ? false : true; 
+		}
+
 	}]);
 

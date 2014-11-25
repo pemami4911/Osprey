@@ -16,18 +16,14 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 
 		$scope.checkLogged = function(callback) {
 			splashFactory.isLoggedIn()
-				.success(function(data) {
-					if ( data == "false" ) {
-						$scope.loading = true;
-						$location.path('/');
-					} else {
-						$scope.loggedUser = data;
-						if (callback)
-							callback();
-						
-					}
+				.success( function (data) {
+					//console.log( data ); 
+					$scope.loggedUser = data;
+					if (callback)
+						callback();			
 				}).error(function(response) {
 					$scope.error = response.message; 
+					console.log( $scope.error ); 
 					$location.path('/');
 				});
 			$scope.loading = false; 
@@ -64,26 +60,24 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 				// call the factory service function logoutAttempt
 				splashFactory.logoutAttempt($scope.loggedUser) 
 					// on successful logout
-					.success(function(data){
-						if( data === "OK") {
-							$scope.loading = true;
-							$scope.loggedUser = null;
-							$location.path('/'); 
-						}
-						else 
-							console.log(data); 
+					.success( function() {				
+						$scope.loading = true;
+						$scope.loggedUser = null;
+						$location.path('/'); 	
 					}).error( function (response) {
-						console.log( response ); 
+						console.log( response.message ); 
 						$scope.error = response.message; 
 					});
 				$scope.loading = false;
 			}
-			else
-				$scope.error = "Failed call to logoutAttempt()"; 
+			else {
+				$scope.error = "Attempt to log out failed because no one is logged in!"; 
+				console.log( $scope.error ); 
+			}
 		}
 
 		var init = function() {
-			if ($scope.loggedUser.userType == 'Parent') {
+			if ($scope.loggedUser.userType === 'Parent') {
 				$scope.navItems.push({name: "Home", num: 1})
 				$scope.switchTab(1);
 			} else {

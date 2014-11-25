@@ -2,26 +2,25 @@
 angular.module('regPhysicianPageModule', ['splashPageService'])
 
 	// inject the Todo service factory into our controller
-	.controller('regPhysicianController', ['$scope','$http', '$location', 'splashFactory', function($scope, $http, $location, splashFactory) {
+	.controller('regPhysicianController', ['$scope','$http', '$location', 'splashFactory', '$cookieStore', function( $scope, $http, $location, splashFactory, $cookieStore ) {
 		$scope.regData = {};
-		$scope.regData.email = splashFactory.get('e-mail');
-		$scope.regData.userType = splashFactory.get('userType'); 
+		$scope.regData.userType = $cookieStore.get( 'userType' );  
+		$scope.regData.email = $cookieStore.get( $scope.regData.userType );  
 		$scope.loading = false;
 
 		$scope.back = function() {
 			$location.path('/'); 
-		};
-
-		if ($scope.regData.email == '') 
-			$scope.back();
+		}
+		
 		// $scope.$on is an event handler
 		// $locationChangeStart is an angular event that is called every time a location change begins
 		$scope.$on('$locationChangeStart', function (event, newURL) {
 			var msg = "Are you sure you want to navigate away from this page? All input will be lost."; 
-			var check = "dashboard"; 
+			var badURL1 = "dashboard";
+			var badURL2 = "regParent";
 
 	        if( $scope.loading === false ) {
-	        	if( newURL.indexOf(check) != (-1) ) {
+	        	if( newURL.indexOf(badURL1) != (-1) || newURL.indexOf(badURL2) != (-1) ) {
 	        		event.preventDefault(); 
 	        	}
 	        	else {
@@ -29,7 +28,7 @@ angular.module('regPhysicianPageModule', ['splashPageService'])
 	        			event.preventDefault(); 
 	        	}
 	        }
-   		})
+   		}) 
 
 		$scope.registerFinal = function() {
 			$scope.loading = true;
@@ -39,17 +38,16 @@ angular.module('regPhysicianPageModule', ['splashPageService'])
 				// call the create function from our service (returns a promise object)
 				splashFactory.registerFinal($scope.regData)
 					// if successful creation, call our get function to get all the new todos
-					.success(function(data) {
+					.success( function() {
 						//console.log(data);
 						//window.alert("User created");
-						if( data != 'false' )
-							$location.path('/verify');
-						else {
-							window.alert("Failed to register!");
-							$scope.loading = false;
-						}
+						$cookieStore.remove('userType'); 
+						$cookieStore.remove($scope.regData.userType); 
+						$location.path('/verify');
 					}).error(function(response) {
+						window.alert("Failed to register!");
 						$scope.error = response.message;
+						console.log( $scope.error ); 
 						$scope.loading = false;
 					});
 			}

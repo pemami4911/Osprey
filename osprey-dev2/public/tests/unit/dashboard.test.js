@@ -50,7 +50,7 @@ describe('dashboardControllerLoggedInPhysician', function(){
     it('should fail to log out if scope.loggedUser is empty', function() {
         scope.loggedUser = undefined; 
         scope.logoutAttempt(scope.loggedUser); 
-        expect(scope.error).toBe("Failed call to logoutAttempt()"); 
+        expect(scope.error).toBe("Attempt to log out failed because no one is logged in!"); 
     });
 
     it('should change the content url when a new tab is selected, and should be able to switch back', function() {

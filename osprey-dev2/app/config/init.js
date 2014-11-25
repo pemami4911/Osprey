@@ -18,6 +18,7 @@ exports.initialize = function(globals, apikey, vaultid) {
 			var foundChild = false;
 			var foundEmailLog = false;
 			var foundEmailConfirmation = false;
+			var foundInviteCodeSchema = false;
 
 			// define utility functions here
 			var lookForMySchema = function( mySchema ) {
@@ -42,12 +43,14 @@ exports.initialize = function(globals, apikey, vaultid) {
 			globals.childSchemaId = lookForMySchema("child");
 			globals.emailLogSchemaId = lookForMySchema("emailLog"); 
 			globals.emailConfirmationId = lookForMySchema("emailConfirmation"); 
+			globals.inviteCodeId = lookForMySchema("inviteCode"); 
 
 			// set booleans
 			foundUser = !!globals.userSchemaId; 
 			foundChild = !!globals.childSchemaId;
 			foundEmailLog = !!globals.emailLogSchemaId; 
 			foundEmailConfirmation = !!globals.emailConfirmationId; 
+			foundInviteCode = !!globals.inviteCodeId; 
 
 			if (!foundUser) {
 				var schema = {
@@ -214,6 +217,40 @@ exports.initialize = function(globals, apikey, vaultid) {
 			else {
 				console.log("Child Schema loaded: " + globals.childSchemaId); 
 			}
+
+			if( !foundInviteCode ) {
+
+				var schema = {
+					"name" : "inviteCode",
+					"fields" : [
+						{
+							"name":"physicianId",
+							"index":true,
+							"type":"string"
+						},
+						{
+							"name":"parentId",
+							"index":true,
+							"type":"string"
+						},
+						{
+							"name":"inviteCode",
+							"index":false,
+							"type":"string"
+						}
+					]
+				};
+				createNewSchema(
+				 	{
+						"vault_id" : vaultid,
+						"schema" : schema
+					}, function( value ) {
+						globals.inviteCodeId = value
+					}
+				); 
+			}
+			else				
+				console.log( "InviteCodeSchema loaded: " + globals.inviteCodeId ); 
 		}
 	});
 

@@ -12,7 +12,7 @@ angular.module('dashboardPatientsModule', ['splashPageService', 'ngReactGrid', '
 
 		$scope.updateColumns = function() {
             // if ($scope.loggedUser.tableSettings != undefined) {
-            console.log($scope.loggedUser);
+            //console.log($scope.loggedUser);
 	   			if ($scope.loggedUser.phyShowEmail) {
 	        		$scope.grid.columnDefs.push({field: "email", displayName: "E-mail Address"});
 	        	}

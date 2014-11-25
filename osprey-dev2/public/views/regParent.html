@@ -33,7 +33,7 @@
             <div class="form-group">
                <label for="inputField1" class="col-sm-2 control-label">Password</label>
                <div class="col-sm-9">
-                  <input type="password" class="form-control" id="inputField1" placeholder="Password" ng-model="regData.password">
+                  <input type="password" class="form-control" id="inputField1" placeholder="Password" ng-model="regData.password" ng-required="true" ng-minLength="4" ng-maxLength="12">
                </div>
             </div>     
             <div class="form-group">

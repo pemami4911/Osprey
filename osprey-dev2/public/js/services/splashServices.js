@@ -3,24 +3,6 @@
 angular.module('splashPageService', [])
 
 	.factory('splashFactory', ['$http',function($http) {
-
-		var regEmail = '';
-		var userType = ''; 
-
-		var set = function (data, type) {
-			if (type === 'e-mail')
-				regEmail = data;
-			else if (type === 'userType')
-				userType = data; 
-		}
-
-		var get = function (type) {
-			if (type === 'e-mail')
-				return regEmail;
-			else if( type === 'userType')
-				return userType; 
-		}
-
 		return {
 			loginAttempt : function(loginData) {
 				return $http.post('/auth/login', loginData);
@@ -66,16 +48,20 @@ angular.module('splashPageService', [])
 			},
 
 			getUnassignedParents : function() {
-				return $http.post('/users/unassignedParents');
+				return $http.get('/users/unassignedParents');
 			},
 
+			generateInviteCodeEmail : function( patientEmail, currentPassword ) {
+				var postBody = {
+					'patientEmail':patientEmail, 
+					'currentPassword':currentPassword
+				};
+				return $http.post('/settings/generateInvite', postBody);
+			},
+			
 			test: function() {
 				return $http.post('/debug/test');
 			},
-
-			set : set,
-
-			get : get
 		}
 	}]);
 

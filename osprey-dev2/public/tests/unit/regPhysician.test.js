@@ -1,13 +1,14 @@
 describe('regPhysicianController', function(){
 
-	beforeEach(module('regPhysicianPageModule')); 
+	beforeEach(module('regPhysicianPageModule', 'ngCookies')); 
 
 	 var ctrl, scope,
 	 	$httpBackend, 
-	 	$location;
+	 	$location,
+    $cookieStore;
  	 // inject the $controller and $rootScope services
  	 // in the beforeEach block
- 	 beforeEach(inject(function($controller, $rootScope, _$httpBackend_, _$location_) {
+ 	 beforeEach(inject(function($controller, $rootScope, _$httpBackend_, _$location_, _$cookieStore_) {
     	 // Create a new scope that's a child of the $rootScope
    		 scope = $rootScope.$new();
        
@@ -18,6 +19,7 @@ describe('regPhysicianController', function(){
 
     	 $httpBackend = _$httpBackend_; 
     	 $location = _$location_; 
+       $cookieStore = _$cookieStore_; 
   	}));
 
    it('should be able to create an instance of itself', function() {

@@ -17,35 +17,38 @@ angular.module('dashboardSettingsModule', ['splashPageService', 'ngReactGrid', '
 		}; 
 		$scope.newTableSettings = {}; 
 
+		// invite code vars
+		$scope.inviteCode = {
+			'patientEmail':'', 
+			'currPassword':''
+		}
+
 		$scope.changeEmail = function() {
 
 			splashFactory.registerAttempt( $scope.newAccountSettings.changeEmail )
-				.success(function (data) {
-						if (data >= 1) {
-							window.alert("This e-mail address is already in use."); 	
-						}
-						else {
-							splashFactory.changeEmail( $scope.loggedUser.email, $scope.newAccountSettings.changeEmail.password, $scope.newAccountSettings.changeEmail.email )
-								.success(function (data) {
-									if (data == 1) {
-										$scope.checkLogged();
-										window.alert("You have successfully changed your e-mail!");
-									}
-									else if ( data === "err1" ) {
-										window.alert("The current email you entered is not valid."); 
-									}
-									else if ( data === "err2" ) {
-										window.alert("The password you entered is incorrect."); 
-									}
-									else
-										console.log( data ); 
-								}).error(function (response){
-									console.log(response);
-									$scope.error = response.message; 
-							});
-						}
+				.success(function () {
+					splashFactory.changeEmail( $scope.loggedUser.email, $scope.newAccountSettings.changeEmail.password, $scope.newAccountSettings.changeEmail.email )
+						.success(function (data) {
+							if (data == 1) {
+								$scope.checkLogged();
+								window.alert("You have successfully changed your e-mail!");
+							}
+							else if ( data === "err1" ) {
+								window.alert("The current email you entered is not valid."); 
+							}
+							else if ( data === "err2" ) {
+								window.alert("The password you entered is incorrect."); 
+							}
+							else
+								console.log( data ); 
+						}).error(function (response){
+							console.log(response);
+							$scope.error = response.message; 
+					});
 				}).error(function (response) {
 					$scope.error = response.message;
+					console.log( $scope.error ); 
+					window.alert( $scope.error ); 
 			});	
 		};
 
@@ -73,18 +76,24 @@ angular.module('dashboardSettingsModule', ['splashPageService', 'ngReactGrid', '
 
 		$scope.changeTableSettings = function() {
 			splashFactory.changeTableSettings( $scope.loggedUser, $scope.newTableSettings )
-				.success(function (data) {
-					if (data == 1) {
-						window.alert("You have successfully changed your table settings!");
-						$scope.checkLogged();
-					}
+				.success(function () {
+					window.alert("You have successfully changed your table settings!");
+					$scope.checkLogged();
 				}).error(function (response){
-					console.log(response);
+					console.log(response.message);
 					$scope.error = response.message; 
 				});
 		}
 
+		$scope.generateInviteCodeEmail = function() {
+			// splashFactory.generateInviteCodeEmail( $scope.inviteCode.patientEmail, $scope.inviteCode.currPassword ) 
+			// 	.success( function (data) {
 
+			// 	}).error( function (response) ){
+			// 		console.log( response ); 
+			// 		$scope.error = response.message; 
+			// 	}
+		}
 
 	}]);
 
