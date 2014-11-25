@@ -98,11 +98,33 @@ Auth.prototype.register = function(req, res) {
 		    	options2.document.phyShowEmail = true;
 				options2.document.phyShowAge = true;
 				options2.document.phyShowWeight = true;
-		    } 
-		    console.log(options2);
-
-	    	truevault.documents.create( options2, function (err2, value2) {
+		    } else {
+		    	console.log(req.body);
+		    	for (var i = 0; i < req.body.numChildren; i++) {
+		    		console.log(i);
+		    		console.log(req.body.children[i]);
+		    		var childOptions = {
+			    		"schema_id": globals.childSchemaId,
+					    "vault_id": vaultid,
+						"document": {
+							"parentId" : value.user.id,
+							"name": req.body.children[i].childName,
+							"birthday": req.body.children[i].childBirthday,
+							"gender": req.body.children[i].childGender
+						}
+			    	};
+		    		truevault.documents.create(childOptions, function(err, value) {
+		    			if (err) {
+		    				console.log("error at child doc creation");
+		    				res.send(false);
+		    			}
+		    			console.log(value);
+		    		});
+		    	}
+		    }
+	    	truevault.documents.create(options2, function(err2, value2) {
 	    		if (err2) {
+	    			console.log("registration error at document creation");
 	    			console.log(err2);
 	    			res.status(500).send( {"message":"An internal server error occurred. Sad tiger!"});
 	    		}
@@ -271,8 +293,10 @@ Auth.prototype.isLogged = function(req, res) {
 								res.status(500).send({ "message" : "An internal server error occurred. Sad tiger!" });
 							else if ( data === "Unauthorized" )
 								res.status(401).send({ "message" : "The user has accessed the database with an unconfirmed email! ANGRY TIGER!" }); 
-							else
+							else {
+								console.log(document);
 								res.send( value.user ); 
+							}
 						});
 					}); 
 				}

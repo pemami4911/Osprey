@@ -16,7 +16,7 @@ if (process.env.NODE_ENV == 'test')
 	database.url = 'mongodb://localhost/mean-test';
 
 // configuration ===============================================================
-mongoose.connect(database.url); 	// connect to mongoDB database on modulus.io
+// mongoose.connect(database.url); 	// connect to mongoDB database on modulus.io
 
 require('./config/passport')(passport); // pass passport for configuration
 
