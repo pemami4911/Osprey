@@ -18,7 +18,7 @@ Users.prototype.childrenOfParent = function(req, res) {
 		console.log("verified");
 		if (err) {
 			console.log("verification error");
-			res.send(false);
+			res.status(500).send({"message":"Verification error"}); 
 		} else {
 			// find user attributes
 			var options = {
@@ -35,7 +35,7 @@ Users.prototype.childrenOfParent = function(req, res) {
 			truevault.documents.search(options, function (err2, value2) {
 				if (err) {
 					console.log('search error');
-					res.send(err2);
+					res.status(500).send({"message":"Search error"}); 
 				}
 				else {
 					if (value2.data.documents.length == 0)
@@ -96,8 +96,7 @@ var addChild = function(res, retObject, numChildren, childId) {
 	}, function (err, document){
 		retObject.content.push(document);
 		if (retObject.content.length == numChildren) {
-			console.log(retObject);
-			res.json(retObject);
+			res.status(200).json(retObject);
 		}
 	});
 }
