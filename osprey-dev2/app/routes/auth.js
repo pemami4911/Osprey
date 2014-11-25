@@ -54,8 +54,10 @@ Auth.prototype.login = function(req, res) {
 				"password": req.body.password, 
 				"account_id": globals.accountId
 			};
+			console.log(options);
 			truevault.auth.login(options, function(err, value) {
 				if ( err ) {
+					console.log(err);
 					console.log("login failed");
 					//return res.send( handler.errorHandler( 401, "Login Failed" ) );
 					res.status(401).send({"message":"Login Failed"}); 
@@ -294,8 +296,7 @@ Auth.prototype.isLogged = function(req, res) {
 							else if ( data === "Unauthorized" )
 								res.status(401).send({ "message" : "The user has accessed the database with an unconfirmed email! ANGRY TIGER!" }); 
 							else {
-								console.log(document);
-								res.send( value.user ); 
+								res.send( document ); 
 							}
 						});
 					}); 

@@ -93,7 +93,7 @@ module.exports = function(app) {
 	 });
 
 	app.post('/users/childrenOfParent', function(req, res) {
-		var temp = require('../truevault/lib/truevault.js')(req.session.access_token);
+		var temp = require('../../truevault/lib/truevault.js')(req.session.access_token);
 		temp.auth.verify(function(err, value){
 			console.log("verified");
 			if (err) {
