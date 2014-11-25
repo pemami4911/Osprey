@@ -62,7 +62,7 @@ Auth.prototype.login = function(req, res) {
 				} else {
 					console.log("login successful");
 					req.session.access_token = value.user.access_token;
-					res.status(200).send( value.user ); 
+					res.status(200).send( req.body.userType ); 
 				}
 			});	
 		}

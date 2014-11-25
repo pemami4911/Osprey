@@ -19,9 +19,13 @@ angular.module('splashPageModule', ['splashPageService'])
 				// call the create function from our service (returns a promise object)
 				splashFactory.loginAttempt( $scope.loginData )
 					// if successful creation, call our get function to get all the new todos
-					.success( function() {
+					.success( function ( userType ) {
+						console.log( userType ); 
 						$scope.loading = true; 
-						$location.path('/dashboard');
+						if ( userType === "Parent" )
+							$location.path('/dashParent');
+						else
+							$location.path('/dashboard');
 					}).error(function(response) {
 						console.log( response.message ); 
 						$scope.addAlert( response.message, "danger", true)

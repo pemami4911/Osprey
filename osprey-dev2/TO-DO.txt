@@ -1,12 +1,4 @@
 Things that I think we need to do 
  - Patrick
 
-1. When on the dashboard and the back arrow is hit, it should NOT send you back to the registration page
-2. Registration page should show alert with incorrect email input
-3. When on registration page, there should be a form reset button
-4. If you have half-filled out a registration page and you accidentally begin to navigate away from the page, it should prompt you if you are sure you want to do that
-5. 
-
-
-***Nick,***
-add automatic clear function after a user types in wrong email or password <We're going to leave this as is>
+Fix form validation for registration pages. 
