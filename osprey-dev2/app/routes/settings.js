@@ -6,7 +6,6 @@ var vaultid = '';
 var truevault = {};
 
 var nodemailer = require('nodemailer');
-var EmailLogModel = require('../models/emaillog');
 var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
