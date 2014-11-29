@@ -8,7 +8,7 @@ angular.module('regParentPageModule', ['splashPageService'])
 		$scope.regData.email = $cookieStore.get( $scope.regData.userType ); 
 		$scope.regData.numChildren = 1;
 		$scope.loading = false;
-
+		
 		$scope.back = function() {
 			$location.path('/'); 
 		}
