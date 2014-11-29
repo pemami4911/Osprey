@@ -23,12 +23,10 @@ describe('TrueVault Unit Tests', function() {
 			"lastName":"emami",
 			"isConfirmed":false
 		}
-
 		done(); 
 	});
 
 	describe('Create a user', function() {
-
 		it('should create a user with a confirmation token successfully', function(done) {
 			require("crypto").randomBytes(32, function (ex, buf) {
 		    	// User attributes object creation
@@ -41,7 +39,6 @@ describe('TrueVault Unit Tests', function() {
 		    		done();  
 		    	}); 
 		    });
-
 		}); 
 	}); 
 

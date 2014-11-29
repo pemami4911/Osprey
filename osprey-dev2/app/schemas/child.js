@@ -28,12 +28,12 @@ childSchema.prototype.createSchema = function() {
 	}
 }
 
-childSchema.prototype.createChild = function( id, attributes, i ) {
+childSchema.prototype.createChild = function( id, name, birthday, gender) {
 	return child = {
 		"parentId":id,
-		"name":attributes.body.children[i].childName,
-		"birthday":attributes.body.children[i].childBirthday,
-		"gender":attributes.body.children[i].childGender
+		"name":name,
+		"birthday":birthday,
+		"gender":gender
 	}
 }
 

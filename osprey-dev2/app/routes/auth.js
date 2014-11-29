@@ -12,12 +12,16 @@ var transporter = nodemailer.createTransport({
     }
 });
 
+// set this to our domain for security 
+var host = 'localhost:8080'; 
+
 var truevaultBuilder = require('../schemas/truevaultBuilder'); 
 var Builder = new truevaultBuilder(); 
 var UserSchema = require('../schemas/user');
 var User = new UserSchema(); 
 var ChildSchema = require('../schemas/child');
 var Child = new ChildSchema(); 
+var regex = new RegExp("[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}$", "i");	// document id validation
 
 function Auth(_globals, _api_key, _vaultid) {
 	globals = _globals;
@@ -39,8 +43,9 @@ Auth.prototype.login = function(req, res) {
 
 	// check if the user is confirmed 
 	var filterAttributes = Builder.vendFilterAttributes( "eq", req.body.email ); 
-	var checkConfirmed = Builder.vendFilter( globals.userSchemaId, vaultid, {"user_id":filterAttributes} ); 
+	var checkConfirmed = Builder.vendFilter( globals.userSchemaId, vaultid, {"username":filterAttributes}, true ); 
 
+	console.log( checkConfirmed ); 
 	// if the user is confirmed, userType will contain the necessary info
 	isConfirmed( checkConfirmed, function ( data, userType ) {
 		if( data === undefined )
@@ -60,10 +65,12 @@ Auth.prototype.login = function(req, res) {
 				} else {
 					console.log("login successful");
 					req.session.access_token = value.user.access_token;
-					if ( userType === "Physician")
-						res.redirect("http://"+host+"/#/dashboard");
-					else if ( userType === "Parent" )
-						res.redirect("http://"+host+"/#/dashParent") 
+					// if ( userType === "Physician" )
+					// 	res.redirect("/#/dashboard");
+					// else if ( userType === "Parent" ) {
+					// 	res.redirect("/#/dashParent"); 
+					// }
+					res.status(200).end(); 
 				}
 			});	
 		}
@@ -95,7 +102,7 @@ Auth.prototype.register = function(req, res) {
 			    		console.log(i);
 			    		console.log(req.body.children[i]);
 			      		
-			    		var newChild = Child.createChild( value.user.user_id, req, i );
+			    		var newChild = Child.createChild( value.user.user_id, req.body.children[i].childName, req.body.children[i].childBirthday, req.body.children[i].childGender );
 			    		var childDoc = Builder.vendDocument( globals.childSchemaId, vaultid, newChild ); 
 
 			    		truevault.documents.create( childDoc, function(err, value) {
@@ -147,20 +154,26 @@ Auth.prototype.verify = function(req, res){
 
 		console.log( filter ); 
 
-		isConfirmed( filter, function ( data, id ) {
-			 if( data === undefined ) 
+		isConfirmed( filter, function ( resp, user, id ) {
+			 if( resp === undefined ) 
 				res.status(500).send("<h1> An error occurred while verifying your email. Please contact the Osprey Team</h1>"); 
 			else {
-				if( data === "Unauthorized" ) {
-	
+				if( resp === "Unauthorized" ) {
 					// isConfirmed is set to true, confirmationToken set to null
-					var updateUser = Builder.updateDocument( globals.userSchemaId, vaultid, id, {"isConfirmed":true, "confirmationToken":null});
+
+					user.isConfirmed = true; 
+					user.confirmationToken = null; 
+					// not usable with IE9 and earlier
+					//var enc = window.btoa( user ); 
+					var updateUser = Builder.updateDocument( globals.userSchemaId, vaultid, id, user);
+					console.log( updateUser ); 
 					truevault.documents.update( updateUser, function ( err, data ) {
 						if( err ) {
 							console.log( err ); 
 							res.status(500).send("<h1> An error occurred while confirming your email. Please contact the Osprey Team</h1>"); 
 						}
 						else {
+							console.log( data ); 
 							console.log("Successfully updated email confirmation in database");
 							res.redirect("http://"+host+"/#/"); 
 						}				
@@ -193,26 +206,38 @@ Auth.prototype.checkReg = function (req, res) {
 
 // checks access token stored in session 
 Auth.prototype.isLogged = function(req, res) {
+	console.log("checking isLogged"); 
+
 	var temp = require("../../truevault/lib/truevault.js")(req.session.access_token);
 
 	temp.auth.verify(function(err, value){
 		if ( err ) 
 			res.status(500).send({"message":"Verification Error"});
 		else {
+			console.log( value ); 
 
 			var filterAttributes = Builder.vendFilterAttributes( "eq", value.user.user_id ); 
-			var filter = Builder.vendFilter( vaultid, globals.userSchemaId, {"user_id":filterAttributes}, true );
+			var filter = Builder.vendFilter( globals.userSchemaId, vaultid, {"user_id":filterAttributes}, true );
 			
+			console.log( filter ); 
+
 			truevault.documents.search( filter, function (err2, value2) {
 				if (err) 
 					res.status(500).send({"message":"TrueVault API failure"});
 				else {
+					console.log( value2 ); 
+
 					if (value2.data.documents.length === 0)
 						console.log("no matching user document found");
 
+					// used to ensure that the doc id is correct
+					var doc_id = value2.data.documents[0].document_id;
+					if ( !regex.test( doc_id) )
+						doc_id = value2.data.documents[0]; 
+
 					truevault.documents.retrieve({
 					   "vault_id" : vaultid,
-					   "id" : value2.data.documents[0].document_id
+					   "id" : doc_id
 					}, function ( err, document ) {
 						if( err )
 							res.status(500).send({"message":"TrueVault API failure"});
@@ -266,7 +291,12 @@ function isConfirmed( user, callback) {
 		else {
 			console.log( value ); 
 			if( value.data.info.total_result_count != 0) {	// if it is found, continue
-				var doc_id = value.data.documents[0].document_id; 		
+
+				// used to ensure that the doc id is correct
+				var doc_id = value.data.documents[0].document_id;
+				if ( !regex.test( doc_id ) )
+					doc_id = value.data.documents[0]; 
+
 				truevault.documents.retrieve({	// retrieve the user document
 					   "vault_id" : vaultid,
 					   "id" : doc_id
@@ -278,7 +308,7 @@ function isConfirmed( user, callback) {
 					else {		
 						console.log( data ); 
 						if( data.isConfirmed === false )	// if the user has not been confirmed yet
-							callback( "Unauthorized", doc_id);  // send back an error message
+							callback( "Unauthorized", data, doc_id);  // send back an error message
 						else 
 							callback( "OK", data.userType ); 		
 					} 

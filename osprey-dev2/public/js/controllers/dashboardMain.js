@@ -79,7 +79,6 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 		var init = function() {
 			console.log($scope.loggedUser);
 			if ($scope.loggedUser.userType == 'Parent') {
-				console.log($scope.loggedUser);
 				$scope.navItems.push({name: "Home", num: 1})
 				$scope.switchTab(1);
 			} else {
@@ -89,8 +88,8 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 				$scope.navItems.push({name: "Settings", num: 4})
 			}
 		};
-		$scope.checkLogged(init);
 
+		$scope.checkLogged(init);
 
 	}]);
 

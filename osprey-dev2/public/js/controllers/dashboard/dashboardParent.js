@@ -7,6 +7,7 @@ angular.module('dashboardParentModule', ['splashPageService'])
 										'$location', 
 										'splashFactory', 
 	function($scope, $http, $location, splashFactory) {
+		
 		$scope.children = {};
 		splashFactory.getChildrenOfParent($scope.loggedUser.user_id)
 			.success(function(data) {

@@ -5,6 +5,14 @@ var api_key = '';
 var vaultid = '';
 var truevault = {};
 
+var truevaultBuilder = require('../schemas/truevaultBuilder'); 
+var Builder = new truevaultBuilder(); 
+var UserSchema = require('../schemas/user');
+var User = new UserSchema(); 
+var ChildSchema = require('../schemas/child');
+var Child = new ChildSchema(); 
+var regex = new RegExp("[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}$", "i");	// document id validation
+
 function Users(_globals, _api_key, _vaultid) {
 	globals = _globals;
 	api_key = _api_key;
@@ -21,24 +29,28 @@ Users.prototype.childrenOfParent = function(req, res) {
 			res.status(500).send({"message":"Verification error"}); 
 		} else {
 			// find user attributes
-			var options = {
-				'vault_id' : vaultid,
-				'schema_id' : globals.childSchemaId,
-			  	'filter' : { 
-			  		'parentId': {
-				    	"type": "eq",
-				    	"value": req.body.parentId
-				    }
-				},
-				'full_document' : true
-			};
-			truevault.documents.search(options, function (err2, value2) {
+			// var options = {
+			// 	'vault_id' : vaultid,
+			// 	'schema_id' : globals.childSchemaId,
+			//   	'filter' : { 
+			//   		'parentId': {
+			// 	    	"type": "eq",
+			// 	    	"value": req.body.parentId
+			// 	    }
+			// 	},
+			// 	'full_document' : true
+			// };
+			var filterAttributes = Builder.vendFilterAttributes( "eq", req.body.parentId ); 
+			var filter = Builder.vendFilter( globals.childSchemaId, vaultid, {"parentId":filterAttributes}, true );
+
+			truevault.documents.search(filter, function (err2, value2) {
 				if (err) {
 					console.log('search error');
 					res.status(500).send({"message":"Search error"}); 
 				}
 				else {
-					if (value2.data.documents.length == 0)
+					console.log( value2 ); 
+					if (value2.data.documents.length === 0)
 						console.log("no matching child documents found");
 					else {
 						var retObject = {"content":[]};

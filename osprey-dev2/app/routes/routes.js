@@ -9,9 +9,6 @@ var vaultid = '3ff57a92-b0ba-4972-b518-7b584c667809'; //patrick-dev
 var config = require('../config/init'); 
 var truevault = require('../../truevault/lib/truevault.js')(api_key);
 
-// set this to our domain for security 
-var host = 'localhost:8080'; 
-
 // global variables used to store uuids of schemas
 // default value of 0
 var globals = {
@@ -20,6 +17,9 @@ var globals = {
 	settingsSchemaId: 0,
 	accountId: 0			// stores account id
 };
+
+// set this to our domain for security 
+var host = 'localhost:8080'; 
 
 var AuthModule = require('./auth');
 var Auth = new AuthModule(globals, api_key, vaultid);
@@ -40,6 +40,8 @@ module.exports = function(app) {
 	app.post('/debug/test', function(req, res, next) {
 		// console.log(globals);
 	    //clearVault();
+	   	res.redirect("http://"+host+"/#/dashParent");
+
 	});
 	app.post('/auth/login', function(req, res, next) {
 		Auth.login(req, res);						

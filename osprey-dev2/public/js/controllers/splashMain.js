@@ -16,17 +16,18 @@ angular.module('splashPageModule', ['splashPageService'])
    		})
 
 		$scope.login = function() {
-				// call the create function from our service (returns a promise object)
-				splashFactory.loginAttempt( $scope.loginData )
-					// if successful creation, call our get function to get all the new todos
-					.success( function () {
-						$scope.loading = true; 
-					}).error(function(response) {
-						console.log( response.message ); 
-						$scope.addAlert( response.message, "danger", true)
-						$scope.error = response.message;
-						$scope.loading = false;
-					});		
+			// call the create function from our service (returns a promise object)
+			splashFactory.loginAttempt( $scope.loginData )
+				// if successful creation, call our get function to get all the new todos
+				.success( function () {
+					$scope.loading = true; 
+					$location.path('/dashboard');
+				}).error(function (response) {
+					console.log( response.message ); 
+					$scope.addAlert( response.message, "danger", true)
+					$scope.error = response.message;
+					$scope.loading = false;
+				});		
 		}
 
 		$scope.register = function() {
