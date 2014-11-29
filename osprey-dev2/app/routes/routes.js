@@ -1,9 +1,5 @@
 'use strict';
 
-//var passport = require('passport');
-var UserModel = require('../models/user');
-var EmailLogModel = require('../models/emaillog');
-
 var path = require('path');
 var fs = require('fs');
 var css = require('css');

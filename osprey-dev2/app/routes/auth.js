@@ -5,7 +5,6 @@ var truevault = {};
 var host = 'localhost:8080'; 
 
 var nodemailer = require('nodemailer');
-var EmailLogModel = require('../models/emaillog');
 var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -296,6 +295,7 @@ Auth.prototype.isLogged = function(req, res) {
 							else if ( data === "Unauthorized" )
 								res.status(401).send({ "message" : "The user has accessed the database with an unconfirmed email! ANGRY TIGER!" }); 
 							else {
+								document.username = value.user.username;
 								res.send( document ); 
 							}
 						});
