@@ -48,11 +48,7 @@ Auth.prototype.login = function(req, res) {
 		if(  data != "OK" )
 			res.status(401).send({"message":"Please confirm your email first"} );  
 		else {
-			// var options = {
-			// 	"username": req.body.email,
-			// 	"password": req.body.password, 
-			// 	"account_id": globals.accountId
-			// };
+			
 			var loginDetails = Builder.vendLogin( req, globals.accountId ); 
 			console.log( loginDetails );
 			truevault.auth.login( loginDetails, function(err, value) {
@@ -118,7 +114,7 @@ Auth.prototype.register = function(req, res) {
 		    			console.log(err2);
 		    			res.status(500).send( {"message":"An internal server error occurred. Sad tiger!"});
 		    		}
-		    		console.log( value2 ); 
+		    		//console.log( value2 );
 		    		req.session.access_token = value.user.access_token;
 		    
 	    			var link, mailOptions; 
@@ -146,37 +142,18 @@ Auth.prototype.verify = function(req, res){
 	{
 		console.log("Domain is matched. Information is from Authentic email");
 
-		// var options = {
-		// 	"vault_id" : vaultid,
-		// 	"schema_id" : globals.accountConfirmationSchemaId,
-		//   	"filter" : { 
-		//   		"token": {
-		// 	    	"type": "eq",
-		// 	    	"value": req.query.id
-		// 	    }
-		// 	},
-		// 	"full_document" : true
-		// };
 		var filterAttributes = Builder.vendFilterAttributes( "eq", req.query.id ); 
 		var filter = Builder.vendFilter( globals.userSchemaId, vaultid, {"confirmationToken":filterAttributes}, true );
+
+		console.log( filter ); 
 
 		isConfirmed( filter, function ( data, id ) {
 			 if( data === undefined ) 
 				res.status(500).send("<h1> An error occurred while verifying your email. Please contact the Osprey Team</h1>"); 
 			else {
 				if( data === "Unauthorized" ) {
-					// update the document
-					// var options = {
-					// 	"vault_id" : vaultid,
-					// 	"id" : id,
-					// 	"document" : {
-			  //   			"user_id": email, 
-			  //   			"isConfirmed": true
-				 //    	},
-					// 	"schema_id" : globals.userSchemaId		
-					// };
-
-					// isConfirmed is set to true, confirmationToken 
+	
+					// isConfirmed is set to true, confirmationToken set to null
 					var updateUser = Builder.updateDocument( globals.userSchemaId, vaultid, id, {"isConfirmed":true, "confirmationToken":null});
 					truevault.documents.update( updateUser, function ( err, data ) {
 						if( err ) {
@@ -222,18 +199,6 @@ Auth.prototype.isLogged = function(req, res) {
 		if ( err ) 
 			res.status(500).send({"message":"Verification Error"});
 		else {
-			// find user attributes
-			// var options = {
-			// 	"vault_id" : vaultid,
-			// 	"schema_id" : globals.userSchemaId,
-			//   	"filter" : { 
-			//   		"user_id": {
-			// 	    	"type": "eq",
-			// 	    	"value": value.user.user_id
-			// 	    }
-			// 	},
-			// 	"full_document" : true
-			// };
 
 			var filterAttributes = Builder.vendFilterAttributes( "eq", value.user.user_id ); 
 			var filter = Builder.vendFilter( vaultid, globals.userSchemaId, {"user_id":filterAttributes}, true );
@@ -251,18 +216,6 @@ Auth.prototype.isLogged = function(req, res) {
 					}, function ( err, document ) {
 						if( err )
 							res.status(500).send({"message":"TrueVault API failure"});
-
-						// var options = {
-						// 	"vault_id" : vaultid,
-						// 	"schema_id" : globals.accountConfirmationSchemaId,
-						//   	"filter" : { 
-						//   		"email": {
-						// 	    	"type": "eq",
-						// 	    	"value": value.user.username
-						// 	    }					
-						// 	},
-						// 	"full_document" : true
-						// }
 
 						// check if the email has been confirmed
 						isConfirmed( filter, function ( data ) {
@@ -313,7 +266,7 @@ function isConfirmed( user, callback) {
 		else {
 			console.log( value ); 
 			if( value.data.info.total_result_count != 0) {	// if it is found, continue
-				var doc_id = value.data.documents[0]; 		
+				var doc_id = value.data.documents[0].document_id; 		
 				truevault.documents.retrieve({	// retrieve the user document
 					   "vault_id" : vaultid,
 					   "id" : doc_id
@@ -338,7 +291,6 @@ function isConfirmed( user, callback) {
 		}
 	}); 
 }
-
 
 
 function sendEmail(recipient, subject, message) {
