@@ -1,15 +1,10 @@
 'use strict';
 
-//var passport = require('passport');
-var UserModel = require('../models/user');
-var EmailLogModel = require('../models/emaillog');
-
 var path = require('path');
 var fs = require('fs');
 var css = require('css');
-
 var api_key = '24099371-9eb8-4c1d-8a39-5f64b6a52c1b';
-var vaultid = 'b51db608-3321-41dd-9531-bfc40c1f5c27'; //nick-dev
+var vaultid = '3ff57a92-b0ba-4972-b518-7b584c667809'; //patrick-dev
 
 var config = require('../config/init'); 
 var truevault = require('../../truevault/lib/truevault.js')(api_key);
@@ -23,9 +18,6 @@ var globals = {
 	userSchemaId: 0,
 	childSchemaId: 0,
 	settingsSchemaId: 0,
-	emailLogSchemaId: 0,
-	emailConfirmationId: 0,
-	inviteCodeId: 0,
 	accountId: 0			// stores account id
 };
 
@@ -47,7 +39,7 @@ module.exports = function(app) {
 	// used to test new functionality
 	app.post('/debug/test', function(req, res, next) {
 		// console.log(globals);
-		clearVault();
+	    //clearVault();
 	});
 	app.post('/auth/login', function(req, res, next) {
 		Auth.login(req, res);						
@@ -104,8 +96,6 @@ module.exports = function(app) {
 			res.send(obj.stylesheet.rules);
 		});
 	});
-	
-	
 };
 
 function clearVault() {

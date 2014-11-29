@@ -13,7 +13,7 @@ angular.module('splashPageService', [])
 			},
 
 			registerFinal : function(regData) {
-				console.log(regData);
+				//console.log(regData);
 				return $http.post('/auth/register', regData);
 			},
 

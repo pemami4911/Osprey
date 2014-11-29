@@ -1,24 +1,22 @@
+var UserSchema = require('../schemas/user.js'); 
+var User = new UserSchema(); 
+var ChildSchema = require('../schemas/child.js'); 
+var Child = new ChildSchema(); 
 
+// set this to the number of schemas listed above ^
+var numSchemas = 2; 
 // checks for user schemas and email schemas to be present in the vault upon initialization
 exports.initialize = function(globals, apikey, vaultid) {
 
 	var truevault = require('../../truevault/lib/truevault.js')(apikey);
 
-	var options = {
-		"vault_id" : vaultid
-	};
-
-	truevault.schemas.list(options, function(err, value) {
-		if (err){
+	truevault.schemas.list({"vault_id":vaultid}, function(err, value) {
+		if (err)
 			console.log("initialize error:");
-		} else {
-
+		else {
 			var newOptions, schema; 
 			var foundUser = false;
 			var foundChild = false;
-			var foundEmailLog = false;
-			var foundEmailConfirmation = false;
-			var foundInviteCodeSchema = false;
 
 			// define utility functions here
 			var lookForMySchema = function( mySchema ) {
@@ -38,227 +36,52 @@ exports.initialize = function(globals, apikey, vaultid) {
 				});
 			}
 
+			// edit this method when schemas are added/removed
+			var setSchemaId = function( name, id ) {
+				if ( name === "user" ) {
+					globals.userSchemaId = id;  
+				}
+				else if ( name === "child" ) {
+					globals.childSchemaId = id; 
+				}					
+				else {
+					console.log ("Unrecognized schema type!");
+					console.log( id ); 
+				}
+			}
+
 			// extend for additional schemas here
 			globals.userSchemaId = lookForMySchema("user"); 
 			globals.childSchemaId = lookForMySchema("child");
-			globals.emailLogSchemaId = lookForMySchema("emailLog"); 
-			globals.emailConfirmationId = lookForMySchema("emailConfirmation"); 
-			globals.inviteCodeId = lookForMySchema("inviteCode"); 
-
+			
 			// set booleans
 			foundUser = !!globals.userSchemaId; 
 			foundChild = !!globals.childSchemaId;
-			foundEmailLog = !!globals.emailLogSchemaId; 
-			foundEmailConfirmation = !!globals.emailConfirmationId; 
-			foundInviteCode = !!globals.inviteCodeId; 
-
-			if (!foundUser) {
-				var schema = {
-				   	"name": "user",
-				   	"fields": [
-				   	  	{
-				   	  	 	"name": "user_id",
-				   	  	 	"index": true,
-				   	  	 	"type": "string"
-				   	  	},
-				      	{
-				         	"name": "firstName",
-				         	"index": true,
-				         	"type": "string"
-				      	},
-				      	{
-				         	"name": "lastName",
-				         	"index": true,
-				        	"type": "string"
-
-				      	},
-				      	{
-				         	"name": "midInit",
-				         	"index": false,
-				         	"type": "string"
-				      	},
-				      	{
-				        	"name": "userType",
-				        	"index": true,
-				        	"type": "string"
-				      	},
-				      	// parent only fields
-				      	{ 
-				      		"name": "parPhysicianId", // user id of physician
-				      		"index": "true",
-				      		"type": "string"
-				      	},
-
-				      	// physician only fields
-						{
-							"name": "phyShowEmail", 
-							"index": false,
-							"type": "boolean"
-						},
-						{
-							"name": "phyShowAge",
-							"index": false,
-							"type": "boolean"
-						},
-						{
-							"name": "phyShowWeight",
-							"index": false,
-							"type": "boolean"
-						}
-				   	]
-				};
-				createNewSchema({
-						"vault_id" : vaultid,
-						"schema" : schema
-					}, function(value) {
-						globals.userSchemaId = value
-					}
-				);
-
-			} else {
-				console.log("User schema loaded: " + globals.userSchemaId);
-			}
-
-			if (!foundEmailLog) {
-				var schema = {
-				   "name": "emailLog",
-				   "fields": [
-				      {
-				         "name": "timestamp",
-				         "index": false,
-				         "type": "date"
-				      },
-				      {
-				         "name": "data",
-				         "index": true,
-				         "type": "string"
-
-				      }
-				   ]
-				};
-				
-				createNewSchema(
-					{
-						"vault_id" : vaultid,
-						"schema" : schema
-					}, function(value) {
-						globals.emailLogSchemaId = value
-					}
-				);
-
-			} else {
-				console.log("Email Log schema loaded: "+ globals.emailLogSchemaId);
-			}
+		
 			
-			if( !foundEmailConfirmation ) {	
-
-				var schema = {
-					"name" : "emailConfirmation",
-					"fields" : [
-						{
-							"name": "email", 
-							"index": true,
-							"type": "string"
-						},
-						{
-							"name": "token",
-							"index": true,
-							"type": "string"
-						},
-						{
-							"name": "isConfirmed",
-							"index": false,
-							"type": "boolean"
-						}
-
-					]
-				};
-				createNewSchema(
-				 	{
-						"vault_id" : vaultid,
-						"schema" : schema
-					}, function(value) {
-						globals.emailConfirmationId = value
-					}
-				); 
+			if ( !foundUser ) {
+				createNewSchema({
+					"vault_id":vaultid,
+					"schema":User.createSchema()
+					}, function (schemaID) {
+						setSchemaId( "user", schemaID ); 
+				});
 			}
-			else {
-				console.log("Email Confirmation Schema loaded: " + globals.emailConfirmationId); 
+			else
+				console.log("User schema loaded: " + globals.userSchemaId);	
+					
+				
+			if ( !foundChild ) {
+				createNewSchema({
+					"vault_id":vaultid,
+					"schema":Child.createSchema()
+					}, function (schemaID) {
+						setSchemaId( "child", schemaID ); 
+				});
 			}
-
-			if( !foundChild ) {	
-
-				var schema = {
-					"name" : "child",
-					"fields" : [
-						{
-					   	  	"name": "parentId", //user id of parent
-					   	  	"index": true,
-					   	  	"type": "string"
-					   	},
-						{
-							"name": "name", 
-							"index": true,
-							"type": "string"
-						},
-						{
-							"name": "birthday",
-							"index": true,
-							"type": "date"
-						},
-						{
-							"name": "gender",
-							"index": false,
-							"type": "string"
-						}
-					]
-				};
-				createNewSchema(
-				 	{
-						"vault_id" : vaultid,
-						"schema" : schema
-					}, function(value) {
-						globals.childSchemaId = value
-					}
-				); 
-			}
-			else {
-				console.log("Child Schema loaded: " + globals.childSchemaId); 
-			}
-
-			if( !foundInviteCode ) {
-
-				var schema = {
-					"name" : "inviteCode",
-					"fields" : [
-						{
-							"name":"physicianId",
-							"index":true,
-							"type":"string"
-						},
-						{
-							"name":"parentId",
-							"index":true,
-							"type":"string"
-						},
-						{
-							"name":"inviteCode",
-							"index":false,
-							"type":"string"
-						}
-					]
-				};
-				createNewSchema(
-				 	{
-						"vault_id" : vaultid,
-						"schema" : schema
-					}, function( value ) {
-						globals.inviteCodeId = value
-					}
-				); 
-			}
-			else				
-				console.log( "InviteCodeSchema loaded: " + globals.inviteCodeId ); 
+			else
+				console.log("Child Schema loaded: " + globals.childSchemaId); 	
+								  
 		}
 	});
 
