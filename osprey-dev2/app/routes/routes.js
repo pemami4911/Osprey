@@ -15,6 +15,7 @@ var globals = {
 	userSchemaId: 0,
 	childSchemaId: 0,
 	settingsSchemaId: 0,
+	inviteCodeSchemaId: 0,
 	accountId: 0			// stores account id
 };
 
@@ -39,9 +40,7 @@ module.exports = function(app) {
 	// used to test new functionality
 	app.post('/debug/test', function(req, res, next) {
 		// console.log(globals);
-	    //clearVault();
-	   	res.redirect("http://"+host+"/#/dashParent");
-
+	    clearVault();
 	});
 	app.post('/auth/login', function(req, res, next) {
 		Auth.login(req, res);						

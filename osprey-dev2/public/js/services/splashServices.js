@@ -52,10 +52,12 @@ angular.module('splashPageService', [])
 				return $http.get('/users/unassignedParents');
 			},
 
-			generateInviteCodeEmail : function( patientEmail, currentPassword ) {
+			generateInviteCodeEmail : function( id, email, patientEmail, currentPassword ) {
 				var postBody = {
-					'patientEmail':patientEmail, 
-					'currentPassword':currentPassword
+					'physicianID':id,
+					'email':email,
+					'password':currentPassword,
+					'patientEmail':patientEmail 
 				};
 				return $http.post('/settings/generateInvite', postBody);
 			},

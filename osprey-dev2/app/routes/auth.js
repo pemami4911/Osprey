@@ -45,7 +45,6 @@ Auth.prototype.login = function(req, res) {
 	var filterAttributes = Builder.vendFilterAttributes( "eq", req.body.email ); 
 	var checkConfirmed = Builder.vendFilter( globals.userSchemaId, vaultid, {"username":filterAttributes}, true ); 
 
-	console.log( checkConfirmed ); 
 	// if the user is confirmed, userType will contain the necessary info
 	isConfirmed( checkConfirmed, function ( data, userType ) {
 		if( data === undefined )
@@ -55,21 +54,14 @@ Auth.prototype.login = function(req, res) {
 		else {
 			
 			var loginDetails = Builder.vendLogin( req, globals.accountId ); 
-			console.log( loginDetails );
 			truevault.auth.login( loginDetails, function(err, value) {
 				if ( err ) {
 					console.log(err);
-					console.log("login failed");
 					//return res.send( handler.errorHandler( 401, "Login Failed" ) );
 					res.status(401).send({"message":"Login Failed"}); 
 				} else {
 					console.log("login successful");
 					req.session.access_token = value.user.access_token;
-					// if ( userType === "Physician" )
-					// 	res.redirect("/#/dashboard");
-					// else if ( userType === "Parent" ) {
-					// 	res.redirect("/#/dashParent"); 
-					// }
 					res.status(200).end(); 
 				}
 			});	
@@ -99,7 +91,6 @@ Auth.prototype.register = function(req, res) {
 
 		    	if (req.body.userType != "Physician") {
 			    	for (var i = 0; i < req.body.numChildren; i++) {
-			    		console.log(i);
 			    		console.log(req.body.children[i]);
 			      		
 			    		var newChild = Child.createChild( value.user.user_id, req.body.children[i].childName, req.body.children[i].childBirthday, req.body.children[i].childGender );
@@ -117,11 +108,9 @@ Auth.prototype.register = function(req, res) {
 
 	    		truevault.documents.create( doc, function(err2, value2) {
 		    		if (err2) {
-		    			console.log("registration error at user doc creation");
 		    			console.log(err2);
 		    			res.status(500).send( {"message":"An internal server error occurred. Sad tiger!"});
 		    		}
-		    		//console.log( value2 );
 		    		req.session.access_token = value.user.access_token;
 		    
 	    			var link, mailOptions; 
@@ -141,9 +130,7 @@ Auth.prototype.register = function(req, res) {
 	});
 }
 
-Auth.prototype.verify = function(req, res){
-	console.log(req.protocol+"://"+req.get("host"));
-	console.log("http://"+host); 
+Auth.prototype.verify = function(req, res) {
 
 	if((req.protocol+"://"+req.get("host"))==("http://"+host))
 	{
@@ -151,8 +138,6 @@ Auth.prototype.verify = function(req, res){
 
 		var filterAttributes = Builder.vendFilterAttributes( "eq", req.query.id ); 
 		var filter = Builder.vendFilter( globals.userSchemaId, vaultid, {"confirmationToken":filterAttributes}, true );
-
-		console.log( filter ); 
 
 		isConfirmed( filter, function ( resp, user, id ) {
 			 if( resp === undefined ) 
@@ -166,7 +151,6 @@ Auth.prototype.verify = function(req, res){
 					// not usable with IE9 and earlier
 					//var enc = window.btoa( user ); 
 					var updateUser = Builder.updateDocument( globals.userSchemaId, vaultid, id, user);
-					console.log( updateUser ); 
 					truevault.documents.update( updateUser, function ( err, data ) {
 						if( err ) {
 							console.log( err ); 
@@ -191,41 +175,130 @@ Auth.prototype.verify = function(req, res){
 // takes email in request body
 // returns 1 if that user is found in list of all users, 0 otherwise
 Auth.prototype.checkReg = function (req, res) {
-	truevault.users.list(function(err, value){
-	    if (err)
-	    	res.status(500).send({"message":"An internal server error occurred. Sad tiger!"});
-	    else {
-	    	for (var i = 0; i < value.users.length; i++) {
-	    		if (req.body.email == value.users[i].username)
-	    			res.status(401).send({"message":"A user is already registered with this email"}); 
-	    	}
-	    	res.status(200).end();
-	    }
-	});
+
+	//if parent, check to see if the invite code is matched to a physician 
+	if( req.body.userType === "Parent" ) {
+
+		var ic = req.body.inviteCode; 
+		var filterAttributes = Builder.vendFilterAttributes( "eq", ic ); 
+		var filter = Builder.vendFilter( globals.inviteCodeSchemaId, vaultid, {"token":filterAttributes}, true )
+
+		truevault.documents.search( filter, function( err, value ) {
+			if( err )
+				console.log( err ); 
+			else {
+				console.log( value ); 
+
+				if( value.data.documents.length === 0 ) {
+					res.status(401).send({"message":"The invite code was not recognized"}); 
+				}
+				else if( value.data.documents.length > 1 ) {
+					res.status(500).send({"message":"An internal error occurred"}); 
+				}
+				else {
+					// used to ensure that the doc id is correct
+					var doc_id = value.data.documents[0].document_id;
+					if ( !regex.test( doc_id) )
+						doc_id = value2.data.documents[0]; 
+
+					truevault.documents.retrieve({	// retrieve the user document
+						   "vault_id" : vaultid,
+						   "id" : doc_id
+					}, function ( err, data ) {
+						var physID = data.physicianID;  
+						if( err ) {
+							console.log( err ); 
+							res.status(500).send(); 
+						}
+						else {
+							if( data.parentEmail != req.body.email ) {
+								res.status(401).send({"message":"The invite code is not registered to this email"}); 
+							}
+							else {
+								// grab the physicians First and last name 
+								var filterAttributes = Builder.vendFilterAttributes( "eq", data.physicianID ); 
+								var filter = Builder.vendFilter( globals.userSchemaId, vaultid, {"user_id":filterAttributes}, true );
+
+								truevault.documents.search( filter, function( err, value ) {
+									if ( err ) {
+										console.log( err ); 
+										res.status(500).send(); 
+									}
+									else {
+										if( value.data.documents.length === 0) 
+											res.status(401).send({"message":"There are no physicians associated with the invite code"}); 
+										else {
+											var doc_id = value.data.documents[0].document_id;
+											if ( !regex.test( doc_id) )
+												doc_id = value2.data.documents[0]; 
+
+											truevault.documents.retrieve({	// retrieve the document
+												   "vault_id" : vaultid,
+												   "id" : doc_id
+											}, function ( err, data ) {
+												if( err )
+													console.log( err );
+												else {
+													var physData = {	// construct an object with the physician name and id
+														"name":"Dr. "+data.firstName+" "+data.lastName,
+														"id":physID
+													}
+													console.log( physData ); 
+													truevault.users.list(function(err, value) {
+													    if (err)
+													    	res.status(500).send({"message":"An internal server error occurred. Sad tiger!"});
+													    else {
+													    	for (var i = 0; i < value.users.length; i++) {
+													    		if (req.body.email == value.users[i].username)
+													    			res.status(401).send({"message":"A user is already registered with this email"}); 
+													    	}
+													    	res.status(200).send( physData ); // send the physician id and name to the reg data
+													    }
+													});     
+												}
+											}); 
+										}
+									}
+								});  
+							}
+						}
+					}); 
+				}
+			}
+		});
+	}
+	else {
+		truevault.users.list(function(err, value){
+		    if (err)
+		    	res.status(500).send({"message":"An internal server error occurred. Sad tiger!"});
+		    else {
+		    	for (var i = 0; i < value.users.length; i++) {
+		    		if (req.body.email == value.users[i].username)
+		    			res.status(401).send({"message":"A user is already registered with this email"}); 
+		    	}
+		    	res.status(200).end();
+		    }
+		});
+	}
+	
 }
 
 // checks access token stored in session 
 Auth.prototype.isLogged = function(req, res) {
-	console.log("checking isLogged"); 
-
 	var temp = require("../../truevault/lib/truevault.js")(req.session.access_token);
 
 	temp.auth.verify(function(err, value){
 		if ( err ) 
 			res.status(500).send({"message":"Verification Error"});
 		else {
-			console.log( value ); 
 
 			var filterAttributes = Builder.vendFilterAttributes( "eq", value.user.user_id ); 
 			var filter = Builder.vendFilter( globals.userSchemaId, vaultid, {"user_id":filterAttributes}, true );
 			
-			console.log( filter ); 
-
 			truevault.documents.search( filter, function (err2, value2) {
 				if (err) 
 					res.status(500).send({"message":"TrueVault API failure"});
 				else {
-					console.log( value2 ); 
 
 					if (value2.data.documents.length === 0)
 						console.log("no matching user document found");
@@ -289,7 +362,6 @@ function isConfirmed( user, callback) {
 			callback( undefined ); 	// err occurred while searching for user
 		}	
 		else {
-			console.log( value ); 
 			if( value.data.info.total_result_count != 0) {	// if it is found, continue
 
 				// used to ensure that the doc id is correct
@@ -306,7 +378,6 @@ function isConfirmed( user, callback) {
 						callback( undefined ); 
 					} 
 					else {		
-						console.log( data ); 
 						if( data.isConfirmed === false )	// if the user has not been confirmed yet
 							callback( "Unauthorized", data, doc_id);  // send back an error message
 						else 

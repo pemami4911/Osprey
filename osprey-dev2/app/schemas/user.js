@@ -40,11 +40,6 @@ userSchema.prototype.createSchema = function() {
                 "index": true,
                 "type": "string"
             },
-            {
-                "name": "inviteCode",
-                "index" : true,
-                "type": "string"
-            },
             // only for physicians
             {
                  "name": "phyShowEmail", 
@@ -92,6 +87,9 @@ userSchema.prototype.createUser = function( id, attributes, token ) {
         user.phyShowEmail = true;
         user.phyShowAge = true;
         user.phyShowWeight = true;
+    }
+    else {
+        user.parPhysicianId = attributes.body.physicianID; 
     }
 
     return user; 
