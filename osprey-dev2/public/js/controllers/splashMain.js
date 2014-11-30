@@ -31,27 +31,30 @@ angular.module('splashPageModule', ['splashPageService'])
 		}
 
 		$scope.register = function() {
+			// call the create function from our service (returns a promise object)
+			splashFactory.registerAttempt( $scope.initRegData )
+				// if successful creation, call our get function to get all the new todos
+				.success( function( physData ) {
+					console.log( physData ); 
+					$scope.loading = true; 
 
-				// call the create function from our service (returns a promise object)
-				splashFactory.registerAttempt( $scope.initRegData )
-					// if successful creation, call our get function to get all the new todos
-					.success( function( data ) {
-						$scope.loading = true; 
-
-						$cookieStore.put( 'userType', $scope.initRegData.userType ); 
-						$cookieStore.put( $scope.initRegData.userType, $scope.initRegData.email ); 
-
-						if ($scope.initRegData.userType === 'Parent')
-							$location.path('/regParent');
-						else
-							$location.path('/regPhysician');
-						
-					}).error(function (response) {
-						console.log( response.message ); 
-						$scope.addAlert( response.message, "danger", false); 
-						$scope.error = response.message;
-						$scope.loading = false;
-					});
+					$cookieStore.put( 'userType', $scope.initRegData.userType ); 
+					$cookieStore.put( $scope.initRegData.userType, $scope.initRegData.email ); 
+					
+					if ($scope.initRegData.userType === 'Parent') {
+						$cookieStore.put( $scope.initRegData.email, physData.id);
+						$cookieStore.put( physData.id, physData.name ); 		
+						$location.path('/regParent');
+					}
+					else
+						$location.path('/regPhysician');
+					
+				}).error(function (response) {
+					console.log( response.message ); 
+					$scope.addAlert( response.message, "danger", false); 
+					$scope.error = response.message;
+					$scope.loading = false;
+				});
 		}
 
 		$scope.loginAlerts = [];
@@ -81,7 +84,12 @@ angular.module('splashPageModule', ['splashPageService'])
 		}
 
 		$scope.isPhysician = function() {
-			return ($scope.initRegData.userType === "Parent") ? false : true; 
+			if( $scope.initRegData.userType === "Parent")
+				return false; 
+			else {
+				$scope.initRegData.inviteCode = ''; 
+				return true; 
+			}
 		}
 
 	}]);

@@ -6,6 +6,8 @@ angular.module('regParentPageModule', ['splashPageService'])
 		$scope.regData = {};
 		$scope.regData.userType = $cookieStore.get( 'userType' );  
 		$scope.regData.email = $cookieStore.get( $scope.regData.userType ); 
+		$scope.regData.physicianID = $cookieStore.get( $scope.regData.email ); 
+		$scope.regData.physicianName = $cookieStore.get( $scope.regData.physicianID ); 
 		$scope.regData.numChildren = 1;
 		$scope.loading = false;
 		
@@ -42,6 +44,9 @@ angular.module('regParentPageModule', ['splashPageService'])
 						//console.log(data);
 						$cookieStore.remove('userType'); 
 						$cookieStore.remove($scope.regData.userType); 
+						$cookieStore.remove($scope.regData.email); 
+						$cookieStore.remove($scope.regData.physicianName);
+
 						$location.path('/verify');		
 					}).error(function(response) {
 						$scope.error = response.message;

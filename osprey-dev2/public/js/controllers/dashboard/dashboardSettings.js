@@ -86,13 +86,13 @@ angular.module('dashboardSettingsModule', ['splashPageService', 'ngReactGrid', '
 		}
 
 		$scope.generateInviteCodeEmail = function() {
-			// splashFactory.generateInviteCodeEmail( $scope.inviteCode.patientEmail, $scope.inviteCode.currPassword ) 
-			// 	.success( function (data) {
-
-			// 	}).error( function (response) ){
-			// 		console.log( response ); 
-			// 		$scope.error = response.message; 
-			// 	}
+			splashFactory.generateInviteCodeEmail( $scope.loggedUser.user_id, $scope.loggedUser.username, $scope.inviteCode.patientEmail, $scope.inviteCode.currPassword ) 
+				.success ( function (data) {
+					window.alert("Sent invite code"); 
+				}).error ( function (response) {
+					console.log( response ); 
+					$scope.error = response.message; 
+				}); 
 		}
 
 	}]);

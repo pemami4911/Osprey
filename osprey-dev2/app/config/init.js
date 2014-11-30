@@ -1,10 +1,10 @@
-var UserSchema = require('../schemas/user.js'); 
+var UserSchema = require('../schemas/user'); 
 var User = new UserSchema(); 
-var ChildSchema = require('../schemas/child.js'); 
+var ChildSchema = require('../schemas/child'); 
 var Child = new ChildSchema(); 
+var InviteCodeSchema = require('../schemas/inviteCode'); 
+var InviteCode = new InviteCodeSchema(); 
 
-// set this to the number of schemas listed above ^
-var numSchemas = 2; 
 // checks for user schemas and email schemas to be present in the vault upon initialization
 exports.initialize = function(globals, apikey, vaultid) {
 
@@ -17,6 +17,7 @@ exports.initialize = function(globals, apikey, vaultid) {
 			var newOptions, schema; 
 			var foundUser = false;
 			var foundChild = false;
+			var foundInviteCode = false; 
 
 			// define utility functions here
 			var lookForMySchema = function( mySchema ) {
@@ -43,7 +44,10 @@ exports.initialize = function(globals, apikey, vaultid) {
 				}
 				else if ( name === "child" ) {
 					globals.childSchemaId = id; 
-				}					
+				}	
+				else if ( name === "inviteCode" ) {
+					gloabls.inviteCodeSchemaId = id; 
+				}			
 				else {
 					console.log ("Unrecognized schema type!");
 					console.log( id ); 
@@ -53,12 +57,13 @@ exports.initialize = function(globals, apikey, vaultid) {
 			// extend for additional schemas here
 			globals.userSchemaId = lookForMySchema("user"); 
 			globals.childSchemaId = lookForMySchema("child");
+			globals.inviteCodeSchemaId = lookForMySchema("inviteCode"); 
 			
 			// set booleans
 			foundUser = !!globals.userSchemaId; 
 			foundChild = !!globals.childSchemaId;
+			foundInviteCode = !!globals.inviteCodeSchemaId; 
 		
-			
 			if ( !foundUser ) {
 				createNewSchema({
 					"vault_id":vaultid,
@@ -81,6 +86,17 @@ exports.initialize = function(globals, apikey, vaultid) {
 			}
 			else
 				console.log("Child Schema loaded: " + globals.childSchemaId); 	
+
+			if ( !foundInviteCode ) {
+				createNewSchema({
+					"vault_id":vaultid,
+					"schema":InviteCode.createSchema() 
+					}, function (schemaID) {
+						setSchemaId( "inviteCode", schemaID ); 
+				});
+			}
+			else
+				console.log("Invite Code Schema loaded: " + globals.inviteCodeSchemaId); 	
 								  
 		}
 	});
