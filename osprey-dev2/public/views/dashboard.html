@@ -4,12 +4,14 @@
     <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
         <div class="navbar-header">
             <a class="navbar-brand">Osprey</a>
+
         </div>
         <!-- /.navbar-header -->
 
         <ul class="nav navbar-top-links navbar-right">
             {{loggedUser.username}}
             <button ng-click="logoutAttempt()" class="btn btn-default btn-md" id="logout-button"> Logout </button>
+            <button ng-click="test()">Test</button>
             <!-- /.dropdown -->
         </ul>
         <!-- /.navbar-top-links -->
@@ -29,3 +31,4 @@
 
     </div>
 </div>
+

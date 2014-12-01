@@ -19,6 +19,7 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 				.success( function (data) {
 					//console.log( data ); 
 					$scope.loggedUser = data;
+					$scope.getChildren();
 					if (callback)
 						callback();			
 				}).error(function(response) {
@@ -88,6 +89,10 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 				$scope.navItems.push({name: "Settings", num: 4})
 			}
 		};
+
+		$scope.getChildren = function() {
+			splashFactory.getChildrenOfPhysician($scope.loggedUser.user_id);
+		}
 
 		$scope.checkLogged(init);
 

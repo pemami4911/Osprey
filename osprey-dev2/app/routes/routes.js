@@ -41,7 +41,7 @@ module.exports = function(app) {
 
 	// used to test new functionality
 	app.post('/debug/test', function(req, res, next) {
-		Debug.generateFitbit(req, res);
+		Users.childrenOfPhysician(req, res);
 	});
 	app.post('/auth/login', function(req, res, next) {
 		Auth.login(req, res);						

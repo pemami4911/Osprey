@@ -27,28 +27,29 @@ Users.prototype.childrenOfParent = function(req, res) {
 		if (err) {
 			console.log("verification error");
 			res.status(500).send({"message":"Verification error"}); 
-		} else {
-			var filterAttributes = Builder.vendFilterAttributes( "eq", req.body.parentId ); 
-			var filter = Builder.vendFilter( globals.childSchemaId, vaultid, {"parentId":filterAttributes}, true );
-
-			truevault.documents.search(filter, function (err2, value2) {
-				if (err) {
-					console.log('search error');
-					res.status(500).send({"message":"Search error"}); 
-				}
-				else {
-					console.log( value2 ); 
-					if (value2.data.documents.length === 0)
-						console.log("no matching child documents found");
-					else {
-						var retObject = {"content":[]};
-						for (var i = 0; i < value2.data.documents.length; i++) {
-							addChild(res, retObject, value2.data.documents.length, value2.data.documents[i].document_id);
-						}
-					}
-				}
-			});
+			return;
 		}
+
+		var filterAttributes = Builder.vendFilterAttributes( "eq", req.body.parentId ); 
+		var filter = Builder.vendFilter( globals.childSchemaId, vaultid, {"parentId":filterAttributes}, true );
+
+		truevault.documents.search(filter, function (err2, value2) {
+			if (err) {
+				console.log('search error');
+				res.status(500).send({"message":"Search error"});
+				return;
+			}
+
+			console.log( value2 ); 
+			if (value2.data.documents.length === 0)
+				console.log("no matching child documents found");
+			else {
+				var retObject = {"content":[]};
+				for (var i = 0; i < value2.data.documents.length; i++) {
+					addChild(res, retObject, value2.data.documents.length, value2.data.documents[i]);
+				}
+			}
+		});
 	});
 }
 
@@ -56,80 +57,130 @@ Users.prototype.childrenOfParent = function(req, res) {
 
 // Not complete
 Users.prototype.childrenOfPhysician = function(req, res) {
-	var temp = require('../truevault/lib/truevault.js')(req.session.access_token);
-	temp.auth.verify(function(err, value){
-		console.log("verified");
-		if (err) {
-			console.log("verification error");
-			res.send(false);
-		} else {
-			// find user attributes
-			var options = {
-				'vault_id' : vaultid,
-				'schema_id' : globals.childSchemaId,
-			  	'filter' : { 
-			  		'parentId': {
-				    	"type": "eq",
-				    	"value": req.body.parentId
-				    }
-				},
-				'full_document' : true
-			};
-		}
-	});
-}
-
-Users.prototype.childrenOfParent = function(req, res) {
 	var temp = require('../../truevault/lib/truevault.js')(req.session.access_token);
 	temp.auth.verify(function(err, value){
 		console.log("verified");
 		if (err) {
 			console.log("verification error");
 			res.status(500).send({"message":"Verification error"}); 
-		} else {
-			var filterAttributes = Builder.vendFilterAttributes( "eq", req.body.parentId ); 
-			var filter = Builder.vendFilter( globals.childSchemaId, vaultid, {"parentId":filterAttributes}, true );
+			return;
+		}
 
-			truevault.documents.search(filter, function (err2, value2) {
-				if (err) {
-					console.log('search error');
-					res.status(500).send({"message":"Search error"}); 
-				}
-				else {
-					console.log( value2 ); 
-					if (value2.data.documents.length === 0)
-						console.log("no matching child documents found");
-					else {
-						var retObject = {"content":[]};
-						for (var i = 0; i < value2.data.documents.length; i++) {
-							addChild(res, retObject, value2.data.documents.length, value2.data.documents[i].document_id);
-						}
+		var filterParentAttributes = Builder.vendFilterAttributes( "eq", req.body.physicianId ); 
+		var filterParent = Builder.vendFilter( globals.userSchemaId, vaultid, {"parPhysicianId":filterParentAttributes}, true );
+
+		truevault.documents.search(filterParent, function (err, value) {
+			if (err) {
+				console.log('search error');
+				res.status(500).send({"message":"Search error"});
+				return;
+			}
+			
+			if (value.data.documents.length === 0) {
+				console.log("no matching parent documents found");
+				return;
+			}
+
+			var numOfParents = value.data.documents.length;
+			var retObject = {"content":[]};
+
+			// keeps track of how many children and parents have been added to return object
+			// ensures that object is only returned when all parents and children have been added
+			var returnTracker = {
+				"totalChildren": 0,
+				"childrenProcessed": 0,
+				"totalParents": numOfParents,
+				"parentsProcessed": 0
+			};
+
+			// for each parent
+			for (var i = 0; i < numOfParents; i++) {
+				var buf = new Buffer(value.data.documents[i].document, 'base64');
+				var parentObject = JSON.parse(buf.toString('ascii'));
+
+				var filterChildAttributes = Builder.vendFilterAttributes( "eq", parentObject.user_id ); 
+				var filterChild = Builder.vendFilter( globals.childSchemaId, vaultid, {"parentId":filterChildAttributes}, true );
+				
+				truevault.documents.search(filterChild, function (err, value) {
+					if (err) {
+						console.log('child search error');
+						res.status(500).send({"message":"Child search error"});
+						return;
 					}
-				}
-			});
+
+					returnTracker.totalChildren += value.data.documents.length;
+					returnTracker.parentsProcessed++;
+					for (var j = 0; j < value.data.documents.length; j++) {
+						addChildPhysician(res, retObject, returnTracker, value.data.documents[j], parentObject);
+					}
+				});
+			}
+		});
+	});
+}
+
+// helper function for /users/childrenOfPhysician
+var addChildPhysician = function(res, retObject, retTracker, childDoc, parentObject) {
+	var buf = new Buffer(childDoc.document, 'base64');
+	var childObject = JSON.parse(buf.toString('ascii'));
+	childObject.fitbit = [];
+	childObject.parent = parentObject;
+
+	var allFitbitFilterAttributes = Builder.vendFilterAttributes("eq", childDoc.document_id);
+	var allFitbitFilter = Builder.vendFilter 	(globals.fitbitSchemaId, vaultid, 
+												{"childID":allFitbitFilterAttributes}, true);
+	truevault.documents.search(allFitbitFilter, function(err, value) {
+		if (err) {
+			console.log("Fitbit search error");
+			res.status(500).send({"message":"Fitbit search error"});
+			return;
+		}
+
+		for (var i = 0; i < value.data.documents.length; i++) {
+			var buf2 = new Buffer(value.data.documents[i].document, 'base64');
+			var fitbitObj = JSON.parse(buf2.toString('ascii'));
+			childObject.fitbit.push(fitbitObj);
+		}
+
+		retObject.content.push(childObject);
+		retTracker.childrenProcessed++;
+
+		if (retTracker.childrenProcessed == retTracker.totalChildren && retTracker.parentsProcessed == retTracker.totalParents) {
+			console.log(retObject);
+			res.status(200).json(retObject);
 		}
 	});
 }
 
-// might not be needed
-Users.prototype.unassignedParents = function(req, res) {
-	// 	if (!req.isAuthenticated())
-	// 		res.send(false);
-		
-	// 	UserModel.find({ $and: [{userType : "Parent"}, {physician: null}] }, function(err, data) {
-	// 		console.log(data);
-	// 		res.send(data);
-	// 	});
-}
 
 // helper function for /users/childrenOfParent
-// adds children to an array, sends if all children have been found and added to array
-var addChild = function(res, retObject, numChildren, childId) {
-	truevault.documents.retrieve({
-	   'vault_id' : vaultid,
-	   'id' : childId
-	}, function (err, document){
-		retObject.content.push(document);
+// creates child object out of b64 string
+// creates array of all fitbit data for that child and appends to child object
+// adds child object to return object
+// sends if all children have been found and added to array
+var addChild = function(res, retObject, numChildren, childDoc) {
+	var buf = new Buffer(childDoc.document, 'base64');
+	var childObject = JSON.parse(buf.toString('ascii'));
+	childObject.fitbit = [];
+
+	var allFitbitFilterAttributes = Builder.vendFilterAttributes("eq", childDoc.document_id);
+	var allFitbitFilter = Builder.vendFilter 	(globals.fitbitSchemaId, vaultid, 
+												{"childID":allFitbitFilterAttributes}, true);
+
+	truevault.documents.search(allFitbitFilter, function(err, value) {
+		if (err) {
+			console.log("Fitbit search error");
+			res.status(500).send({"message":"Fitbit search error"});
+			return;
+		}
+			
+		for (var i = 0; i < value.data.documents.length; i++) {
+			var buf2 = new Buffer(value.data.documents[i].document, 'base64');
+			var fitbitObj = JSON.parse(buf2.toString('ascii'));
+			childObject.fitbit.push(fitbitObj);
+		}
+
+		retObject.content.push(childObject);
 		if (retObject.content.length == numChildren) {
 			res.status(200).json(retObject);
 		}

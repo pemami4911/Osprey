@@ -50,7 +50,7 @@ Debug.prototype.generateFitbit = function(req, res) {
 				var calories = 500 * Math.random();
 
 				var newFitbit = Fitbit.createFitbit(	value.data.documents[i].document_id,
-														time1, time2, time3, timestamp	);
+														time1, time2, time3, timestamp, calories	);
 				var fitbitDoc = Builder.vendDocument( globals.fitbitSchemaId, vaultid, newFitbit );
 				truevault.documents.create(fitbitDoc, function (err, value) {
 					if (err) {

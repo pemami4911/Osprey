@@ -70,6 +70,12 @@ angular.module('splashPageService', [])
 				var postBody = {};
 				postBody.parentId = parentId;
 				return $http.post('/users/childrenOfParent', postBody);
+			},
+
+			getChildrenOfPhysician: function(physicianId) {
+				var postBody = {};
+				postBody.physicianId = physicianId;
+				return $http.post('/users/childrenOfPhysician', postBody);
 			}
 		}
 	}]);
