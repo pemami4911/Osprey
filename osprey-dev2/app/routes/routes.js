@@ -4,7 +4,7 @@ var path = require('path');
 var fs = require('fs');
 var css = require('css');
 var api_key = '24099371-9eb8-4c1d-8a39-5f64b6a52c1b';
-var vaultid = '3ff57a92-b0ba-4972-b518-7b584c667809'; //patrick-dev
+var vaultid = 'b51db608-3321-41dd-9531-bfc40c1f5c27'; //nick-dev
 
 var config = require('../config/init'); 
 var truevault = require('../../truevault/lib/truevault.js')(api_key);
@@ -14,7 +14,7 @@ var truevault = require('../../truevault/lib/truevault.js')(api_key);
 var globals = {
 	userSchemaId: 0,
 	childSchemaId: 0,
-	settingsSchemaId: 0,
+	fitbitSchemaId: 0,
 	inviteCodeSchemaId: 0,
 	accountId: 0			// stores account id
 };
@@ -28,6 +28,8 @@ var SettingsModule = require('./settings');
 var Settings = new SettingsModule(globals, api_key, vaultid); 
 var UsersModule = require('./users'); 
 var Users = new UsersModule(globals, api_key, vaultid); 
+var DebugModule = require('./debug'); 
+var Debug = new DebugModule(globals, api_key, vaultid); 
 
 // -----------------------------------------------------------------------------
 
@@ -39,8 +41,7 @@ module.exports = function(app) {
 
 	// used to test new functionality
 	app.post('/debug/test', function(req, res, next) {
-		// console.log(globals);
-	    clearVault();
+		Debug.generateFitbit(req, res);
 	});
 	app.post('/auth/login', function(req, res, next) {
 		Auth.login(req, res);						
@@ -90,8 +91,6 @@ module.exports = function(app) {
 	});
 
 	app.get('/nvd3css', function(req, res){
-		// if (!req.isAuthenticated())
-		// 	res.send(false);
 		fs.readFile(path.resolve('./public/lib/d3/nv.d3.css'), 'utf8', function(err, data){
 			var obj = css.parse(data);
 			res.send(obj.stylesheet.rules);
@@ -99,42 +98,3 @@ module.exports = function(app) {
 	});
 };
 
-function clearVault() {
-	truevault.documents.list({
-	 	'vault_id':vaultid,
-	  	'per_page':50, 
-	  	'page':1, 
-	  	'full_document': false //true to return full documents vs uuids
-	}, function (err, document){
-		if (err)
-			console.log(err);
-
-		for (var i = 0; i < document.data.items.length; i++) {
-			console.log("Deleting document: " + document.data.items[i].id)
-			truevault.documents.del({
-			   'vault_id' : vaultid,
-			   'id' : document.data.items[i].id
-			}, function (err, document){
-				if (err)
-					console.log("Error deleting document");
-				else
-					console.log("Document deleted");
-			});
-		}
-	});
-
-	truevault.schemas.list({ "vault_id":vaultid }, function (err, document){
-		for (var i = 0; i < document.schemas.length; i++) {
-			console.log("Deleting schema: " + document.schemas[i].id)
-			truevault.schemas.del({
-			   'vault_id' : vaultid,
-			   'id' : document.schemas[i].id
-			}, function (err, document){
-				if (err)
-					console.log("Error deleting schema");
-				else
-					console.log("Schema deleted");
-			});
-		}
-	})
-}

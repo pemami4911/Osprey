@@ -13,7 +13,8 @@ TrueVaultBuilder.prototype.vendFilter = function( schema, vault, filter, fullDoc
 		"schema_id" : schema,
 		"vault_id" : vault, 
 		"filter" : filter,
-		"full_document" : fullDoc
+		"full_document" : fullDoc,
+		"per_page": 1000
 	}
 }
 
