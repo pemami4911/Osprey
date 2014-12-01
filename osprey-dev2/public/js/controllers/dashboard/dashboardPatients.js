@@ -56,26 +56,46 @@ angular.module('dashboardPatientsModule', ['splashPageService', 'ngReactGrid', '
 	            localMode: true,
 	        };
 
-	        $http.get('../json/users.json').success(function(data) {
-			    		$scope.tableData = data;
+	        $scope.tableData = [];
 
-			    		for (var i = 1; i <= 100; i++) {
-							$scope.tableData.push({	
-								"patientName" : "Patient " + i,
-							 	"parentName" : "Parent " + i,
-							 	"email" : "test@email.com" + i,
-							 	"weight" : i,
-							 	"age" : i * 2
-							})
-						}
+	        var content = $scope.loggedUser.children.content;
 
-			        	$scope.grid.data = $scope.tableData;
+    		for (var i = 0; i < content.length; i++) {
+    			var months = parseInt(content[i].birthday.substr(5, 2)) + 1;
+    			var birthday = new Date(content[i].birthday.substr(0, 4), 
+    									months, 
+    									content[i].birthday.substr(8, 2), 
+    									0, 0, 0, 0);
 
-			  		});
+				$scope.tableData.push({	
+					"patientName" : content[i].name,
+				 	"parentName" : content[i].parent.firstName + " " + content[i].parent.lastName ,
+				 	"email" : content[i].parent.username,
+				 	"weight" : Math.random(),
+				 	"age" : calculateAge(birthday)
+				})
+			}
+
+        	$scope.grid.data = $scope.tableData;
+
 	        $scope.updateColumns();
 	    }
 
    		reloadGrid();
+
+   		function calculateAge (birthDate) {
+		    birthDate = new Date(birthDate);
+		    var otherDate = new Date()
+
+		    var years = (otherDate.getFullYear() - birthDate.getFullYear());
+
+		    if (otherDate.getMonth() < birthDate.getMonth() || 
+		        otherDate.getMonth() == birthDate.getMonth() && otherDate.getDate() < birthDate.getDate()) {
+		        years--;
+		    }
+
+		    return years;
+		}
 
 	}]);
 

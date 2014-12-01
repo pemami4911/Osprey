@@ -19,7 +19,6 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 				.success( function (data) {
 					//console.log( data ); 
 					$scope.loggedUser = data;
-					$scope.getChildren();
 					if (callback)
 						callback();			
 				}).error(function(response) {
@@ -91,10 +90,16 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 		};
 
 		$scope.getChildren = function() {
-			splashFactory.getChildrenOfPhysician($scope.loggedUser.user_id);
+			if ($scope.loggedUser.userType == 'Physician') {
+				splashFactory.getChildrenOfPhysician($scope.loggedUser.user_id)
+					.success( function(data) {
+						$scope.loggedUser.children = data;
+						init();
+					});
+			}
 		}
 
-		$scope.checkLogged(init);
+		$scope.checkLogged($scope.getChildren);
 
 	}]);
 
