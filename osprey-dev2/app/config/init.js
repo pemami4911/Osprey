@@ -1,9 +1,12 @@
+'use strict';
 var UserSchema = require('../schemas/user'); 
 var User = new UserSchema(); 
 var ChildSchema = require('../schemas/child'); 
 var Child = new ChildSchema(); 
 var InviteCodeSchema = require('../schemas/inviteCode'); 
 var InviteCode = new InviteCodeSchema(); 
+var FitbitSchema = require('../schemas/fitbit'); 
+var Fitbit = new FitbitSchema(); 
 
 // checks for user schemas and email schemas to be present in the vault upon initialization
 exports.initialize = function(globals, apikey, vaultid) {
@@ -18,6 +21,7 @@ exports.initialize = function(globals, apikey, vaultid) {
 			var foundUser = false;
 			var foundChild = false;
 			var foundInviteCode = false; 
+			var foundFitbit = false;
 
 			// define utility functions here
 			var lookForMySchema = function( mySchema ) {
@@ -46,8 +50,11 @@ exports.initialize = function(globals, apikey, vaultid) {
 					globals.childSchemaId = id; 
 				}	
 				else if ( name === "inviteCode" ) {
-					gloabls.inviteCodeSchemaId = id; 
-				}			
+					globals.inviteCodeSchemaId = id; 
+				}
+				else if ( name === "fitbit" ) {
+					globals.fitbitSchemaId = id; 
+				}
 				else {
 					console.log ("Unrecognized schema type!");
 					console.log( id ); 
@@ -57,12 +64,14 @@ exports.initialize = function(globals, apikey, vaultid) {
 			// extend for additional schemas here
 			globals.userSchemaId = lookForMySchema("user"); 
 			globals.childSchemaId = lookForMySchema("child");
-			globals.inviteCodeSchemaId = lookForMySchema("inviteCode"); 
+			globals.inviteCodeSchemaId = lookForMySchema("inviteCode");
+			globals.fitbitSchemaId = lookForMySchema("fitbit");
 			
 			// set booleans
 			foundUser = !!globals.userSchemaId; 
 			foundChild = !!globals.childSchemaId;
 			foundInviteCode = !!globals.inviteCodeSchemaId; 
+			foundFitbit = !!globals.fitbitSchemaId;
 		
 			if ( !foundUser ) {
 				createNewSchema({
@@ -96,7 +105,18 @@ exports.initialize = function(globals, apikey, vaultid) {
 				});
 			}
 			else
-				console.log("Invite Code Schema loaded: " + globals.inviteCodeSchemaId); 	
+				console.log("Invite Code Schema loaded: " + globals.inviteCodeSchemaId);
+
+			if ( !foundFitbit ) {
+				createNewSchema({
+					"vault_id":vaultid,
+					"schema":Fitbit.createSchema() 
+					}, function (schemaID) {
+						setSchemaId( "fitbit", schemaID ); 
+				});
+			}
+			else
+				console.log("Fitbit Schema loaded: " + globals.fitbitSchemaId); 	
 								  
 		}
 	});
