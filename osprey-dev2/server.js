@@ -10,7 +10,9 @@ var session = require('express-session');
 var flash = require('connect-flash');
 
 // configuration ===============================================================
-// mongoose.connect(database.url); 	// connect to mongoDB database on modulus.io
+var vaultid = 'b51db608-3321-41dd-9531-bfc40c1f5c27' // nick-dev
+if (process.env.NODE_ENV == 'test')
+	vaultid = '093b7e33-be5c-4f41-bd95-11cdebf3465b' // test
 
 
 app.use(express.static(__dirname + '/public')); 		// set the static files location /public/img will be /img for users
@@ -27,7 +29,7 @@ app.use(session({ secret: 'thisismysecret'}));
 app.use(flash()); // flash messages stored in session
 
 // routes ======================================================================
-require('./app/routes/routes.js')(app);
+require('./app/routes/routes.js')(app, vaultid);
 
 
 // listen (start app with node server.js) ======================================

@@ -1,48 +1,53 @@
 'use strict';
 
-var path = require('path');
-var fs = require('fs');
-var css = require('css');
-var api_key = '24099371-9eb8-4c1d-8a39-5f64b6a52c1b';
-var vaultid = 'b51db608-3321-41dd-9531-bfc40c1f5c27'; //nick-dev
+module.exports = function(app, vault) {
+	var path = require('path');
+	var fs = require('fs');
+	var css = require('css');
+	var api_key = '24099371-9eb8-4c1d-8a39-5f64b6a52c1b';
+	var vaultid = vault;
 
-var config = require('../config/init'); 
-var truevault = require('../../truevault/lib/truevault.js')(api_key);
+	var config = require('../config/init'); 
+	var truevault = require('../../truevault/lib/truevault.js')(api_key);
 
-// global variables used to store uuids of schemas
-// default value of 0
-var globals = {
-	userSchemaId: 0,
-	childSchemaId: 0,
-	fitbitSchemaId: 0,
-	inviteCodeSchemaId: 0,
-	accountId: 0			// stores account id
-};
+	// global variables used to store uuids of schemas
+	// default value of 0
+	var globals = {
+		userSchemaId: 0,
+		childSchemaId: 0,
+		fitbitSchemaId: 0,
+		inviteCodeSchemaId: 0,
+		accountId: 0			// stores account id
+	};
 
-// set this to our domain for security 
-var host = 'localhost:8080'; 
+	// set this to our domain for security 
+	var host = 'localhost:8080'; 
 
-var AuthModule = require('./auth');
-var Auth = new AuthModule(globals, api_key, vaultid);
-var SettingsModule = require('./settings'); 
-var Settings = new SettingsModule(globals, api_key, vaultid); 
-var UsersModule = require('./users'); 
-var Users = new UsersModule(globals, api_key, vaultid); 
-var DebugModule = require('./debug'); 
-var Debug = new DebugModule(globals, api_key, vaultid); 
+	var AuthModule = require('./auth');
+	var Auth = new AuthModule(globals, api_key, vaultid);
+	var SettingsModule = require('./settings'); 
+	var Settings = new SettingsModule(globals, api_key, vaultid); 
+	var UsersModule = require('./users'); 
+	var Users = new UsersModule(globals, api_key, vaultid); 
+	var DebugModule = require('./debug'); 
+	var Debug = new DebugModule(globals, api_key, vaultid); 
 
-// -----------------------------------------------------------------------------
-
-config.initialize(globals, api_key, vaultid);
-
-// -----------------------------------------------------------------------------
-
-module.exports = function(app) {
+	// -----------------------------------------------------------------------------
+	config.initialize(globals, api_key, vaultid);
 
 	// used to test new functionality
 	app.post('/debug/test', function(req, res, next) {
-		Users.childrenOfPhysician(req, res);
+		Debug.clearVault(req, res);
 	});
+
+	app.post('/debug/deleteTestUser', function(req, res, next) {
+		Debug.deleteTestUser(req, res);
+	});
+
+	app.post('/debug/clearVault', function(req, res, next) {
+		Debug.clearVault(req, res);
+	});
+
 	app.post('/auth/login', function(req, res, next) {
 		Auth.login(req, res);						
 	});
@@ -88,6 +93,10 @@ module.exports = function(app) {
 
 	app.post('/users/childrenOfPhysician', function(req, res) {
 		Users.childrenOfPhysician(req, res);
+	});
+
+	app.post('/test/test', function(req, res) {
+		res.status(200).json({"hi":"hi"});
 	});
 
 	app.get('/nvd3css', function(req, res){

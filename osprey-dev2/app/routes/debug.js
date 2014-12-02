@@ -99,21 +99,39 @@ Debug.prototype.clearVault = function(req, res) {
 		if (err)
 			console.log(err);
 
+		var docTracker = {"docsDeleted":0, "totalDocs": document.data.items.length};
+		if (docTracker.docsDeleted == docTracker.totalDocs) {
+			clearSchemas(req, res);
+		} 
+
 		for (var i = 0; i < document.data.items.length; i++) {
 			console.log("Deleting document: " + document.data.items[i].id)
 			truevault.documents.del({
 			   'vault_id' : vaultid,
 			   'id' : document.data.items[i].id
 			}, function (err, document){
-				if (err)
+				if (err) {
+					console.log(err);
 					console.log("Error deleting document");
-				else
+				}
+				else {
 					console.log("Document deleted");
+					docTracker.docsDeleted++;
+					if (docTracker.docsDeleted == docTracker.totalDocs) {
+						clearSchemas(req, res);
+					}
+				}
 			});
 		}
-	});
+	});	
+}
 
+var clearSchemas = function(req, res) {
 	truevault.schemas.list({ "vault_id":vaultid }, function (err, document){
+		var schemaTracker = {"schDeleted":0, "totalSch": document.schemas.length};
+		if (schemaTracker.schDeleted == schemaTracker.totalSch) {
+			res.status(200).end();
+		}
 		for (var i = 0; i < document.schemas.length; i++) {
 			console.log("Deleting schema: " + document.schemas[i].id)
 			truevault.schemas.del({
@@ -122,11 +140,39 @@ Debug.prototype.clearVault = function(req, res) {
 			}, function (err, document){
 				if (err)
 					console.log("Error deleting schema");
-				else
+				else {
+					schemaTracker.schDeleted++;
+					if (schemaTracker.schDeleted == schemaTracker.totalSch) {
+						res.status(200).end();
+					}
 					console.log("Schema deleted");
+				}
 			});
 		}
 	})
+}
+
+
+Debug.prototype.deleteTestUser = function(req, res) {
+	truevault.users.list(function (err, value) {
+		if (err) {
+			console.log("Error retrieving users");
+			res.status(500).end();
+			return;
+		}
+		for (var i = 0; i < value.users.length; i++) {
+			if (value.users[i].username == 'nickoftime555@gmail.com') {
+				truevault.users.delete({user_id: value.users[i].user_id}, function(err, value) {
+					if (err) {
+						console.log("Error deleting user");
+						res.status(500).end();
+						return;
+					}
+					res.status(200).end();
+				});
+			}
+		}
+	});
 }
 
 

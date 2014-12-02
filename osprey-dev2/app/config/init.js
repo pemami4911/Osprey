@@ -127,6 +127,7 @@ exports.initialize = function(globals, apikey, vaultid) {
 		else {
 			globals.accountId = value.users[0].account_id;
 			console.log("AccountID: " + globals.accountId);
+			console.log("Vault ID: " + vaultid)
 		}
 	})
 }

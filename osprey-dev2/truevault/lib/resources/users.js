@@ -72,6 +72,19 @@ Users.prototype.retrieve = function(options, callback) {
 
 };
 
+Users.prototype.delete = function(options, callback) {
+    var path = util.format("/%s/users/%s",
+    this.truevault.getOption('api_version'),
+    options.user_id
+  );
+
+  return this.httpsRequest({
+    path : path,
+    method : 'DELETE',
+    callback : callback
+  });
+}
+
 
 
 module.exports = Users;

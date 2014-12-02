@@ -77,9 +77,9 @@ Auth.prototype.register = function(req, res) {
 		"username": req.body.email,
 		"password": req.body.password,
 	};
+
 	truevault.users.create( user, function(err, value){
 	    if ( err ) {
-	    	console.log(err);
 	    	res.status(500).send({"message":"E-mail already exists"});
 		}
 	    else {
@@ -105,7 +105,6 @@ Auth.prototype.register = function(req, res) {
 			    		});
 			    	}
 			    }
-
 	    		truevault.documents.create( doc, function(err2, value2) {
 		    		if (err2) {
 		    			console.log(err2);
@@ -120,6 +119,7 @@ Auth.prototype.register = function(req, res) {
 	    				subject : "Email confirmation", 
 	    				html : "Hello,<br> Please Click on the link to verify your email.<br><a href="+link+">Click Here to Verify</a>"
 	    			}
+
 	    			sendEmail( mailOptions.to, mailOptions.subject, mailOptions.html ); 
 	    			res.status(200).end(); 
 			    	
