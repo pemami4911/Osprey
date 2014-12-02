@@ -151,7 +151,7 @@ Settings.prototype.generateInvite = function( req, res ) {
 		if ( err )
 			res.status(401).send( err );
 		else {
-			console.log( "Password verified for generating invite code");
+			// console.log( "Password verified for generating invite code");
 	 
 			// create an invite code
 			require("crypto").randomBytes(12, function (ex, buf) {
@@ -160,15 +160,11 @@ Settings.prototype.generateInvite = function( req, res ) {
 		    	// create invite code document and store it
 		    	var icAttributes = InviteCode.createInviteCode( req.body.physicianID, req.body.patientEmail, inviteCode );
 		    	var icDoc = Builder.vendDocument( globals.inviteCodeSchemaId, vaultid, icAttributes ); 
-		    	
-		    	console.log( icDoc ); 
 
 		    	truevault.documents.create( icDoc, function ( err, value ) {
 		    		if( err )
 		    			res.status(500).send( err ); 
 		  			else {
-		  				console.log( value ); 
-		    	
 				    	// send email to patient containing the token 
 				    	var link = "http://"+host+"/#/";
 						var mailOptions = {
@@ -188,7 +184,7 @@ Settings.prototype.generateInvite = function( req, res ) {
 }
 
 function sendEmail(recipient, subject, message) {
-	console.log("Send Email"); 
+	// console.log("Send Email"); 
 	transporter.sendMail({
 	    from: "ospreytester@gmail.com",
 	    to: recipient,

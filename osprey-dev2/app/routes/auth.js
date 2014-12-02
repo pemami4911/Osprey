@@ -134,7 +134,7 @@ Auth.prototype.verify = function(req, res) {
 
 	if((req.protocol+"://"+req.get("host"))==("http://"+host))
 	{
-		console.log("Domain is matched. Information is from Authentic email");
+		// console.log("Domain is matched. Information is from Authentic email");
 
 		var filterAttributes = Builder.vendFilterAttributes( "eq", req.query.id ); 
 		var filter = Builder.vendFilter( globals.userSchemaId, vaultid, {"confirmationToken":filterAttributes}, true );
@@ -157,8 +157,9 @@ Auth.prototype.verify = function(req, res) {
 							res.status(500).send("<h1> An error occurred while confirming your email. Please contact the Osprey Team</h1>"); 
 						}
 						else {
-							console.log( data ); 
-							console.log("Successfully updated email confirmation in database");
+							// console.log( data ); 
+							// console.log("Successfully updated email confirmation in database");
+
 							res.redirect("http://"+host+"/#/"); 
 						}				
 					});

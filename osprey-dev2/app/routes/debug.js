@@ -105,7 +105,7 @@ Debug.prototype.clearVault = function(req, res) {
 		} 
 
 		for (var i = 0; i < document.data.items.length; i++) {
-			console.log("Deleting document: " + document.data.items[i].id)
+			// console.log("Deleting document: " + document.data.items[i].id)
 			truevault.documents.del({
 			   'vault_id' : vaultid,
 			   'id' : document.data.items[i].id
@@ -115,7 +115,7 @@ Debug.prototype.clearVault = function(req, res) {
 					console.log("Error deleting document");
 				}
 				else {
-					console.log("Document deleted");
+					// console.log("Document deleted");
 					docTracker.docsDeleted++;
 					if (docTracker.docsDeleted == docTracker.totalDocs) {
 						clearSchemas(req, res);
@@ -133,7 +133,7 @@ var clearSchemas = function(req, res) {
 			res.status(200).end();
 		}
 		for (var i = 0; i < document.schemas.length; i++) {
-			console.log("Deleting schema: " + document.schemas[i].id)
+			// console.log("Deleting schema: " + document.schemas[i].id)
 			truevault.schemas.del({
 			   'vault_id' : vaultid,
 			   'id' : document.schemas[i].id
@@ -145,7 +145,7 @@ var clearSchemas = function(req, res) {
 					if (schemaTracker.schDeleted == schemaTracker.totalSch) {
 						res.status(200).end();
 					}
-					console.log("Schema deleted");
+					// console.log("Schema deleted");
 				}
 			});
 		}
