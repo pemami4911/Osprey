@@ -96,7 +96,7 @@ describe('splashController', function(){
 
 		scope.initRegData.email = 'test@test.com';
 		scope.initRegData.userType = 'Parent'; 
-		$httpBackend.when('POST', '/auth/checkReg').respond(200);
+		$httpBackend.when('POST', '/auth/checkReg').respond(200, {id: 'sampleid', name: 'dr. test'});
 
 		scope.register();
 		$httpBackend.flush();
@@ -132,7 +132,7 @@ describe('splashController', function(){
 		scope.initRegData.invCode = 'ai8s9d2fsd2'; 
 		scope.register(); 
 
-		$httpBackend.when('POST', '/auth/checkReg'). respond(200); 
+		$httpBackend.when('POST', '/auth/checkReg'). respond(200, {id: 'sampleid', name: 'dr. test'}); 
 
 		$httpBackend.flush(); 
 

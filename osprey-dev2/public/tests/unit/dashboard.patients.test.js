@@ -10,7 +10,14 @@ describe('dashboardPatientsController', function(){
 		scope = $rootScope.$new();
 
 		// establish parent controller
-		userResponse = { "userType": "Physician", "email": "asd@asd.com", "password": "hash", "tableSettings" : {"showAge": true, "showWeight": true, "showEmail": false}};
+		userResponse = 	{ 	"userType": "Physician", "email": "asd@asd.com", "password": "hash", 
+							"phyShowAge": true, "phyShowEmail": false, "phyShowWeight": true, 
+							"children" : {"content": [
+							{"birthday":"2010-01-01", "name": "child a", 
+								"parent": {"firstName":"John", "lastName":"Smith", "username": "a@a.com"}
+							}
+							]}
+						};
 		scope.loggedUser = userResponse;
 
 
@@ -20,9 +27,7 @@ describe('dashboardPatientsController', function(){
 		});
 
 		$httpBackend = _$httpBackend_; 
-		$httpBackend.when('GET', '../json/users.json').respond(200, [{}]);
 		$location = _$location_; 
-		$httpBackend.flush();
 	}));
 
 	it('should be able to instantiate a copy of the dashboardController', function() {
@@ -33,8 +38,8 @@ describe('dashboardPatientsController', function(){
 		expect(scope.tableSelections).toExist; 
 	});
 
-	it('should populate the tables with an http.GET request to our dummy backend', function() {
-		expect(scope.grid.data.length).toBe(101);
+	it('should populate the tables with children', function() {
+		expect(scope.grid.data.length).toBe(1);
 	});
 	it('should not display the email column if the user has that setting off', function() {
 		expect(scope.grid.columnDefs.length).toBe(5);

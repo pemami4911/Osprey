@@ -161,15 +161,19 @@ Debug.prototype.deleteTestUser = function(req, res) {
 			res.status(500).end();
 			return;
 		}
+		var usersDeleted = 0;
 		for (var i = 0; i < value.users.length; i++) {
-			if (value.users[i].username == 'ospreytestphysician@gmail.com') {
+			if (value.users[i].username == 'ospreytestphysician@gmail.com' || value.users[i].username == 'ospreytestparent@gmail.com') {
 				truevault.users.delete({user_id: value.users[i].user_id}, function(err, value) {
 					if (err) {
 						console.log("Error deleting user");
 						res.status(500).end();
 						return;
 					}
-					res.status(200).end();
+
+					usersDeleted++;
+					if (usersDeleted == 2)
+						res.status(200).end();
 				});
 			}
 		}

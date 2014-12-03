@@ -17,11 +17,11 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 		$scope.checkLogged = function(callback) {
 			splashFactory.isLoggedIn()
 				.success( function (data) {
-					//console.log( data ); 
 					$scope.loggedUser = data;
 					if (callback)
 						callback();			
 				}).error(function(response) {
+					$scope.loading = true;
 					$scope.error = response.message; 
 					console.log( $scope.error ); 
 					$location.path('/');
@@ -32,8 +32,9 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 		// $scope.$on is an event handler
 		// $routeChangeStart is an angular event that is called every time a route change begins
 		$scope.$on('$locationChangeStart', function (event) {
-	        if( !($scope.loading) )
+	        if( !($scope.loading) ) {
 	        	event.preventDefault();
+	        }
    		});
 
 		$scope.switchTab = function( pageNumber ) {
@@ -96,6 +97,8 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 						$scope.loggedUser.children = data;
 						init();
 					});
+			} else {
+				init();
 			}
 		}
 

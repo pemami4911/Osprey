@@ -18,6 +18,9 @@ describe('dashboardControllerLoggedInPhysician', function(){
         $httpBackend.when('POST', '/auth/isLogged').respond( function() {
             return [200, userResponse];
         }); 
+        $httpBackend.when('POST', '/users/childrenOfPhysician').respond( function() {
+            return [200, {'content':[]}];
+        }); 
         $httpBackend.when('GET', '/auth/logout').respond(200, "OK"); 
         $httpBackend.flush();
         $location = _$location_; 
@@ -66,8 +69,8 @@ describe('dashboardControllerLoggedInPhysician', function(){
    it('should change the content url to any other url', function() {
         scope.switchTab(3);  
         expect(scope.contentUrl).toBe('views/dashPartials/dashCharts.html'); 
-        scope.switchTab(1);
-        expect(scope.contentUrl).toBe('views/dashPartials/dashMain.html'); 
+        scope.switchTab(4);
+        expect(scope.contentUrl).toBe('views/dashPartials/dashSettings.html'); 
         scope.switchTab(2); 
         expect(scope.contentUrl).toBe('views/dashPartials/dashMyPatients.html'); 
     });
@@ -109,9 +112,8 @@ describe('dashboardControllerLoggedInParent', function(){
         expect(scope.activeTab).toExist; 
     });
 
-    // the first thing a physician should see when they log in is a table of their patients
     it('should display a table of the physicians patients immediately when they log in to the dashboard', function() {
-        expect(scope.contentUrl).toBe('views/dashPartials/dashMain.html'); 
+        expect(scope.contentUrl).toBe('views/dashPartials/dashParent.html'); 
     });
     it('should have one tab in the navigation bar', function() {
         expect(scope.navItems.length).toBe(1);
@@ -135,7 +137,7 @@ describe('dashboardControllerNotLoggedIn', function(){
         });
 
         $httpBackend = _$httpBackend_; 
-        $httpBackend.when('POST', '/auth/isLogged').respond(200, 'false'); 
+        $httpBackend.when('POST', '/auth/isLogged').respond(500, {"message":"Verification Error"}); 
         $location = _$location_; 
     }));
 
