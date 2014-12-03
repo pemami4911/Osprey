@@ -83,10 +83,6 @@ module.exports = function(app, vault) {
 		Settings.changePassword( req, res ); 
 	});
 
-	app.get('/users/unassignedParents', function(req, res) {
-		Users.unassignedParents(req, res);
-	 });
-
 	app.post('/users/childrenOfParent', function(req, res) {
 		Users.childrenOfParent(req, res);
 	});
