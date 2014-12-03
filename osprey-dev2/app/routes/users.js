@@ -75,14 +75,15 @@ Users.prototype.childrenOfPhysician = function(req, res) {
 				res.status(500).send({"message":"Search error"});
 				return;
 			}
-			
+			var retObject = {"content":[]};
+
 			if (value.data.documents.length === 0) {
-				console.log("no matching parent documents found");
+				res.status(200).json(retObject);
 				return;
 			}
 
 			var numOfParents = value.data.documents.length;
-			var retObject = {"content":[]};
+			
 
 			// keeps track of how many children and parents have been added to return object
 			// ensures that object is only returned when all parents and children have been added

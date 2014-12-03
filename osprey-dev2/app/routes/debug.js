@@ -138,8 +138,9 @@ var clearSchemas = function(req, res) {
 			   'vault_id' : vaultid,
 			   'id' : document.schemas[i].id
 			}, function (err, document){
-				if (err)
-					console.log("Error deleting schema");
+				if (err) {
+					console.log(err);
+				}
 				else {
 					schemaTracker.schDeleted++;
 					if (schemaTracker.schDeleted == schemaTracker.totalSch) {
@@ -161,7 +162,7 @@ Debug.prototype.deleteTestUser = function(req, res) {
 			return;
 		}
 		for (var i = 0; i < value.users.length; i++) {
-			if (value.users[i].username == 'nickoftime555@gmail.com') {
+			if (value.users[i].username == 'ospreytestphysician@gmail.com') {
 				truevault.users.delete({user_id: value.users[i].user_id}, function(err, value) {
 					if (err) {
 						console.log("Error deleting user");

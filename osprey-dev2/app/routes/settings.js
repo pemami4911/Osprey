@@ -149,7 +149,7 @@ Settings.prototype.generateInvite = function( req, res ) {
 
 	truevault.auth.login( loginDetails, function(err, value) {
 		if ( err )
-			res.status(401).send( err );
+			res.status(401).send( "Incorrect password" );
 		else {
 			// console.log( "Password verified for generating invite code");
 	 
@@ -160,7 +160,6 @@ Settings.prototype.generateInvite = function( req, res ) {
 		    	// create invite code document and store it
 		    	var icAttributes = InviteCode.createInviteCode( req.body.physicianID, req.body.patientEmail, inviteCode );
 		    	var icDoc = Builder.vendDocument( globals.inviteCodeSchemaId, vaultid, icAttributes ); 
-
 		    	truevault.documents.create( icDoc, function ( err, value ) {
 		    		if( err )
 		    			res.status(500).send( err ); 

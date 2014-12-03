@@ -49,8 +49,9 @@ Auth.prototype.login = function(req, res) {
 	isConfirmed( checkConfirmed, function ( data, userType ) {
 		if( data === undefined )
 			res.status(500).send({"message":"Invalid email or password"}); 
-		if(  data != "OK" )
+		if(  data != "OK" ) {
 			res.status(401).send({"message":"Please confirm your email first"} );  
+		}
 		else {
 			
 			var loginDetails = Builder.vendLogin( req, globals.accountId ); 
@@ -140,7 +141,7 @@ Auth.prototype.verify = function(req, res) {
 		var filter = Builder.vendFilter( globals.userSchemaId, vaultid, {"confirmationToken":filterAttributes}, true );
 
 		isConfirmed( filter, function ( resp, user, id ) {
-			 if( resp === undefined ) 
+			if( resp === undefined ) 
 				res.status(500).send("<h1> An error occurred while verifying your email. Please contact the Osprey Team</h1>"); 
 			else {
 				if( resp === "Unauthorized" ) {
@@ -157,15 +158,16 @@ Auth.prototype.verify = function(req, res) {
 							res.status(500).send("<h1> An error occurred while confirming your email. Please contact the Osprey Team</h1>"); 
 						}
 						else {
+							// console.log(updateUser);
 							// console.log( data ); 
 							// console.log("Successfully updated email confirmation in database");
 
 							res.redirect("http://"+host+"/#/"); 
 						}				
 					});
-				}	 
+				}
 				else 
-					res.status(500).send("<h1>User has already been updated</h1>"); 
+					res.status(400).send("<h1>User has already been updated</h1>"); 
 			}
 		});
 	}
@@ -188,8 +190,6 @@ Auth.prototype.checkReg = function (req, res) {
 			if( err )
 				console.log( err ); 
 			else {
-				console.log( value ); 
-
 				if( value.data.documents.length === 0 ) {
 					res.status(401).send({"message":"The invite code was not recognized"}); 
 				}
@@ -244,7 +244,6 @@ Auth.prototype.checkReg = function (req, res) {
 														"name":"Dr. "+data.firstName+" "+data.lastName,
 														"id":physID
 													}
-													console.log( physData ); 
 													truevault.users.list(function(err, value) {
 													    if (err)
 													    	res.status(500).send({"message":"An internal server error occurred. Sad tiger!"});
@@ -275,7 +274,7 @@ Auth.prototype.checkReg = function (req, res) {
 		    else {
 		    	for (var i = 0; i < value.users.length; i++) {
 		    		if (req.body.email == value.users[i].username)
-		    			res.status(401).send({"message":"A user is already registered with this email"}); 
+		    			res.status(500).send({"message":"A user is already registered with this email"}); 
 		    	}
 		    	res.status(200).end();
 		    }
@@ -378,7 +377,7 @@ function isConfirmed( user, callback) {
 						console.log( err );
 						callback( undefined ); 
 					} 
-					else {		
+					else {
 						if( data.isConfirmed === false )	// if the user has not been confirmed yet
 							callback( "Unauthorized", data, doc_id);  // send back an error message
 						else 
@@ -387,7 +386,7 @@ function isConfirmed( user, callback) {
 				});		 
 			}
 			else {
-				console.log( value.data ); 	// the user is not found
+				// console.log( value.data ); 	// the user is not found
 				callback( undefined );
 			}
 		}
@@ -396,7 +395,7 @@ function isConfirmed( user, callback) {
 
 
 function sendEmail(recipient, subject, message) {
-	console.log("Send Email"); 
+	// console.log("Send Email"); 
 	transporter.sendMail({
 	    from: "ospreytester@gmail.com",
 	    to: recipient,
