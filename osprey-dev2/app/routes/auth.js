@@ -50,7 +50,7 @@ Auth.prototype.login = function(req, res) {
 		if( data === undefined )
 			res.status(500).send({"message":"Invalid email or password"}); 
 		if(  data != "OK" ) {
-			res.status(401).send({"message":"Please confirm your email first"} );  
+			res.status(401).send({"message":"Please confirm your email first"});  
 		}
 		else {
 			
@@ -61,9 +61,9 @@ Auth.prototype.login = function(req, res) {
 					//return res.send( handler.errorHandler( 401, "Login Failed" ) );
 					res.status(401).send({"message":"Login Failed"}); 
 				} else {
-					console.log("login successful");
+					// console.log("login successful");
 					req.session.access_token = value.user.access_token;
-					res.status(200).end(); 
+					res.status(200).end();; 
 				}
 			});	
 		}
@@ -92,7 +92,6 @@ Auth.prototype.register = function(req, res) {
 
 		    	if (req.body.userType != "Physician") {
 			    	for (var i = 0; i < req.body.numChildren; i++) {
-			    		console.log(req.body.children[i]);
 			      		
 			    		var newChild = Child.createChild( value.user.user_id, req.body.children[i].childName, req.body.children[i].childBirthday, req.body.children[i].childGender );
 			    		var childDoc = Builder.vendDocument( globals.childSchemaId, vaultid, newChild ); 
@@ -102,7 +101,6 @@ Auth.prototype.register = function(req, res) {
 			    				console.log( err ); 
 			    				res.status(500).send({"message":"error at child doc creation"});
 			    			}
-			    			console.log(value);
 			    		});
 			    	}
 			    }
@@ -158,10 +156,6 @@ Auth.prototype.verify = function(req, res) {
 							res.status(500).send("<h1> An error occurred while confirming your email. Please contact the Osprey Team</h1>"); 
 						}
 						else {
-							// console.log(updateUser);
-							// console.log( data ); 
-							// console.log("Successfully updated email confirmation in database");
-
 							res.redirect("http://"+host+"/#/"); 
 						}				
 					});
@@ -286,7 +280,6 @@ Auth.prototype.checkReg = function (req, res) {
 // checks access token stored in session 
 Auth.prototype.isLogged = function(req, res) {
 	var temp = require("../../truevault/lib/truevault.js")(req.session.access_token);
-
 	temp.auth.verify(function(err, value){
 		if ( err ) 
 			res.status(500).send({"message":"Verification Error"});
@@ -294,7 +287,6 @@ Auth.prototype.isLogged = function(req, res) {
 
 			var filterAttributes = Builder.vendFilterAttributes( "eq", value.user.user_id ); 
 			var filter = Builder.vendFilter( globals.userSchemaId, vaultid, {"user_id":filterAttributes}, true );
-			
 			truevault.documents.search( filter, function (err2, value2) {
 				if (err) 
 					res.status(500).send({"message":"TrueVault API failure"});
@@ -336,8 +328,6 @@ Auth.prototype.isLogged = function(req, res) {
 // checks access token stored in session
 // attempts to logout, sends appropriate message 
 Auth.prototype.logout = function (req, res) {
-	console.log(req.session.access_token);
-
 	if (req.session.access_token != null) {
 		var temp = require("../../truevault/lib/truevault.js")(req.session.access_token);
 

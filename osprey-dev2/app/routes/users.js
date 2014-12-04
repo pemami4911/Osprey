@@ -30,6 +30,7 @@ Users.prototype.childrenOfParent = function(req, res) {
 			return;
 		}
 
+		// change req.body.parentid to value.user.user_id
 		var filterAttributes = Builder.vendFilterAttributes( "eq", req.body.parentId ); 
 		var filter = Builder.vendFilter( globals.childSchemaId, vaultid, {"parentId":filterAttributes}, true );
 
@@ -54,21 +55,16 @@ Users.prototype.childrenOfParent = function(req, res) {
 }
 
 
-
-// Not complete
 Users.prototype.childrenOfPhysician = function(req, res) {
 	var temp = require('../../truevault/lib/truevault.js')(req.session.access_token);
 	temp.auth.verify(function(err, value){
-		console.log("verified");
 		if (err) {
-			console.log("verification error");
 			res.status(500).send({"message":"Verification error"}); 
 			return;
 		}
 
-		var filterParentAttributes = Builder.vendFilterAttributes( "eq", req.body.physicianId ); 
+		var filterParentAttributes = Builder.vendFilterAttributes( "eq", value.user.user_id ); 
 		var filterParent = Builder.vendFilter( globals.userSchemaId, vaultid, {"parPhysicianId":filterParentAttributes}, true );
-
 		truevault.documents.search(filterParent, function (err, value) {
 			if (err) {
 				console.log('search error');
@@ -147,7 +143,6 @@ var addChildPhysician = function(res, retObject, retTracker, childDoc, parentObj
 		retTracker.childrenProcessed++;
 
 		if (retTracker.childrenProcessed == retTracker.totalChildren && retTracker.parentsProcessed == retTracker.totalParents) {
-			console.log(retObject);
 			res.status(200).json(retObject);
 		}
 	});

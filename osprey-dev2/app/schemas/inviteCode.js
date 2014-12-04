@@ -11,7 +11,7 @@ inviteCodeSchema.prototype.createSchema = function() {
 		   	},
 		   	{	
 		   		"name": "parentEmail",
-		   	  	"index": false,
+		   	  	"index": true,
 		   	  	"type": "string"
 		   	},
 			{

@@ -57,62 +57,52 @@ Settings.prototype.changeTableSettings = function(req, res) {
 				'full_document' : true
 			};
 			truevault.documents.search(options, function (err2, value2) {
-				if (err2)
+				if (err2) {
 					res.status(500).send({"message":"TrueVault API"}); 
-				else {
-					if (value2.data.documents.length == 0)
-						res.status(401).send( {"message":"no matching user document found"} );
-					else {
-						truevault.documents.retrieve({
-						   'vault_id' : vaultid,
-						   'id' : value2.data.documents[0].document_id
-						}, function (err, document) {
-
-							document.phyShowEmail = req.body.newSettings.email;
-							document.phyShowAge = req.body.newSettings.age;
-							document.phyShowWeight = req.body.newSettings.weight;
-
-							truevault.documents.update({
-								'vault_id' : vaultid,
-						  		'id' : value2.data.documents[0].document_id,
-						  		'document' : document
-							}, function ( err, value ) {
-								if( err )
-									res.status(500).send({"message":"An internal server error occurred. Sad tiger!"}); 
-								res.status(200).end(); 
-							});
-						});
-					}
+					return;
 				}
+
+				if (value2.data.documents.length == 0) {
+					res.status(401).send( {"message":"no matching user document found"} );
+					return;
+				}
+
+				var buf = new Buffer(value2.data.documents[0].document, 'base64');
+				var physObject = JSON.parse(buf.toString('ascii'));
+
+				physObject.phyShowEmail = req.body.newSettings.email;
+				physObject.phyShowAge = req.body.newSettings.age;
+				physObject.phyShowWeight = req.body.newSettings.weight;
+
+				truevault.documents.update({
+					'vault_id' : vaultid,
+			  		'id' : value2.data.documents[0].document_id,
+			  		'document' : physObject
+				}, function ( err, value ) {
+					if( err )
+						res.status(500).send({"message":"An internal server error occurred. Sad tiger!"}); 
+					res.status(200).end(); 
+				});
 			});
 		}
 	});
 }
 
 Settings.prototype.changeEmail = function(req, res) {
-		// UserModel.findOne({ email : req.body.currentEmail }, function(err, user) {
-		// 	if(err) res.send(err); 
-		// 	else { 
-		// 		if( !user )	// if the email was not found, return null
-		// 			res.send("err1"); 
-		// 		else {
-		// 			if ( !user.validPassword(req.body.password) ) // if the email is correct but the password is not, return false
-		// 				res.send("err2"); 
-		// 			else {
-		// 				// use mongoose to get all todos in the database
-		// 				UserModel.update({email: req.body.currentEmail}, {email: req.body.newEmail}, {}, function(err, result) {
-		// 					if (err) {
-		// 						console.log("error" + err);
-		// 						res.send(err);
-		// 					}
-		// 					sendEmail(req.body.newEmail, "E-mail changed!", "You have changed your e-mail address!");
-		// 					sendEmail(req.body.currentEmail, "E-mail changed!", "This is no longer the e-mail address registered with your Osprey account!"); 
-		// 					res.json(result);
-		// 				});
-		// 			}
-		// 		}
-		// 	}
-		// }); 	
+	var temp = require('../../truevault/lib/truevault.js')(req.session.access_token);
+
+	temp.auth.verify(function(err, value){
+		if (err) {
+			res.status(500).send({"message": "User verification error"});
+			return;
+		}
+
+		truevault.users.updateUsername({'user_id': value.user.user_id, 'username': 'a@a.com'}, function (err, value) {
+			console.log(err);
+			console.log(value);
+			res.status(200).end();
+		});
+	});
 }
 
 Settings.prototype.changePassword = function(req, res) {
