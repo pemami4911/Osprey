@@ -1,0 +1,22 @@
+
+.patient-stats {
+    vertical-align: top;
+    padding: -10px 30px;
+}
+.patient-name { 
+	font-weight: bold;
+	line-height: 0.5;
+}
+.tracking { 
+	font-weight: bold;
+	margin-top: 8px; 
+	margin-bottom: 8px;
+}
+.patient-name-row { 
+	background-color: #f3f3f3;
+	padding: 5px 0px;	
+}
+.patient-photo { 
+	margin-right: -5px; 
+	margin-left: -5px;
+	}
