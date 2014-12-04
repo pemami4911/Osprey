@@ -10,8 +10,8 @@
         <div class="col-lg-12">
             <tabset>
                 <tab id="patients" heading="Link With Patients">
-                    <accordion>
-                        <accordion-group heading="Generate Invite Code">
+                    <accordion close-others="true">
+                        <accordion-group heading="Generate Invite Code" is-open="isFirstOpen">
                             <form class="form-horizontal" role="form" ng-submit="generateInviteCodeEmail()">
                                  <div class="form-group">
                                     <label for="patientEmail" class="col-sm-2 control-label" >Patient Email</label>
@@ -31,12 +31,12 @@
                                     </div>  
                                 </div>
                             </form>
-                        </accordion>
+                        </accordion-group>
                     </accordion>
                 </tab>
                 <tab id="custom" heading="Customize">
                     <accordion close-others="true">
-                        <accordion-group heading="Table">
+                        <accordion-group heading="Table" is-open="isFirstOpen">
                             <form class="form-horizontal" role="form" ng-submit="changeTableSettings()">
                                 <div class="form-group">
                                     <div class="col-sm-12 text-left">
@@ -71,7 +71,7 @@
                 </tab>
                 <tab id="accSettings" heading="Account Settings">
                     <accordion close-others="true" >
-                        <accordion-group id="chEmail" heading="Change E-mail" class="in">
+                        <accordion-group id="chEmail" heading="Change E-mail" is-open="isFirstOpen">
                             <form class="form-horizontal" role="form" ng-submit="changeEmail()">
                                 <div class="form-group">
                                     <label for="oldEmail" class="col-sm-2 control-label" >Current Email</label>

@@ -17,6 +17,8 @@ angular.module('dashboardSettingsModule', ['splashPageService', 'ngReactGrid', '
 		}; 
 		$scope.newTableSettings = {}; 
 
+		$scope.isFirstOpen = true;
+
 		// invite code vars
 		$scope.inviteCode = {
 			'patientEmail':'', 
