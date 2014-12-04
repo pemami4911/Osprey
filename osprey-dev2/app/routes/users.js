@@ -23,15 +23,12 @@ function Users(_globals, _api_key, _vaultid) {
 Users.prototype.childrenOfParent = function(req, res) {
 	var temp = require('../../truevault/lib/truevault.js')(req.session.access_token);
 	temp.auth.verify(function(err, value){
-		console.log("verified");
 		if (err) {
-			console.log("verification error");
-			res.status(500).send({"message":"Verification error"}); 
+			res.status(401).send({"message":"Verification error"}); 
 			return;
 		}
 
-		// change req.body.parentid to value.user.user_id
-		var filterAttributes = Builder.vendFilterAttributes( "eq", req.body.parentId ); 
+		var filterAttributes = Builder.vendFilterAttributes( "eq", value.user.user_id  ); 
 		var filter = Builder.vendFilter( globals.childSchemaId, vaultid, {"parentId":filterAttributes}, true );
 
 		truevault.documents.search(filter, function (err2, value2) {
@@ -41,14 +38,12 @@ Users.prototype.childrenOfParent = function(req, res) {
 				return;
 			}
 
-			console.log( value2 ); 
-			if (value2.data.documents.length === 0)
-				console.log("no matching child documents found");
-			else {
-				var retObject = {"content":[]};
-				for (var i = 0; i < value2.data.documents.length; i++) {
-					addChild(res, retObject, value2.data.documents.length, value2.data.documents[i]);
-				}
+			var retObject = {"content":[]};
+			if (value2.data.documents.length == 0) {
+				res.status(200).json(retObject);
+			}
+			for (var i = 0; i < value2.data.documents.length; i++) {
+				addChild(res, retObject, value2.data.documents.length, value2.data.documents[i]);
 			}
 		});
 	});
@@ -59,7 +54,7 @@ Users.prototype.childrenOfPhysician = function(req, res) {
 	var temp = require('../../truevault/lib/truevault.js')(req.session.access_token);
 	temp.auth.verify(function(err, value){
 		if (err) {
-			res.status(500).send({"message":"Verification error"}); 
+			res.status(401).send({"message":"Verification error"}); 
 			return;
 		}
 
@@ -113,6 +108,27 @@ Users.prototype.childrenOfPhysician = function(req, res) {
 				});
 			}
 		});
+	});
+}
+
+Users.prototype.addChild = function(req, res) {
+	var temp = require('../../truevault/lib/truevault.js')(req.session.access_token);
+	temp.auth.verify(function(err, value){
+		if (err) {
+			res.status(401).send({"message":"Verification error"}); 
+			return;
+		}
+
+		var newChild = Child.createChild( value.user.user_id, req.body.childName, req.body.childBirthday, req.body.childGender );
+		var childDoc = Builder.vendDocument( globals.childSchemaId, vaultid, newChild );
+
+		truevault.documents.create( childDoc, function( err, value ) {
+			if (err) {
+				console.log( err ); 
+				res.status(500).send({"message":"error at child doc creation"});
+			}
+			res.status(200).end();
+		}); 
 	});
 }
 
@@ -182,5 +198,8 @@ var addChild = function(res, retObject, numChildren, childDoc) {
 		}
 	});
 }
+
+
+
 
 module.exports = Users; 

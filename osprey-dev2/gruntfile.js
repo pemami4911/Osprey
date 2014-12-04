@@ -47,6 +47,12 @@ module.exports = function(grunt) {
 	    env: {
 			test: {
 				NODE_ENV: 'test'
+			},
+			nick: {
+				NODE_ENV: 'nick'
+			},
+			patrick: {
+				NODE_ENV: 'patrick'
 			}
 		},
 	    mochaTest: {
@@ -78,7 +84,7 @@ module.exports = function(grunt) {
 		    dev: {
 		    	script: 'server.js',
 		    	options: {
-		    		args: ['NODE_ENV=test']
+
 		    	}
 		    }
 	    }
@@ -93,6 +99,8 @@ module.exports = function(grunt) {
 
     grunt.registerTask('test', ['env:test', 'karma', 'mochaTest', 'protractor_webdriver', 'protractor']);
     grunt.registerTask('default', ['nodemon']);
+    grunt.registerTask('nick', ['env:nick', 'nodemon']);
+    grunt.registerTask('patrick', ['env:patrick', 'nodemon']);
    	grunt.registerTask('testmocha', ['env:test', 'mochaTest']);
    	grunt.registerTask('testkarma', ['env:test', 'karma']);
    	grunt.registerTask('testprotractor', ['env:test', 'mochaTest', 'protractor_webdriver', 'protractor']);

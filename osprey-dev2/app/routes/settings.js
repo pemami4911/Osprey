@@ -90,61 +90,61 @@ Settings.prototype.changeTableSettings = function(req, res) {
 }
 
 Settings.prototype.changeEmail = function(req, res) {
-		var user, doc_id; 
+	var user, doc_id; 
 
-		// validate the email and password 
-		var userDetails = Builder.vendLogin( req, globals.accountId ); 
-		// grab the user with the current email
-		var filterAttributes = Builder.vendFilterAttributes( "eq", req.body.email ); 
-		var filter = Builder.vendFilter( globals.userSchemaId, vaultid, {"username":filterAttributes}, true );
+	// validate the email and password 
+	var userDetails = Builder.vendLogin( req, globals.accountId ); 
+	// grab the user with the current email
+	var filterAttributes = Builder.vendFilterAttributes( "eq", req.body.email ); 
+	var filter = Builder.vendFilter( globals.userSchemaId, vaultid, {"username":filterAttributes}, true );
 
-		var onSuccess = function( ex, buf ) {
-			// User attributes object creation
-	    	var token = buf.toString("hex");
-	    	user.confirmationToken = token; 
+	var onSuccess = function( ex, buf ) {
+		// User attributes object creation
+    	var token = buf.toString("hex");
+    	user.confirmationToken = token; 
 
-	   		var link, mailOptions; 
-			link = "http://"+req.get("host")+"/verify?id="+token; 
-			mailOptions={
-				to : req.body.newEmail,
-				subject : "Email confirmation", 
-				html : "Hello,<br> Please Click on the link to verify your email.<br><a href="+link+">Click Here to Verify</a><br><br><p>Regards,<p><p>The Osprey Team<p>"
-			}
-
-			sendEmail( mailOptions.to, mailOptions.subject, mailOptions.html ); 
-			// update the user document in the database
-			var updateDetails = Builder.updateDocument( globals.userSchemaId, vaultid, doc_id, user ); 
-			truevault.documents.update( updateDetails, ifError); 
+   		var link, mailOptions; 
+		link = "http://"+req.get("host")+"/verify?id="+token; 
+		mailOptions={
+			to : req.body.newEmail,
+			subject : "Email confirmation", 
+			html : "Hello,<br> Please Click on the link to verify your email.<br><a href="+link+">Click Here to Verify</a><br><br><p>Regards,<p><p>The Osprey Team<p>"
 		}
 
-		var foundUser = function( err, value ) {
-			if( err ) {
-				console.log( err ); 
-				res.status(401).send({"message":err}); 
-			}	
-			else {
+		sendEmail( mailOptions.to, mailOptions.subject, mailOptions.html ); 
+		// update the user document in the database
+		var updateDetails = Builder.updateDocument( globals.userSchemaId, vaultid, doc_id, user ); 
+		truevault.documents.update( updateDetails, ifError); 
+	}
 
-				// used to ensure that the doc id is correct
-				doc_id = value.data.documents[0].document_id;
-				if ( !regex.test( doc_id) )
-					doc_id = value.data.documents[0]; 
+	var foundUser = function( err, value ) {
+		if( err ) {
+			console.log( err ); 
+			res.status(401).send({"message":err}); 
+		}	
+		else {
 
-				var b64string = value.data.documents[0].document;
-				var buf = new Buffer(b64string, 'base64');
-				user = JSON.parse(buf.toString('ascii'));
-				truevault.users.updateUsername({'user_id': user.user_id, 'username': req.body.newEmail}, ifError); 
-				
-				// change the email in the user document
-				user.username = req.body.newEmail; 
-				user.isConfirmed = false; 
-				// set the new token and send an email
-				require("crypto").randomBytes(32, onSuccess); 
-				
-				res.status(200).end(); 
-			}
+			// used to ensure that the doc id is correct
+			doc_id = value.data.documents[0].document_id;
+			if ( !regex.test( doc_id) )
+				doc_id = value.data.documents[0]; 
+
+			var b64string = value.data.documents[0].document;
+			var buf = new Buffer(b64string, 'base64');
+			user = JSON.parse(buf.toString('ascii'));
+			truevault.users.updateUsername({'user_id': user.user_id, 'username': req.body.newEmail}, ifError); 
+			
+			// change the email in the user document
+			user.username = req.body.newEmail; 
+			user.isConfirmed = false; 
+			// set the new token and send an email
+			require("crypto").randomBytes(32, onSuccess); 
+			
+			res.status(200).end(); 
 		}
-		truevault.auth.login( userDetails, validateUser);
-		truevault.documents.search( filter, foundUser); 
+	}
+	truevault.auth.login( userDetails, validateUser);
+	truevault.documents.search( filter, foundUser); 
 }
 
 Settings.prototype.changePassword = function(req, res) {

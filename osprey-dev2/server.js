@@ -14,6 +14,11 @@ var vaultid = 'b51db608-3321-41dd-9531-bfc40c1f5c27' // nick-dev
 if (process.env.NODE_ENV == 'test') {
 	vaultid = '093b7e33-be5c-4f41-bd95-11cdebf3465b' // test
 } else {
+	if (process.env.NODE_ENV == 'nick')
+		vaultid = 'b51db608-3321-41dd-9531-bfc40c1f5c27'  // nick-dev
+	else if (process.env.NODE_ENV == 'patrick')
+		vaultid = '3ff57a92-b0ba-4972-b518-7b584c667809'  // patrick-dev
+
 	app.use(morgan('dev')); // log every request to the console
 }
 

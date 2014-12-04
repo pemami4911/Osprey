@@ -897,7 +897,7 @@ describe('mocha unit tests', function () {
 		        	if (err) {
 		            	throw err;
 		          	}
-		          	res.status.should.equal(500);
+		          	res.status.should.equal(401);
 		          	res.error.text.should.equal('{"message":"Verification error"}');
 		          	done();
 		        });
@@ -985,37 +985,34 @@ describe('mocha unit tests', function () {
 		        });
 	    });
 
-	    it('should change a username successfully', function(done) {
-	    	this.timeout(5000);
+	 //    it('should change a username successfully', function(done) {
+	 //    	this.timeout(5000);
 
-			agent
-          		.post('/settings/changeEmail')
-				.end(function(err, res) {
-		        	if (err) {
-		            	throw err;
-		          	}
-		          	res.status.should.equal(200);
-		          	done();
-		        });
-	    });
+		// 	agent
+  //         		.post('/settings/changeEmail')
+		// 		.end(function(err, res) {
+		//         	if (err) {
+		//             	throw err;
+		//           	}
+		//           	res.status.should.equal(200);
+		//           	done();
+		//         });
+	 //    });
 
-		it('should successfully update the user document when username is changed', function(done) {
-			this.timeout(5000);
-			agent
-          		.post('/auth/isLogged')
-				.end(function(err, res) {
-		        	if (err) {
-		            	throw err;
-		          	}
-		          	console.log(res.body);
-		          	done();
-		        });
-	    });
+		// it('should successfully update the user document when username is changed', function(done) {
+		// 	this.timeout(5000);
+		// 	agent
+  //         		.post('/auth/isLogged')
+		// 		.end(function(err, res) {
+		//         	if (err) {
+		//             	throw err;
+		//           	}
+		//           	console.log(res.body);
+		//           	done();
+		//         });
+	 //    });
 
 	    it('should log out successfully', function(done) {
-	    	var postBody = {
-	        	"physicianId": physicianId
-	      	};
 	    	agent
           		.get('/auth/logout')
 				.end(function(err, res) {
@@ -1052,6 +1049,196 @@ describe('mocha unit tests', function () {
 		          	done();
 		        });
 	    });
+	});
+
+/*
+	=========================================================================
+	=========================================================================
+	|																		|
+	|						  PARENT FUNCTIONALITY 							|
+	|																		|
+	=========================================================================
+	=========================================================================
+	*/
+	describe('Parent functionality (/auth/logout, /auth/isLogged, /users/childrenOfParent)', function() {
+		var agentPhysician = request.agent(url); // agent tracks its own cookies and session variables
+		var agentParent = request.agent(url);
+		var parent1Id = '';
+		var parent2Id = '';
+		before( function(done) {			
+			this.timeout(20000);
+
+	     	var postBody = {
+	        	email: 'ospreytestphysician@gmail.com',
+	        	password: 'asdf'
+	      	};
+
+	      	agentPhysician
+          		.post('/auth/login')
+				.send(postBody)
+				.end(function(err, res) {
+		        	if (err) {
+		            	throw err;
+		          	}
+		          	var postBody2 = {
+			        	email: 'ospreytestparent2@gmail.com',
+			        	password: 'asdf'
+			      	};
+
+				    agentParent
+		          		.post('/auth/login')
+						.send(postBody2)
+						.end(function(err, res) {
+				        	if (err) {
+				            	throw err;
+				          	}
+				          	done();
+				        });
+		        });
+		});
+
+		it('should successfully login and return a user document for a parent', function(done) {
+			this.timeout(5000);
+			agentParent
+          		.post('/auth/isLogged')
+				.end(function(err, res) {
+		        	if (err) {
+		            	throw err;
+		          	}
+		          	res.body.username.should.equal('ospreytestparent2@gmail.com');
+		          	res.body.firstName.should.equal('Jane2');
+		          	res.body.lastName.should.equal('Johnson2');
+		          	res.body.userType.should.equal("Parent");
+		          	res.body.isConfirmed.should.equal(true);
+		          	parent1Id = res.body.user_id;
+		          	done();
+		        });
+	    });
+
+	    it('should get all the children of a parent', function(done) {
+	    	this.timeout(5000);
+	    	agentParent
+          		.post('/users/childrenOfParent')
+				.end(function(err, res) {
+		        	if (err) {
+		            	throw err;
+		          	}
+					res.body.content.length.should.equal(2);
+					for (var i = 0; i < res.body.content; i++) {
+						var childDocument = res.body.content[i];
+						if (childDocument.name == 'Child One') {
+							childDocument.birthday.should.equal('2010-01-01');
+							childDocument.gender.should.equal('Male');
+							childDocument.parentId.should.equal(parId2);
+							childDocument.parent.username.should.equal("ospreytestparent@gmail.com");
+						} else {
+							childDocument.birthday.should.equal('2011-01-01');
+							childDocument.gender.should.equal('Female');
+							childDocument.parentId.should.equal(parId2);
+							childDocument.parent.username.should.equal("ospreytestparent@gmail.com");
+						}
+					}
+		          	done();
+		        });
+	    });
+
+		it('should return nothing if childrenOfParent is called while a physician is logged in', function(done) {
+			this.timeout(5000);
+	    	agentPhysician
+          		.post('/users/childrenOfParent')
+				.end(function(err, res) {
+		        	if (err) {
+		            	throw err;
+		          	}
+					res.body.content.length.should.equal(0);
+		          	done();
+		        });
+	    });
+
+	    it('should reject childrenOfParent if the session access token is invalid', function(done) {
+			request(url)
+          		.post('/users/childrenOfParent')
+				.end(function(err, res) {
+		        	if (err) {
+		            	throw err;
+		          	}
+		          	res.status.should.equal(401);
+		          	res.error.text.should.equal('{"message":"Verification error"}');
+		          	done();
+		        });
+	    });
+
+	    it('should add a child successfully to a parent with two children', function(done){
+	    	this.timeout(5000);
+	    	var postBody = {"childName": "New Child", "childBirthday": "2005-01-01", "childGender":"Male"};
+			agentParent
+          		.post('/users/addChild')
+          		.send(postBody)
+				.end(function(err, res) {
+		        	if (err) {
+		            	throw err;
+		          	}
+		          	res.status.should.equal(200);
+		          	done();
+		        });
+	    })
+
+	    it('should add a new child document successfully when a child is added to a parent with two children', function(done){
+	    	this.timeout(5000);
+	    	truevault.documents.search({
+				"vault_id" : vaultid, 
+				"filter" : {"name": {type:"eq", value:"New Child"}},
+				"full_document" : true,
+				"per_page": 10 //true to return full documents vs uuids
+			}, function (err, document){
+				var b64string = document.data.documents[0].document;
+				var buf = new Buffer(b64string, 'base64');
+				var childDocument = JSON.parse(buf.toString('ascii'));
+				childDocument.birthday.should.equal('2005-01-01');
+				childDocument.gender.should.equal('Male');
+				childDocument.parentId.should.equal(parent1Id);
+				done();
+			});
+	    })
+
+	    it('should log out successfully', function(done) {
+	    	agentParent
+          		.get('/auth/logout')
+				.end(function(err, res) {
+		        	if (err) {
+		            	throw err;
+		          	}
+					res.status.should.equal(200);
+		          	done();
+		        });
+	    });
+
+	    it('should reject addChild if the session access token is invalid', function(done) {
+			request(url)
+          		.post('/users/addChild')
+				.end(function(err, res) {
+		        	if (err) {
+		            	throw err;
+		          	}
+		          	res.status.should.equal(401);
+		          	res.error.text.should.equal('{"message":"Verification error"}');
+		          	done();
+		        });
+	    });
+
+	    it('should fail to log out a user that was formerly logged in', function(done) {
+	    	agentParent
+          		.get('/auth/logout')
+				.end(function(err, res) {
+		        	if (err) {
+		            	throw err;
+		          	}
+					res.status.should.equal(401);
+					res.error.text.should.equal('{"message":"No one is currently logged in"}');
+		          	done();
+		        });
+	    });
+
 	});
 
     after( function(done) {

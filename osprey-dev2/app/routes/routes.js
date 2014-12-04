@@ -91,6 +91,10 @@ module.exports = function(app, vault) {
 		Users.childrenOfPhysician(req, res);
 	});
 
+	app.post('/users/addChild', function(req, res) {
+		Users.addChild(req, res);
+	});
+
 	app.post('/test/test', function(req, res) {
 		res.status(200).json({"hi":"hi"});
 	});

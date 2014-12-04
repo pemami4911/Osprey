@@ -81,7 +81,6 @@ Auth.prototype.register = function(req, res) {
 	};
 
 	var onCreation = function( err2, value2 ) {
-		console.log( "on creation"); 
 		if ( err2 ) {
 			console.log(err2);
 			res.status(500).send( {"message":"An internal server error occurred. Sad tiger!"});
@@ -121,9 +120,7 @@ Auth.prototype.register = function(req, res) {
 	    	uuid = value.user.user_id; 
 
 			if (req.body.userType != "Physician") {
-		    	for (var i = 0; i < req.body.numChildren; i++) {
-		    		console.log(req.body.children[i]);
-		      		
+		    	for (var i = 0; i < req.body.numChildren; i++) {;
 		    		var newChild = Child.createChild( uuid, req.body.children[i].childName, req.body.children[i].childBirthday, req.body.children[i].childGender );
 		    		var childDoc = Builder.vendDocument( globals.childSchemaId, vaultid, newChild ); 	
 
@@ -387,7 +384,6 @@ function isConfirmed( user, callback ) {
 						callback( undefined ); 
 					} 
 					else {
-						console.log( data ); 
 						if( data.isConfirmed === false )	// if the user has not been confirmed yet
 							callback( "Unauthorized", data, doc_id);  // send back an error message
 						else 
