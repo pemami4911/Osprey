@@ -1,4 +1,0 @@
-Things that I think we need to do 
- - Patrick
-
-Fix form validation for registration pages. 

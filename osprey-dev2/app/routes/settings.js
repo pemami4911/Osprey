@@ -143,8 +143,24 @@ Settings.prototype.changeEmail = function(req, res) {
 			res.status(200).end(); 
 		}
 	}
-	truevault.auth.login( userDetails, validateUser);
-	truevault.documents.search( filter, foundUser); 
+
+	var temp = require('../../truevault/lib/truevault.js')(req.session.access_token);
+
+	temp.auth.verify(function(err, value){
+		if (err) {
+			res.status(500).send({"message": "User verification error"});
+			return;
+		}
+		truevault.auth.login( userDetails, function( err, value ) {
+			if( err ) {
+				console.log( err ); 
+				res.status( 401 ).send({"message":"The email/password combination you entered is incorrect"}); 
+				return;
+			}
+
+			truevault.documents.search( filter, foundUser); 
+		});
+	});
 }
 
 Settings.prototype.changePassword = function(req, res) {
@@ -166,13 +182,26 @@ Settings.prototype.changePassword = function(req, res) {
 		}
 	}
 
-	truevault.auth.login( userDetails, validateUser);
+	var temp = require('../../truevault/lib/truevault.js')(req.session.access_token);
+	temp.auth.verify(function(err, value){
+		if (err) {
+			res.status(500).send({"message": "User verification error"});
+			return;
+		}
+		truevault.auth.login( userDetails, function( err, value ) {
+			if( err ) {
+				console.log( err ); 
+				res.status( 401 ).send({"message":"The email/password combination you entered is incorrect"}); 
+				return;
+			}
 
-	// grab the user with the current email
-	var filterAttributes = Builder.vendFilterAttributes( "eq", req.body.email ); 
-	var filter = Builder.vendFilter( globals.userSchemaId, vaultid, {"username":filterAttributes}, true );
+			// grab the user with the current email
+			var filterAttributes = Builder.vendFilterAttributes( "eq", req.body.email ); 
+			var filter = Builder.vendFilter( globals.userSchemaId, vaultid, {"username":filterAttributes}, true );
 
-	truevault.documents.search( filter, foundUser); 
+			truevault.documents.search( filter, foundUser); 
+		});
+	});
 }
 
 Settings.prototype.generateInvite = function( req, res ) {
