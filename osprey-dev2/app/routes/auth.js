@@ -47,8 +47,8 @@ Auth.prototype.login = function(req, res) {
 
 	// if the user is confirmed, userType will contain the necessary info
 	isConfirmed( checkConfirmed, function ( data, userType ) {
-		if( data === undefined )
-			res.status(500).send({"message":"Invalid email or password"}); 
+		if( data === "Bad Email" )
+			res.status(500).send({"message":"Invalid email"}); 
 		if(  data != "OK" ) {
 			res.status(401).send({"message":"Please confirm your email first"});  
 		}
@@ -59,7 +59,7 @@ Auth.prototype.login = function(req, res) {
 				if ( err ) {
 					console.log(err);
 					//return res.send( handler.errorHandler( 401, "Login Failed" ) );
-					res.status(401).send({"message":"Login Failed"}); 
+					res.status(401).send({"message":"Invalid password"}); 
 				} else {
 					// console.log("login successful");
 					req.session.access_token = value.user.access_token;
@@ -108,7 +108,7 @@ Auth.prototype.register = function(req, res) {
    		if( !checkDuplicates( newUser.username ) )
    			truevault.documents.create( doc, onCreation); 
    		else
-   			res.status(401).send({"message":"Error: E-mail already exists"}); 
+   			res.status(401).send({"message":"This email already exists in our records!"}); 
 	}
 
 	var createUser = function( err, value ) {
@@ -152,31 +152,32 @@ Auth.prototype.verify = function(req, res) {
 		var filter = Builder.vendFilter( globals.userSchemaId, vaultid, {"confirmationToken":filterAttributes}, true );
 
 		isConfirmed( filter, function ( resp, user, id ) {
-			if( resp === undefined ) 
-				res.status(500).send("<h1> An error occurred while verifying your email. Please contact the Osprey Team</h1>"); 
-			else {
-				if( resp === "Unauthorized" ) {
-					// isConfirmed is set to true, confirmationToken set to null
+			console.log( filter ); 
+			if( resp === "Bad Email" ) 	// should not happen
+				res.status(500).send("<h1> The email address being used to verify this account is not found in our records. Please contact the Osprey Team</h1>"); 
+			else if( resp === undefined )
+				res.status(500).send("<h1>An internal server error occurred");
+			else if ( resp === "Unauthorized" ) {
+				// isConfirmed is set to true, confirmationToken set to null
 
-					user.isConfirmed = true; 
-					user.confirmationToken = null; 
-					// not usable with IE9 and earlier
-					//var enc = window.btoa( user ); 
-					var updateUser = Builder.updateDocument( globals.userSchemaId, vaultid, id, user);
-					truevault.documents.update( updateUser, function ( err, data ) {
-						if( err ) {
-							console.log( err ); 
-							res.status(500).send("<h1> An error occurred while confirming your email. Please contact the Osprey Team</h1>"); 
-						}
-						else {
+				user.isConfirmed = true; 
+				user.confirmationToken = null; 
+				// not usable with IE9 and earlier
+				//var enc = window.btoa( user ); 
+				var updateUser = Builder.updateDocument( globals.userSchemaId, vaultid, id, user);
+				truevault.documents.update( updateUser, function ( err, data ) {
+					if( err ) {
+						console.log( err ); 
+						res.status(500).send("<h1> An error occurred while confirming your email. Please contact the Osprey Team</h1>"); 
+					}
+					else {
 
-							res.redirect("http://"+host+"/#/"); 
-						}				
-					});
-				}
-				else 
-					res.status(400).send("<h1>User has already been updated</h1>"); 
+						res.redirect("http://"+host+"/#/"); 
+					}				
+				});
 			}
+			else 
+				res.status(400).send("<h1>User has already been updated</h1>"); 	// resp is "OK"
 		});
 	}
 	else 
@@ -208,7 +209,7 @@ Auth.prototype.checkReg = function (req, res) {
 					// used to ensure that the doc id is correct
 					var doc_id = value.data.documents[0].document_id;
 					if ( !regex.test( doc_id) )
-						doc_id = value2.data.documents[0]; 
+						doc_id = value.data.documents[0]; 
 
 					truevault.documents.retrieve({	// retrieve the user document
 						   "vault_id" : vaultid,
@@ -239,7 +240,7 @@ Auth.prototype.checkReg = function (req, res) {
 										else {
 											var doc_id = value.data.documents[0].document_id;
 											if ( !regex.test( doc_id) )
-												doc_id = value2.data.documents[0]; 
+												doc_id = value.data.documents[0]; 
 
 											truevault.documents.retrieve({	// retrieve the document
 												   "vault_id" : vaultid,
@@ -295,51 +296,50 @@ Auth.prototype.checkReg = function (req, res) {
 
 // checks access token stored in session 
 Auth.prototype.isLogged = function(req, res) {
-	var temp = require("../../truevault/lib/truevault.js")(req.session.access_token);
-	temp.auth.verify(function(err, value){
+	var document, filter, theUsername; 
+
+	var confirmCallback = function( err ) {
+		if ( err === undefined )
+			res.status(500).send({ "message" : "An internal server error occurred. Sad tiger!" });
+		else if ( err === "Unauthorized" )
+			res.status(401).send({ "message" : "The user has accessed the dashboard with an unconfirmed email! ANGRY TIGER!" }); 
+		else {
+			document.username = theUsername;
+			res.send( document ); 
+		}
+	}
+
+	var searchCallback = function( err, value ) {
+		if (err) 
+			res.status(500).send({"message":"TrueVault API failure"});
+		else {
+			if (value.data.documents.length === 0) 
+				res.status(500).send({"message":"User data could not be found!"}); 
+			else {
+				var b64string = value.data.documents[0].document;
+				var buf = new Buffer(b64string, 'base64');
+				document = JSON.parse(buf.toString('ascii'));
+
+				// check if the email has been confirmed
+				isConfirmed( filter, confirmCallback );
+			}
+		}
+	}
+
+	var verifyCallback = function( err, value ) {
 		if ( err ) 
-			res.status(500).send({"message":"Verification Error"});
+			res.status(500).send({"message":"User has been logged out...redirecting to the login page"});
 		else {
 
+			theUsername = value.user.username; 
 			var filterAttributes = Builder.vendFilterAttributes( "eq", value.user.user_id ); 
-			var filter = Builder.vendFilter( globals.userSchemaId, vaultid, {"user_id":filterAttributes}, true );
-			truevault.documents.search( filter, function (err2, value2) {
-				if (err) 
-					res.status(500).send({"message":"TrueVault API failure"});
-				else {
-
-					if (value2.data.documents.length === 0)
-						console.log("no matching user document found");
-
-					// used to ensure that the doc id is correct
-					var doc_id = value2.data.documents[0].document_id;
-					if ( !regex.test( doc_id) )
-						doc_id = value2.data.documents[0]; 
-
-					truevault.documents.retrieve({
-					   "vault_id" : vaultid,
-					   "id" : doc_id
-					}, function ( err, document ) {
-						if( err )
-							res.status(500).send({"message":"TrueVault API failure"});
-
-						// check if the email has been confirmed
-						isConfirmed( filter, function ( data ) {
-
-							if ( data === undefined )
-								res.status(500).send({ "message" : "An internal server error occurred. Sad tiger!" });
-							else if ( data === "Unauthorized" )
-								res.status(401).send({ "message" : "The user has accessed the database with an unconfirmed email! ANGRY TIGER!" }); 
-							else {
-								document.username = value.user.username;
-								res.send( document ); 
-							}
-						});
-					}); 
-				}
-			});
+			filter = Builder.vendFilter( globals.userSchemaId, vaultid, {"user_id":filterAttributes}, true );
+			truevault.documents.search( filter, searchCallback); 
 		}
-	}); 
+	}
+
+	var temp = require("../../truevault/lib/truevault.js")(req.session.access_token);
+	temp.auth.verify(verifyCallback); 	
 }
 // checks access token stored in session
 // attempts to logout, sends appropriate message 
@@ -360,6 +360,7 @@ Auth.prototype.logout = function (req, res) {
 		res.status(401).send({"message" : "No one is currently logged in"});
 }
 
+
 // Works on the principle that each username (email) and random token is unique
 function isConfirmed( user, callback ) {
 	truevault.documents.search( user, function (err, value) {	// find a user in the database
@@ -369,31 +370,25 @@ function isConfirmed( user, callback ) {
 		}	
 		else {
 			if( value.data.info.total_result_count != 0) {	// if it is found, continue
-
 				// used to ensure that the doc id is correct
 				var doc_id = value.data.documents[0].document_id;
-				if ( !regex.test( doc_id ) )
-					doc_id = value.data.documents[0]; 
+				if ( !regex.test( doc_id) )
+					doc_id = value.data.documents[0];
 
-				truevault.documents.retrieve({	// retrieve the user document
-					   "vault_id" : vaultid,
-					   "id" : doc_id
-				}, function ( err, data ) {
-					if( err ) {
-						console.log( err );
-						callback( undefined ); 
-					} 
-					else {
-						if( data.isConfirmed === false )	// if the user has not been confirmed yet
-							callback( "Unauthorized", data, doc_id);  // send back an error message
-						else 
-							callback( "OK", data.userType ); 		
-					} 
-				});		 
+				var b64string = value.data.documents[0].document;
+				var buf = new Buffer(b64string, 'base64');
+				var data = JSON.parse(buf.toString('ascii'));
+				
+				console.log( data ); 
+
+				if( data.isConfirmed === false )	// if the user has not been confirmed yet
+					callback( "Unauthorized", data, doc_id);  // send back an error message
+				else 
+					callback( "OK", data.userType ); 							 
 			}
 			else {
 				//console.log( value.data ); 	// the user is not found
-				callback( undefined );
+				callback( "Bad Email" );
 			}
 		}
 	}); 
@@ -403,7 +398,7 @@ function checkDuplicates( email ) {
 	var filterAttributes = Builder.vendFilterAttributes( "eq", email ); 
 	var filter = Builder.vendFilter( globals.userSchemaId, vaultid, {"username":filterAttributes}, true);
 
-	truevault.documents.search( filter, function( err, value ) {
+	var searchCallback = function( err, value ) {
 		if ( err ) {
 			console.log( err ); 
 		}
@@ -413,7 +408,9 @@ function checkDuplicates( email ) {
 			else
 				return false; 
 		}
-	}); 
+	}
+
+	truevault.documents.search( filter, searchCallback); 
 }
 
 function sendEmail(recipient, subject, message) {

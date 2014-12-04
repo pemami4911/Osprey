@@ -25,6 +25,14 @@ angular.module('splashPageService', [])
 				return $http.get('/auth/logout', userData); 
 			},
 
+			deleteAccount: function( userID, email, password) {
+				var postBody = {};
+				postBody.email = email; 
+				postBody.password = password; 
+				postBody.user_id = userID; 
+				return $http.post('/settings/deleteAccount', postBody); 
+			},
+
 			changeEmail : function(currentEmail, password, newEmail) {
 				var postBody = {};
 				postBody.email = currentEmail;
@@ -66,6 +74,11 @@ angular.module('splashPageService', [])
 				return $http.post('/debug/test');
 			},
 
+			clearUser: function( email ) {
+				var postBody = {"email":email}; 
+				return $http.post('/debug/clearUser', postBody); 
+			},
+
 			getChildrenOfParent: function(parentId) {
 				var postBody = {};
 				postBody.parentId = parentId;
@@ -77,6 +90,7 @@ angular.module('splashPageService', [])
 				postBody.physicianId = physicianId;
 				return $http.post('/users/childrenOfPhysician', postBody);
 			}
+
 		}
 	}]);
 

@@ -182,5 +182,57 @@ Debug.prototype.deleteTestUser = function(req, res) {
 	});
 }
 
+Debug.prototype.clearUser = function( req, res ) {
+	var filterAttributes = Builder.vendFilterAttributes( "eq", req.body.email ); 
+	var filter = Builder.vendFilter( globals.userSchemaId, vaultid, {"username":filterAttributes}, true );
+
+	var deleteCallback = function( err, value ) {
+		if ( err ) {
+			console.log( err ); 
+			res.status(500).send({"message":err}); 
+		}
+		else {
+			console.log( value ); 
+			res.status(200).send({"message":"successfully deleted account"});
+		}
+
+	}
+
+	var searchCallback = function( err, value ) {
+		if( err ) {
+			console.log( err ); 
+			res.status(500).send({"message":err})
+		}
+		else {
+			if( value.data.info.total_result_count === 0 )
+				res.status(401).send({"message":"No account with this email"}); 
+
+			var b64string = value.data.documents[0].document;
+			var buf = new Buffer(b64string, 'base64');
+			var user = JSON.parse(buf.toString('ascii'));
+			var options = {"user_id":user.user_id}; 
+
+			for (var i = 0; i < value.data.documents.length; ++i) {
+				console.log("Deleting document "+i+" : " + value.data.documents[i].document_id)
+				truevault.documents.del({
+				   'vault_id' : vaultid,
+				   'id' : value.data.documents[i].document_id
+				}, function (err, document){
+					if (err) {
+						console.log("Error deleting document " + i);
+						console.log( err ); 
+						res.status(500).send({"message":"An error occurred while deleting the account."});
+					}
+					else
+						console.log("Document deleted");
+				});
+			}
+
+			truevault.users.delete( options, deleteCallback );
+		}
+	}
+
+	truevault.documents.search( filter, searchCallback); 
+}
 
 module.exports = Debug; 

@@ -216,6 +216,57 @@ Settings.prototype.generateInvite = function( req, res ) {
 	});  
 }
 
+Settings.prototype.deleteAccount = function( req, res ) {
+	// for physicians, all parents still need to be updated so that they know their physician's account has been removed
+	var loginDetails = Builder.vendLogin( req, globals.accountId ); 
+	
+	var searchCallback = function( err, value ) {
+		for (var i = 0; i < value.data.documents.length; ++i) {
+			console.log("Deleting document "+i+" : " + value.data.documents[i].document_id)
+			truevault.documents.del({
+			   'vault_id' : vaultid,
+			   'id' : value.data.documents[i].document_id
+			}, function (err, document){
+				if (err) {
+					console.log("Error deleting document " + i);
+					console.log( err ); 
+					res.status(500).send({"message":"An error occurred while deleting the account."});
+				}
+				else
+					console.log("Document deleted");
+			});
+		}
+
+		res.status(200).send({"message":"The account was deleted successfully."}); 
+	}
+
+	var deleteCallback = function( err, value ) {
+		if( err ) {
+			console.log( err ); 
+			res.status(500).send({"message":err});
+		}
+		else {
+			console.log( value ); 
+			// delete all documents containing this email
+			var filterAttributes = Builder.vendFilterAttributes("eq", req.body.email);
+			var filter = Builder.vendFilter(globals.userSchemaId, vaultid, {"username":filterAttributes}, true);
+
+			truevault.documents.search(filter, searchCallback);
+		}
+	}
+
+	var loginCallback = function( err, value ) {
+		if( err ) {
+			console.log( err ); 
+			res.status(401).send({"message":"Invalid user credentials"}); 
+		}
+	}
+
+	var options = {"user_id":req.body.user_id}; 
+	truevault.auth.login( loginDetails, loginCallback); 
+	truevault.users.delete( options, deleteCallback); 
+}
+
 function validateUser( err, value ) {
 	if( err ) {
 		console.log( err ); 

@@ -7,7 +7,7 @@ angular.module('splashPageModule', ['splashPageService'])
 		$scope.loginData = {};
 		$scope.initRegData = {userType: "Parent"};
 		$scope.loading = false; 
-
+		$scope.clearUserData; 
 		// $scope.$on is an event handler
 		// $locationChangeStart is an angular event that is called every time a route change begins
 		$scope.$on('$locationChangeStart', function (event) {
@@ -81,6 +81,15 @@ angular.module('splashPageModule', ['splashPageService'])
 
 		$scope.test = function() {
 			splashFactory.test();
+		}
+
+		$scope.clearUser = function() {
+			splashFactory.clearUser( $scope.clearUserData )
+				.success( function() {
+					window.alert("successfully deleted user "+ $scope.clearUserData); 
+				}).error( function (response ) {
+					window.alert( response.message ); 
+				});
 		}
 
 		$scope.isPhysician = function() {

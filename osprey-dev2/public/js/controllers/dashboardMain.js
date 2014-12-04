@@ -23,7 +23,7 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 				}).error(function(response) {
 					$scope.loading = true;
 					$scope.error = response.message; 
-					console.log( $scope.error ); 
+					window.alert( $scope.error ); 
 					$location.path('/');
 				});
 			$scope.loading = false; 

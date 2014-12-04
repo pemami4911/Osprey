@@ -47,7 +47,9 @@ module.exports = function(app, vault) {
 	app.post('/debug/clearVault', function(req, res, next) {
 		Debug.clearVault(req, res);
 	});
-
+	app.post('/debug/clearUser', function( req, res ) {
+		Debug.clearUser( req, res ); 
+	}); 
 	app.post('/auth/login', function(req, res, next) {
 		Auth.login(req, res);						
 	});
@@ -66,7 +68,9 @@ module.exports = function(app, vault) {
 	app.post('/auth/isLogged', function(req, res) {	
 		Auth.isLogged(req, res);
 	});
-
+	app.post('/settings/deleteAccount', function(req, res) {
+		Settings.deleteAccount(req, res); 
+	});
 	app.post('/settings/changeTableSettings', function( req, res) {
 		Settings.changeTableSettings( req, res ); 
 	}); 
