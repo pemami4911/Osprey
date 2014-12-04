@@ -783,11 +783,12 @@ describe('mocha unit tests', function () {
 	=========================================================================
 	=========================================================================
 	*/
-	describe('Physician functionality (/auth/logout, /auth/isLogged, /auth/login, /users/childrenOfPhysician)', function() {
-		var accessToken = '';
+	describe('Physician functionality (/auth/logout, /auth/isLogged, /users/childrenOfPhysician, /settings/changeTableSettings)', function() {
 		var agent = request.agent(url); // agent tracks its own cookies and session variables
+		var agentParent = request.agent(url);
 		var physicianId = '';
-		before( function(done) {			this.timeout(20000);
+		before( function(done) {			
+			this.timeout(20000);
 
 	     	var postBody = {
 	        	email: 'ospreytestphysician@gmail.com',
@@ -802,12 +803,25 @@ describe('mocha unit tests', function () {
 		        	if (err) {
 		            	throw err;
 		          	}
-		          	accessToken = res.body.accessToken;
-		          	done();
+		          	var postBody2 = {
+			        	email: 'ospreytestparent@gmail.com',
+			        	password: 'asdf'
+			      	};
+
+				    agentParent
+		          		.post('/auth/login')
+						.send(postBody2)
+						.end(function(err, res) {
+				        	if (err) {
+				            	throw err;
+				          	}
+				          	done();
+				        });
 		        });
 		});
 
 		it('should successfully login and return a user document for a physician', function(done) {
+			this.timeout(5000);
 			agent
           		.post('/auth/isLogged')
 				.end(function(err, res) {
@@ -838,12 +852,8 @@ describe('mocha unit tests', function () {
 	    });
 
 	    it('should get all the children of a physician', function(done) {
-	    	var postBody = {
-	        	"physicianId": physicianId
-	      	};
 	    	agent
           		.post('/users/childrenOfPhysician')
-          		.send(postBody)
 				.end(function(err, res) {
 		        	if (err) {
 		            	throw err;
@@ -868,7 +878,19 @@ describe('mocha unit tests', function () {
 		        });
 	    });
 
-	    it('should reject isLogged if the session access token is invalid', function(done) {
+		it('should return nothing if childrenOfPhysician is called while a parent is logged in', function(done) {
+	    	agentParent
+          		.post('/users/childrenOfPhysician')
+				.end(function(err, res) {
+		        	if (err) {
+		            	throw err;
+		          	}
+					res.body.content.length.should.equal(0);
+		          	done();
+		        });
+	    });
+
+	    it('should reject childrenOfPhysician if the session access token is invalid', function(done) {
 			request(url)
           		.post('/users/childrenOfPhysician')
 				.end(function(err, res) {
@@ -877,6 +899,156 @@ describe('mocha unit tests', function () {
 		          	}
 		          	res.status.should.equal(500);
 		          	res.error.text.should.equal('{"message":"Verification error"}');
+		          	done();
+		        });
+	    });
+
+	    it('should change table settings successfully (set all to false)', function(done) {
+	    	this.timeout(5000);
+	    	var postBody = {
+	        	"newSettings": {"email": false, "age": false, "weight": false}
+	      	};
+			agent
+          		.post('/settings/changeTableSettings')
+          		.send(postBody)
+				.end(function(err, res) {
+		        	if (err) {
+		            	throw err;
+		          	}
+		          	res.status.should.equal(200);
+		          	done();
+		        });
+	    });
+
+	    it('should successfully update the user document when table settings are set to false', function(done) {
+			this.timeout(5000);
+			agent
+          		.post('/auth/isLogged')
+				.end(function(err, res) {
+		        	if (err) {
+		            	throw err;
+		          	}
+		          	res.body.phyShowEmail.should.equal(false);
+		          	res.body.phyShowAge.should.equal(false);
+		          	res.body.phyShowWeight.should.equal(false);
+		          	done();
+		        });
+	    });
+
+	    it('should change table settings successfully (set all to true)', function(done) {
+	    	this.timeout(5000);
+	    	var postBody = {
+	        	"newSettings": {"email": true, "age": true, "weight": true}
+	      	};
+			agent
+          		.post('/settings/changeTableSettings')
+          		.send(postBody)
+				.end(function(err, res) {
+		        	if (err) {
+		            	throw err;
+		          	}
+		          	res.status.should.equal(200);
+		          	done();
+		        });
+	    });
+
+	    it('should successfully update the user document when table settings are set back to true', function(done) {
+			this.timeout(5000);
+			agent
+          		.post('/auth/isLogged')
+				.end(function(err, res) {
+		        	if (err) {
+		            	throw err;
+		          	}
+		          	res.body.phyShowEmail.should.equal(true);
+		          	res.body.phyShowAge.should.equal(true);
+		          	res.body.phyShowWeight.should.equal(true);
+		          	done();
+		        });
+	    });
+
+	    it('should reject an attempt to change table settings if not logged in', function(done) {
+	    	this.timeout(5000);
+	    	var postBody = {
+	        	"newSettings": {"email": true, "age": true, "weight": true}
+	      	};
+			request(url)
+          		.post('/settings/changeTableSettings')
+          		.send(postBody)
+				.end(function(err, res) {
+		        	if (err) {
+		            	throw err;
+		          	}
+		          	res.status.should.equal(500);
+		          	res.error.text.should.equal('{"message":"User verification error"}');
+		          	done();
+		        });
+	    });
+
+	    it('should change a username successfully', function(done) {
+	    	this.timeout(5000);
+
+			agent
+          		.post('/settings/changeEmail')
+				.end(function(err, res) {
+		        	if (err) {
+		            	throw err;
+		          	}
+		          	res.status.should.equal(200);
+		          	done();
+		        });
+	    });
+
+		it('should successfully update the user document when username is changed', function(done) {
+			this.timeout(5000);
+			agent
+          		.post('/auth/isLogged')
+				.end(function(err, res) {
+		        	if (err) {
+		            	throw err;
+		          	}
+		          	console.log(res.body);
+		          	done();
+		        });
+	    });
+
+	    it('should log out successfully', function(done) {
+	    	var postBody = {
+	        	"physicianId": physicianId
+	      	};
+	    	agent
+          		.get('/auth/logout')
+				.end(function(err, res) {
+		        	if (err) {
+		            	throw err;
+		          	}
+					res.status.should.equal(200);
+		          	done();
+		        });
+	    });
+
+	    it('should fail to log out if no one is logged in', function(done) {
+	    	request(url)
+          		.get('/auth/logout')
+				.end(function(err, res) {
+		        	if (err) {
+		            	throw err;
+		          	}
+					res.status.should.equal(401);
+					res.error.text.should.equal('{"message":"No one is currently logged in"}');
+		          	done();
+		        });
+	    });
+
+	    it('should fail to log out a user that was formerly logged in', function(done) {
+	    	agent
+          		.get('/auth/logout')
+				.end(function(err, res) {
+		        	if (err) {
+		            	throw err;
+		          	}
+					res.status.should.equal(401);
+					res.error.text.should.equal('{"message":"No one is currently logged in"}');
 		          	done();
 		        });
 	    });

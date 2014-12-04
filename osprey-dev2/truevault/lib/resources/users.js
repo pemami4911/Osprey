@@ -85,6 +85,42 @@ Users.prototype.delete = function(options, callback) {
   });
 }
 
+Users.prototype.updateUsername = function(options, callback) {
+  var path = util.format("/%s/users/%s",
+    this.truevault.getOption('api_version'),
+    options.user_id
+  );
+  
+  var data = {
+    username : options.username
+  };
+
+  return this.httpsRequest({
+    path : path,
+    method : 'PUT',
+    data : data,
+    callback : callback
+  });
+}
+
+Users.prototype.updatePassword = function(options, callback) {
+  var path = util.format("/%s/users/%s",
+    this.truevault.getOption('api_version'),
+    options.user_id
+  );
+  
+  var data = {
+    password : options.password
+  };
+
+  return this.httpsRequest({
+    path : path,
+    method : 'PUT',
+    data : data,
+    callback : callback
+  });
+}
+
 
 
 module.exports = Users;

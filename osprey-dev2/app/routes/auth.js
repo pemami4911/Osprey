@@ -63,7 +63,7 @@ Auth.prototype.login = function(req, res) {
 				} else {
 					// console.log("login successful");
 					req.session.access_token = value.user.access_token;
-					res.status(200).send({"accessToken":req.session.access_token});; 
+					res.status(200).end();; 
 				}
 			});	
 		}
@@ -328,8 +328,6 @@ Auth.prototype.isLogged = function(req, res) {
 // checks access token stored in session
 // attempts to logout, sends appropriate message 
 Auth.prototype.logout = function (req, res) {
-	console.log(req.session.access_token);
-
 	if (req.session.access_token != null) {
 		var temp = require("../../truevault/lib/truevault.js")(req.session.access_token);
 
