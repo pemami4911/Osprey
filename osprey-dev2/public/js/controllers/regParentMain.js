@@ -59,7 +59,7 @@ angular.module('regParentPageModule', ['splashPageService'])
 				$scope.loading = false;
 		};
 
-		$scope.options = [1, 2, 3, 4, 5];
+		$scope.options = [0, 1, 2, 3, 4, 5];
 
 		$scope.getNumber = function(num) {
 		    return new Array(num);   

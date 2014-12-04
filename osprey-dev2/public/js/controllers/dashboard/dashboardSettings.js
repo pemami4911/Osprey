@@ -9,8 +9,8 @@ angular.module('dashboardSettingsModule', ['splashPageService', 'ngReactGrid', '
 										'splashFactory', 
 	function($scope, $http, $location, splashFactory) {
 		// Toggles for Account Settings
-		$scope.passwordCollapsed = true;
-		$scope.emailCollapsed = true;
+		$scope.passwordCollapsed = false;
+		$scope.emailCollapsed = false;
 		$scope.newAccountSettings = {
 			'changeEmail': {}, 
 			'changePassword': {}
