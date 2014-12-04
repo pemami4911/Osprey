@@ -24,33 +24,24 @@ angular.module('dashboardSettingsModule', ['splashPageService', 'ngReactGrid', '
 		}
 
 		$scope.changeEmail = function() {
-
-			splashFactory.registerAttempt( $scope.newAccountSettings.changeEmail )
+			splashFactory.changeEmail( $scope.loggedUser.username, $scope.newAccountSettings.changeEmail.password, $scope.newAccountSettings.changeEmail.email )
 				.success(function () {
-					splashFactory.changeEmail( $scope.loggedUser.email, $scope.newAccountSettings.changeEmail.password, $scope.newAccountSettings.changeEmail.email )
-						.success(function (data) {
-							if (data == 1) {
-								$scope.checkLogged();
-								window.alert("You have successfully changed your e-mail!");
-							}
-							else if ( data === "err1" ) {
-								window.alert("The current email you entered is not valid."); 
-							}
-							else if ( data === "err2" ) {
-								window.alert("The password you entered is incorrect."); 
-							}
-							else
-								console.log( data ); 
-						}).error(function (response){
-							console.log(response);
-							$scope.error = response.message; 
-					});
-				}).error(function (response) {
-					$scope.error = response.message;
-					console.log( $scope.error ); 
-					window.alert( $scope.error ); 
-			});	
-		};
+						$scope.checkLogged();
+						window.alert("You have successfully changed your e-mail!");
+					// }
+					// else if ( data === "err1" ) {
+					// 	window.alert("The current email you entered is not valid."); 
+					// }
+					// else if ( data === "err2" ) {
+					// 	window.alert("The password you entered is incorrect."); 
+					// }
+					// else
+					// 	console.log( data ); 
+				}).error(function (response){
+					console.log(response.message);
+					$scope.error = response.message; 	
+				}); 
+		}
 
 		$scope.changePassword = function() {
 			splashFactory.changePassword( $scope.loggedUser, $scope.newAccountSettings.changePassword.currentPassword, $scope.newAccountSettings.changePassword.newPassword )

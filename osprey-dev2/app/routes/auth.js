@@ -73,62 +73,75 @@ Auth.prototype.login = function(req, res) {
 // takes username, password, user attributes in request body
 // returns true or false, sets session variable to access token
 Auth.prototype.register = function(req, res) {
+	var uuid, token; 
 	// schema for a new user
 	var user = {
 		"username": req.body.email,
 		"password": req.body.password,
 	};
 
-	truevault.users.create( user, function(err, value){
-	    if ( err ) {
+	var onCreation = function( err2, value2 ) {
+		console.log( "on creation"); 
+		if ( err2 ) {
+			console.log(err2);
+			res.status(500).send( {"message":"An internal server error occurred. Sad tiger!"});
+		}
+
+		var link, mailOptions; 
+		link = "http://"+req.get("host")+"/verify?id="+token; 
+		mailOptions={
+			to : req.body.email,
+			subject : "Email confirmation", 
+			html : "Hello,<br> Please Click on the link to verify your email.<br><a href="+link+">Click Here to Verify</a><br><br><p>Regards,<p><p>The Osprey Team<p>"
+		}
+
+		sendEmail( mailOptions.to, mailOptions.subject, mailOptions.html ); 
+		res.status(200).end(); 
+	}
+
+	// callback function executed after random token is generated
+	var onSuccess = function( ex, buf ) {
+		console.log( "On SUccess"); 
+		// User attributes object creation
+    	token = buf.toString("hex");
+   		var newUser = User.createUser( uuid, req, token );
+   		var doc = Builder.vendDocument( globals.userSchemaId, vaultid, newUser );
+
+   		console.log( doc ); 
+   		truevault.documents.create( doc, onCreation); 
+	}
+
+	var createUser = function( err, value ) {
+		if ( err ) {
 	    	res.status(500).send({"message":"E-mail already exists"});
 		}
 	    else {
-	    	require("crypto").randomBytes(32, function (ex, buf) {
-		    	// User attributes object creation
-		    	var token = buf.toString("hex");
-		   		var newUser = User.createUser( value.user.user_id, req, token );
-		   		var doc = Builder.vendDocument( globals.userSchemaId, vaultid, newUser );
+	    	uuid = value.user.user_id; 
 
-		    	if (req.body.userType != "Physician") {
-			    	for (var i = 0; i < req.body.numChildren; i++) {
-			    		console.log(req.body.children[i]);
-			      		
-			    		var newChild = Child.createChild( value.user.user_id, req.body.children[i].childName, req.body.children[i].childBirthday, req.body.children[i].childGender );
-			    		var childDoc = Builder.vendDocument( globals.childSchemaId, vaultid, newChild ); 
+			if (req.body.userType != "Physician") {
+		    	for (var i = 0; i < req.body.numChildren; i++) {
+		    		console.log(req.body.children[i]);
+		      		
+		    		var newChild = Child.createChild( uuid, req.body.children[i].childName, req.body.children[i].childBirthday, req.body.children[i].childGender );
+		    		var childDoc = Builder.vendDocument( globals.childSchemaId, vaultid, newChild ); 	
 
-			    		truevault.documents.create( childDoc, function(err, value) {
-			    			if (err) {
-			    				console.log( err ); 
-			    				res.status(500).send({"message":"error at child doc creation"});
-			    			}
-			    			console.log(value);
-			    		});
-			    	}
-			    }
-	    		truevault.documents.create( doc, function(err2, value2) {
-		    		if (err2) {
-		    			console.log(err2);
-		    			res.status(500).send( {"message":"An internal server error occurred. Sad tiger!"});
+		    		var callback = function( err, value ) {
+		    			if (err) {
+		    				console.log( err ); 
+		    				res.status(500).send({"message":"error at child doc creation"});
+		    			}
+		    			console.log(value);	
 		    		}
-		    		req.session.access_token = value.user.access_token;
-		    
-	    			var link, mailOptions; 
-	    			link = "http://"+req.get("host")+"/verify?id="+token; 
-	    			mailOptions={
-	    				to : req.body.email,
-	    				subject : "Email confirmation", 
-	    				html : "Hello,<br> Please Click on the link to verify your email.<br><a href="+link+">Click Here to Verify</a>"
-	    			}
 
-	    			sendEmail( mailOptions.to, mailOptions.subject, mailOptions.html ); 
-	    			res.status(200).end(); 
-			    	
-			    });
-					
-			});	
+		    		truevault.documents.create( childDoc, callback); 
+		    	}
+			}
+			req.session.access_token = value.user.access_token;
+			require("crypto").randomBytes(32, onSuccess); 
 	    }
-	});
+	}
+
+	truevault.users.create( user, createUser); 
 }
 
 Auth.prototype.verify = function(req, res) {
@@ -158,9 +171,9 @@ Auth.prototype.verify = function(req, res) {
 							res.status(500).send("<h1> An error occurred while confirming your email. Please contact the Osprey Team</h1>"); 
 						}
 						else {
-							// console.log(updateUser);
-							// console.log( data ); 
-							// console.log("Successfully updated email confirmation in database");
+							 // console.log(updateUser);
+							 // console.log( data ); 
+							 // console.log("Successfully updated email confirmation in database");
 
 							res.redirect("http://"+host+"/#/"); 
 						}				
@@ -268,9 +281,11 @@ Auth.prototype.checkReg = function (req, res) {
 		});
 	}
 	else {
-		truevault.users.list(function(err, value){
-		    if (err)
-		    	res.status(500).send({"message":"An internal server error occurred. Sad tiger!"});
+		truevault.users.list(function(err, value) {
+		    if (err) {
+		    	console.log( err ); 
+		    	res.status(500).send({"message":"Internal Server Error occurred"});
+		    }
 		    else {
 		    	for (var i = 0; i < value.users.length; i++) {
 		    		if (req.body.email == value.users[i].username)
@@ -355,7 +370,7 @@ Auth.prototype.logout = function (req, res) {
 }
 
 // Works on the principle that each username (email) and random token is unique
-function isConfirmed( user, callback) {
+function isConfirmed( user, callback ) {
 	truevault.documents.search( user, function (err, value) {	// find a user in the database
 		if ( err ) {
 			console.log( err ); 
@@ -378,6 +393,7 @@ function isConfirmed( user, callback) {
 						callback( undefined ); 
 					} 
 					else {
+						console.log( data ); 
 						if( data.isConfirmed === false )	// if the user has not been confirmed yet
 							callback( "Unauthorized", data, doc_id);  // send back an error message
 						else 
@@ -386,7 +402,7 @@ function isConfirmed( user, callback) {
 				});		 
 			}
 			else {
-				// console.log( value.data ); 	// the user is not found
+				console.log( value.data ); 	// the user is not found
 				callback( undefined );
 			}
 		}

@@ -27,7 +27,7 @@ angular.module('splashPageService', [])
 
 			changeEmail : function(currentEmail, password, newEmail) {
 				var postBody = {};
-				postBody.currentEmail = currentEmail;
+				postBody.email = currentEmail;
 				postBody.password = password;
 				postBody.newEmail = newEmail;
 				return $http.post('/settings/changeEmail', postBody);

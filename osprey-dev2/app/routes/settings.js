@@ -17,6 +17,7 @@ var truevaultBuilder = require('../schemas/truevaultBuilder');
 var Builder = new truevaultBuilder(); 
 var InviteCodeSchema = require('../schemas/inviteCode.js'); 
 var InviteCode = new InviteCodeSchema(); 
+var regex = new RegExp("[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}$", "i");	// document id validation
 
 // set this to our domain for security 
 var host = 'localhost:8080'; 
@@ -90,29 +91,94 @@ Settings.prototype.changeTableSettings = function(req, res) {
 }
 
 Settings.prototype.changeEmail = function(req, res) {
-		// UserModel.findOne({ email : req.body.currentEmail }, function(err, user) {
-		// 	if(err) res.send(err); 
-		// 	else { 
-		// 		if( !user )	// if the email was not found, return null
-		// 			res.send("err1"); 
-		// 		else {
-		// 			if ( !user.validPassword(req.body.password) ) // if the email is correct but the password is not, return false
-		// 				res.send("err2"); 
-		// 			else {
-		// 				// use mongoose to get all todos in the database
-		// 				UserModel.update({email: req.body.currentEmail}, {email: req.body.newEmail}, {}, function(err, result) {
-		// 					if (err) {
-		// 						console.log("error" + err);
-		// 						res.send(err);
-		// 					}
-		// 					sendEmail(req.body.newEmail, "E-mail changed!", "You have changed your e-mail address!");
-		// 					sendEmail(req.body.currentEmail, "E-mail changed!", "This is no longer the e-mail address registered with your Osprey account!"); 
-		// 					res.json(result);
-		// 				});
-		// 			}
-		// 		}
-		// 	}
-		// }); 	
+		var user, doc_id; 
+
+		// validate the email and password 
+		var userDetails = Builder.vendLogin( req, globals.accountId ); 
+		// grab the user with the current email
+		var filterAttributes = Builder.vendFilterAttributes( "eq", req.body.email ); 
+		var filter = Builder.vendFilter( globals.userSchemaId, vaultid, {"username":filterAttributes}, true );
+
+		var validateUser = function( err, value ) {
+			if( err ) {
+				console.log( err ); 
+				res.status( 401 ).send({"message":"The email/password combination you entered is incorrect"}); 
+			}
+		}
+
+		var onSuccess = function( ex, buf ) {
+			// User attributes object creation
+	    	var token = buf.toString("hex");
+	    	user.confirmationToken = token; 
+
+	   		var link, mailOptions; 
+			link = "http://"+req.get("host")+"/verify?id="+token; 
+			mailOptions={
+				to : req.body.newEmail,
+				subject : "Email confirmation", 
+				html : "Hello,<br> Please Click on the link to verify your email.<br><a href="+link+">Click Here to Verify</a><br><br><p>Regards,<p><p>The Osprey Team<p>"
+			}
+
+			sendEmail( mailOptions.to, mailOptions.subject, mailOptions.html ); 
+
+			console.log( user ); 
+			// update the user document in the database
+			var updateDetails = Builder.updateDocument( globals.userSchemaId, vaultid, doc_id, user ); 
+			truevault.documents.update( updateDetails, ifError); 
+		}
+
+		var ifError = function( err, value ) {
+			if ( err ) {
+				console.log( err ); 
+				res.status(500).send({"message": err} ); 
+			}
+			else
+				console.log( value ); 
+		}
+
+		var createCallback = function( err, value ) {
+			if ( err ) {
+				console.log( err ); 
+				res.status(500).send({"message": err } ); 
+			}
+			user.user_id = value.user.user_id; 
+			console.log("New user_id " + user.user_id); 
+		}
+
+		var foundUser = function( err, value ) {
+			if( err ) {
+				console.log( err ); 
+				res.status(401).send({"message":err}); 
+			}	
+			else {
+
+				// used to ensure that the doc id is correct
+				doc_id = value.data.documents[0].document_id;
+				if ( !regex.test( doc_id) )
+					doc_id = value.data.documents[0]; 
+
+				var b64string = value.data.documents[0].document;
+				var buf = new Buffer(b64string, 'base64');
+				user = JSON.parse(buf.toString('ascii'));
+
+				console.log( user.user_id ); 
+				// delete the old User and create a new User
+				truevault.users.delete( user, ifError); 
+				truevault.users.create( {"username":req.body.newEmail, "password":req.body.password}, createCallback);
+
+				// change the email in the user document
+				user.username = req.body.newEmail; 
+				
+				user.isConfirmed = false; 
+				// set the new token and send an email
+				require("crypto").randomBytes(32, onSuccess); 
+				
+				res.status(200).end(); 
+			}
+		}
+
+		truevault.auth.login( userDetails, validateUser);
+		truevault.documents.search( filter, foundUser); 
 }
 
 Settings.prototype.changePassword = function(req, res) {

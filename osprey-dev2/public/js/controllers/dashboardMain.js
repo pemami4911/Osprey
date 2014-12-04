@@ -86,7 +86,7 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 				$scope.switchTab(2);
 				$scope.navItems.push({name: "My Patients", num: 2})
 				$scope.navItems.push({name: "Reports", num: 3})
-				$scope.navItems.push({name: "Settings", num: 4})
+				$scope.navItems.push({name: "Admin", num: 4})
 			}
 		};
 
