@@ -33,10 +33,10 @@ angular.module('splashPageService', [])
 				return $http.post('/settings/changeEmail', postBody);
 			},
 
-			changePassword : function(user, currentPassword, newPassword) {
+			changePassword : function(email, currentPassword, newPassword) {
 				var postBody = {};
-				postBody.user = user;
-				postBody.currentPassword = currentPassword; 
+				postBody.email = email;
+				postBody.password = currentPassword; 
 				postBody.newPassword = newPassword;
 				return $http.post('/settings/changePassword', postBody);
 			},

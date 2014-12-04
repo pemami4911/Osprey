@@ -45,9 +45,8 @@ angular.module('regPhysicianPageModule', ['splashPageService'])
 						$cookieStore.remove($scope.regData.userType); 
 						$location.path('/verify');
 					}).error(function(response) {
-						window.alert("Failed to register!");
+						window.alert(response.message);
 						$scope.error = response.message;
-						console.log( $scope.error ); 
 						$scope.loading = false;
 					});
 			}

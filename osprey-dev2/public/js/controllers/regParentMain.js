@@ -50,8 +50,7 @@ angular.module('regParentPageModule', ['splashPageService'])
 						$location.path('/verify');		
 					}).error(function(response) {
 						$scope.error = response.message;
-						window.alert("Failed to register"); 
-						console.log( $scope.error ); 
+						window.alert(response.message); 
 						$scope.loading = false;
 					});
 			}

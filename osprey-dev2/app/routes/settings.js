@@ -90,7 +90,6 @@ Settings.prototype.changeTableSettings = function(req, res) {
 }
 
 Settings.prototype.changeEmail = function(req, res) {
-<<<<<<< HEAD
 		var user, doc_id; 
 
 		// validate the email and password 
@@ -98,13 +97,6 @@ Settings.prototype.changeEmail = function(req, res) {
 		// grab the user with the current email
 		var filterAttributes = Builder.vendFilterAttributes( "eq", req.body.email ); 
 		var filter = Builder.vendFilter( globals.userSchemaId, vaultid, {"username":filterAttributes}, true );
-
-		var validateUser = function( err, value ) {
-			if( err ) {
-				console.log( err ); 
-				res.status( 401 ).send({"message":"The email/password combination you entered is incorrect"}); 
-			}
-		}
 
 		var onSuccess = function( ex, buf ) {
 			// User attributes object creation
@@ -120,29 +112,9 @@ Settings.prototype.changeEmail = function(req, res) {
 			}
 
 			sendEmail( mailOptions.to, mailOptions.subject, mailOptions.html ); 
-
-			console.log( user ); 
 			// update the user document in the database
 			var updateDetails = Builder.updateDocument( globals.userSchemaId, vaultid, doc_id, user ); 
 			truevault.documents.update( updateDetails, ifError); 
-		}
-
-		var ifError = function( err, value ) {
-			if ( err ) {
-				console.log( err ); 
-				res.status(500).send({"message": err} ); 
-			}
-			else
-				console.log( value ); 
-		}
-
-		var createCallback = function( err, value ) {
-			if ( err ) {
-				console.log( err ); 
-				res.status(500).send({"message": err } ); 
-			}
-			user.user_id = value.user.user_id; 
-			console.log("New user_id " + user.user_id); 
 		}
 
 		var foundUser = function( err, value ) {
@@ -160,15 +132,10 @@ Settings.prototype.changeEmail = function(req, res) {
 				var b64string = value.data.documents[0].document;
 				var buf = new Buffer(b64string, 'base64');
 				user = JSON.parse(buf.toString('ascii'));
-
-				console.log( user.user_id ); 
-				// delete the old User and create a new User
-				truevault.users.delete( user, ifError); 
-				truevault.users.create( {"username":req.body.newEmail, "password":req.body.password}, createCallback);
-
+				truevault.users.updateUsername({'user_id': user.user_id, 'username': req.body.newEmail}, ifError); 
+				
 				// change the email in the user document
 				user.username = req.body.newEmail; 
-				
 				user.isConfirmed = false; 
 				// set the new token and send an email
 				require("crypto").randomBytes(32, onSuccess); 
@@ -176,49 +143,36 @@ Settings.prototype.changeEmail = function(req, res) {
 				res.status(200).end(); 
 			}
 		}
-
 		truevault.auth.login( userDetails, validateUser);
 		truevault.documents.search( filter, foundUser); 
-=======
-	var temp = require('../../truevault/lib/truevault.js')(req.session.access_token);
-
-	temp.auth.verify(function(err, value){
-		if (err) {
-			res.status(500).send({"message": "User verification error"});
-			return;
-		}
-
-		truevault.users.updateUsername({'user_id': value.user.user_id, 'username': 'a@a.com'}, function (err, value) {
-			console.log(err);
-			console.log(value);
-			res.status(200).end();
-		});
-	});
->>>>>>> f1ea80561247dd329f5692014d8da034cb1a7018
 }
 
 Settings.prototype.changePassword = function(req, res) {
-	
-	// 	UserModel.findOne({ email : req.body.user.email }, function(err, user) {
-	// 		if(err) res.send(err); 
-	// 		else { 
-	// 			if( !user )	res.send("err1"); // should never get thrown - if loggedUser was not found in database
-	// 			else {
-	// 				if ( !user.validPassword(req.body.currentPassword) ) res.send("err2"); // validate passed password
-	// 				else {
-	// 						// use mongoose to get all todos in the database
-	// 					UserModel.update({email: req.body.user.email}, {password: UserModel.generateHash(req.body.newPassword)}, {}, function(err, result) {
-	// 						if (err) {
-	// 							console.log("error" + err);
-	// 							res.send(err);
-	// 						}
-	// 						sendEmail(req.body.user.email, "Password changed!", "You have changed your password!");
-	// 						res.json(result);
-	// 					});
-	// 				}
-	// 			}
-	// 		}
-	// 	}); 
+	var user; 
+
+	var userDetails = Builder.vendLogin( req, globals.accountId ); 
+
+	var foundUser = function( err, value ) {
+		if( err ) {
+			console.log( error ); 
+			res.status( 500 ).send({"message":"An error occurred while changing your password"}); 
+		}
+		else {
+			var b64string = value.data.documents[0].document;
+			var buf = new Buffer(b64string, 'base64');
+			user = JSON.parse(buf.toString('ascii'));
+			truevault.users.updatePassword({'user_id': user.user_id, 'password': req.body.newPassword}, ifError); 
+			res.status(200).end(); 
+		}
+	}
+
+	truevault.auth.login( userDetails, validateUser);
+
+	// grab the user with the current email
+	var filterAttributes = Builder.vendFilterAttributes( "eq", req.body.email ); 
+	var filter = Builder.vendFilter( globals.userSchemaId, vaultid, {"username":filterAttributes}, true );
+
+	truevault.documents.search( filter, foundUser); 
 }
 
 Settings.prototype.generateInvite = function( req, res ) {
@@ -232,9 +186,7 @@ Settings.prototype.generateInvite = function( req, res ) {
 	truevault.auth.login( loginDetails, function(err, value) {
 		if ( err )
 			res.status(401).send( "Incorrect password" );
-		else {
-			// console.log( "Password verified for generating invite code");
-	 
+		else {	 
 			// create an invite code
 			require("crypto").randomBytes(12, function (ex, buf) {
 		    	// User attributes object creation
@@ -262,6 +214,21 @@ Settings.prototype.generateInvite = function( req, res ) {
 		    }); 
 		}
 	});  
+}
+
+function validateUser( err, value ) {
+	if( err ) {
+		console.log( err ); 
+		res.status( 401 ).send({"message":"The email/password combination you entered is incorrect"}); 
+	}
+}
+
+
+function ifError( err, value ) {
+	if ( err ) {
+		console.log( err ); 
+		res.status(500).send({"message": err} ); 
+	}
 }
 
 function sendEmail(recipient, subject, message) {

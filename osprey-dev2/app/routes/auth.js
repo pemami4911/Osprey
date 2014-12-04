@@ -101,14 +101,15 @@ Auth.prototype.register = function(req, res) {
 
 	// callback function executed after random token is generated
 	var onSuccess = function( ex, buf ) {
-		console.log( "On SUccess"); 
 		// User attributes object creation
     	token = buf.toString("hex");
    		var newUser = User.createUser( uuid, req, token );
    		var doc = Builder.vendDocument( globals.userSchemaId, vaultid, newUser );
 
-   		console.log( doc ); 
-   		truevault.documents.create( doc, onCreation); 
+   		if( !checkDuplicates( newUser.username ) )
+   			truevault.documents.create( doc, onCreation); 
+   		else
+   			res.status(401).send({"message":"Error: E-mail already exists"}); 
 	}
 
 	var createUser = function( err, value ) {
@@ -131,8 +132,6 @@ Auth.prototype.register = function(req, res) {
 		    				console.log( err ); 
 		    				res.status(500).send({"message":"error at child doc creation"});
 		    			}
-		    			console.log(value);	
-
 		    		}
 
 		    		truevault.documents.create( childDoc, callback); 
@@ -397,13 +396,29 @@ function isConfirmed( user, callback ) {
 				});		 
 			}
 			else {
-				console.log( value.data ); 	// the user is not found
+				//console.log( value.data ); 	// the user is not found
 				callback( undefined );
 			}
 		}
 	}); 
 }
 
+function checkDuplicates( email ) {
+	var filterAttributes = Builder.vendFilterAttributes( "eq", email ); 
+	var filter = Builder.vendFilter( globals.userSchemaId, vaultid, {"username":filterAttributes}, true);
+
+	truevault.documents.search( filter, function( err, value ) {
+		if ( err ) {
+			console.log( err ); 
+		}
+		else {
+			if(  value.data.info.total_result_count != 0 ) 
+				return true; 
+			else
+				return false; 
+		}
+	}); 
+}
 
 function sendEmail(recipient, subject, message) {
 	// console.log("Send Email"); 
