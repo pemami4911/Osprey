@@ -56,17 +56,9 @@
           </div>
             <!-- /.panel-heading -->
             <div class="panel-body">
-                <nvd3-line-chart
-                    data="exampleData"
-                    id="lineChart"
-                    xAxisTickFormat="xAxisTickFormatFunction()"
-                    yAxisTickFormat="yAxisTickFormatFunction()"
-                    width="550"
-                    height="150"
-                    showXAxis="true"
-                    showYAxis="true">
-                        <svg id="render-me"></svg>
-                </nvd3-line-chart>
+                    <div class="flot-chart">
+                        <div class="flot-chart-content" id="flot-line-chart"></div>
+                    </div>
             </div>
             <!-- /.panel-body -->
         </div>
@@ -96,3 +88,8 @@
             </div> 
     </div>
 </div>
+<script src="lib/sb-admin-js/plugins/flot/jquery.flot.js"></script>
+<script src="lib/sb-admin-js/plugins/flot/flot-data.js"></script>
+<script src="lib/sb-admin-js/plugins/flot/jquery.flot.tooltip.min.js"></script>
+<script src="lib/sb-admin-js/plugins/flot/excanvas.min.js"></script>
+<script src="lib/sb-admin-js/plugins/flot/jquery.flot.resize.js"></script>

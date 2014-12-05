@@ -40,10 +40,10 @@ $(document).ready(function() {
 
         var plotObj = $.plot($("#flot-line-chart"), [{
                 data: sin,
-                label: "sin(x)"
+                label: "Burned"
             }, {
                 data: cos,
-                label: "cos(x)"
+                label: "Consumed"
             }],
             options);
     }
