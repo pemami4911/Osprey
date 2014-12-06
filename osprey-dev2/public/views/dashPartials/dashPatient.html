@@ -18,20 +18,20 @@
                 <div class="panel-body" style="padding: 0px 15px;">
                     <div class="col-md-6 column" style="padding: 0px 0px;">
                       <h4>Age: <strong>{{selectedRow.age}}</strong></h4>
-                      <h4>Weight: <strong>{{selectedRow.weight}} lbs</strong></h4>
+                      <h4>Weight: <strong>{{Math.round(selectedRow.weight * 100)}} lbs</strong></h4>
                       <h4>Parent: <strong>{{selectedRow.parentName}}</strong></h4>
                   </div>
                   <div class="col-md-6 column"  style="padding: 0px 0px;">
                       <div class="col-xs-5 col-sm-3 column patient-stats">
-                          <h1 style="line-height: 0.7;"><center><strong> 254 </strong></center></h1>                    
+                          <h1 style="line-height: 0.7;"><center><strong> {{ospreyDays()}} </strong></center></h1>                    
                           <p><center><small>Days</small></center></p>
                       </div>    
                       <div class="col-xs-5 col-sm-5 column patient-stats">
-                          <h1 style="line-height: 0.7;"><center><strong> 2856 </strong></center></h1>                    
+                          <h1 style="line-height: 0.7;"><center><strong> {{Math.round(caloriesConsumed)}} </strong></center></h1>                    
                           <p><center><small>Calories Consumed</small></center></p>
                       </div>   
                       <div class="col-xs-5 col-sm-4 column patient-stats">
-                          <h1 style="line-height: 0.7;"><center><strong> 1223 </strong></center></h1>                    
+                          <h1 style="line-height: 0.7;"><center><strong> {{Math.round(caloriesBurned)}} </strong></center></h1>                    
                           <p><center><small>Calories Burned</small></center></p>
                       </div>
                   </div>
@@ -44,21 +44,35 @@
         <div class="panel panel-default">
             <div class="panel-heading clearfix">
                 <h4 class="tracking pull-left">Live Tracking</h4>
-                <div class="btn-group pull-right" data-toggle="buttons">
+                <!-- <div class="btn-group pull-right" data-toggle="buttons">
                     <label class="btn btn-default btn-md">
                         <input type="radio" name="mode" id="option1">Burned
                     </label>
                     <label class="btn btn-default btn-md">
                         <input type="radio" name="mode" id="option2">Consumed
                     </label>
-              </div>
-             <h4 class="tracking pull-right">Calories:&nbsp;</h4>
+                </div>
+             <h4 class="tracking pull-right">Calories:&nbsp;</h4> -->
           </div>
             <!-- /.panel-heading -->
             <div class="panel-body">
-                    <div class="flot-chart">
-                        <div class="flot-chart-content" id="flot-line-chart"></div>
-                    </div>
+               <nvd3-line-chart
+                    data="exampleData"
+                    id="lineChart"
+                    x="xFunction()"
+                    y="yFunction()"
+                    yAxisTickFormat="yAxisTickFormatFunction()"
+                    xAxisTickFormat="xAxisTickFormatFunction()"
+                    width="1000"
+                    height="400"
+                    showXAxis="true"
+                    showYAxis="true"
+                    tooltips="true"
+                    color="colorFunction()"
+                    legendColor="colorFunction()"
+                    showLegend="true">
+                        <svg id="render-me"></svg>
+                </nvd3-line-chart>
             </div>
             <!-- /.panel-body -->
         </div>
@@ -72,7 +86,7 @@
                 <h5 class="patient-name pull-left">Placeholder 1</h5>
                 </div>
                 <div class="panel-body">
-                     <canvas id="canvas" width="300px" height="300px" style="visibility:hidden;"></canvas>
+                     
                 </div>
               </div>
             </div>
@@ -82,14 +96,9 @@
                 <h5 class="patient-name pull-left">Placeholder 2</h5>
                 </div>
                 <div class="panel-body">
-                     <canvas id="canvas" width="300px" height="300px" style="visibility:hidden;"></canvas>
                 </div>
               </div>
             </div> 
+            <canvas id="canvas" width="900" height="300px" style="visibility:hidden;"></canvas>
     </div>
 </div>
-<script src="lib/sb-admin-js/plugins/flot/jquery.flot.js"></script>
-<script src="lib/sb-admin-js/plugins/flot/flot-data.js"></script>
-<script src="lib/sb-admin-js/plugins/flot/jquery.flot.tooltip.min.js"></script>
-<script src="lib/sb-admin-js/plugins/flot/excanvas.min.js"></script>
-<script src="lib/sb-admin-js/plugins/flot/jquery.flot.resize.js"></script>

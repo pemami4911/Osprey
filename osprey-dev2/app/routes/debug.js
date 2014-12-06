@@ -29,6 +29,7 @@ Debug.prototype.generateFitbit = function(req, res) {
 												{"parentId":allChildrenFilterAttributes}, true);
 
 	truevault.documents.search(allChildrenFilter, function(err, value) {
+		var docsAdded = 0;
 		for (var i = 0; i < value.data.documents.length; i++) {
 			// convert b64string into JSON string, then parse into JSON object
 			var b64string = value.data.documents[i].document;
@@ -37,7 +38,7 @@ Debug.prototype.generateFitbit = function(req, res) {
 
 			console.log(childObject);
 			console.log(value.data.documents[i].document_id)
-
+			var endVal = 31 * value.data.documents.length;
 
 			for (var j = 1; j < 32; j++) {
 				var time1 = Math.random() * 24;
@@ -57,8 +58,15 @@ Debug.prototype.generateFitbit = function(req, res) {
 						console.log("Error creating fitbit doc");
 						console.log(err);
 					}
-					else
-						console.log("Fitbit Doc " + value.document_id + " created");
+					else {
+						docsAdded++;
+						console.log("Fitbit Doc " + value.document_id + " created " + docsAdded);
+						
+						if(docsAdded == endVal) {
+							console.log("Ending");
+							res.status.send(200);
+						}
+					}
 				});
 			}
 		}
@@ -72,7 +80,6 @@ Debug.prototype.clearFitbit = function(req, res) {
 												{"childID":allFitbitFilterAttributes}, true);
 
 	truevault.documents.search(allFitbitFilter, function(err, value) {
-		console.log(value.data.documents);
 		for (var i = 0; i < value.data.documents.length; i++) {
 			console.log("Deleting document: " + value.data.documents[i].document_id)
 			truevault.documents.del({

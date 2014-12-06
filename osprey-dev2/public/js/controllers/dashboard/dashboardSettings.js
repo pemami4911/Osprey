@@ -15,7 +15,10 @@ angular.module('dashboardSettingsModule', ['splashPageService', 'ngReactGrid', '
 			'changeEmail': {}, 
 			'changePassword': {}
 		}; 
-		$scope.newTableSettings = {}; 
+		$scope.newTableSettings = {};
+		$scope.newTableSettings.email = $scope.loggedUser.phyShowEmail; 
+		$scope.newTableSettings.age = $scope.loggedUser.phyShowAge; 
+		$scope.newTableSettings.weight = $scope.loggedUser.phyShowWeight; 
 		$scope.deleteAccount = {};
 		$scope.isFirstOpen = true;
 

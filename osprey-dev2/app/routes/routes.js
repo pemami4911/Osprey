@@ -37,7 +37,7 @@ module.exports = function(app, vault) {
 
 	// used to test new functionality
 	app.post('/debug/test', function(req, res, next) {
-		Debug.clearVault(req, res);
+		Debug.generateFitbit(req, res);
 	});
 
 	app.post('/debug/deleteTestUser', function(req, res, next) {
