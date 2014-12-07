@@ -1,0 +1,104 @@
+<div ng-controller="dashboardMyPatientController">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">Patient Overview</h1>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <div class="row">
+        <div class="col-lg-2">
+            <img src="https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xfp1/v/t1.0-1/c43.0.148.148/p148x148/10417584_10150004166814104_470499672042020938_n.png?oh=d3d3bea5567dfd8ea2ff62ed27de2768&oe=54E63C1E&__gda__=1425524590_b6dcd0b91983c94125edf57b4a87a9ea"></img>
+        </div>
+        <div class="col-lg-10" style="padding-left: 0px;  padding-right: 0px;">
+            <div class="panel panel-default">
+                <div class="panel-heading clearfix" style="padding: 2px 15px;">
+                       <h2 class="patient-name pull-left">{{selectedRow.patientName}}</h2>                 
+                       <button ng-click="pdfGenerator()" class="btn btn-default btn-md pull-right" id="pdf-button" style="margin-top: 0.5em;"> View Quick Report </button>
+                </div>
+                <div class="panel-body" style="padding: 0px 15px;">
+                    <div class="col-md-6 column" style="padding: 0px 0px;">
+                      <h4>Age: <strong>{{selectedRow.age}}</strong></h4>
+                      <h4>Weight: <strong>{{Math.round(selectedRow.weight * 100)}} lbs</strong></h4>
+                      <h4>Parent: <strong>{{selectedRow.parentName}}</strong></h4>
+                  </div>
+                  <div class="col-md-6 column"  style="padding: 0px 0px;">
+                      <div class="col-xs-5 col-sm-3 column patient-stats">
+                          <h1 style="line-height: 0.7;"><center><strong> {{ospreyDays()}} </strong></center></h1>                    
+                          <p><center><small>Days</small></center></p>
+                      </div>    
+                      <div class="col-xs-5 col-sm-5 column patient-stats">
+                          <h1 style="line-height: 0.7;"><center><strong> {{Math.round(caloriesConsumed)}} </strong></center></h1>                    
+                          <p><center><small>Calories Consumed</small></center></p>
+                      </div>   
+                      <div class="col-xs-5 col-sm-4 column patient-stats">
+                          <h1 style="line-height: 0.7;"><center><strong> {{Math.round(caloriesBurned)}} </strong></center></h1>                    
+                          <p><center><small>Calories Burned</small></center></p>
+                      </div>
+                  </div>
+              </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading clearfix">
+                <h4 class="tracking pull-left">Live Tracking</h4>
+                <!-- <div class="btn-group pull-right" data-toggle="buttons">
+                    <label class="btn btn-default btn-md">
+                        <input type="radio" name="mode" id="option1">Burned
+                    </label>
+                    <label class="btn btn-default btn-md">
+                        <input type="radio" name="mode" id="option2">Consumed
+                    </label>
+                </div>
+             <h4 class="tracking pull-right">Calories:&nbsp;</h4> -->
+          </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+               <nvd3-line-chart
+                    data="exampleData"
+                    id="lineChart"
+                    x="xFunction()"
+                    y="yFunction()"
+                    yAxisTickFormat="yAxisTickFormatFunction()"
+                    xAxisTickFormat="xAxisTickFormatFunction()"
+                    width="1000"
+                    height="400"
+                    showXAxis="true"
+                    showYAxis="true"
+                    tooltips="true"
+                    color="colorFunction()"
+                    legendColor="colorFunction()"
+                    showLegend="true">
+                        <svg id="render-me"></svg>
+                </nvd3-line-chart>
+            </div>
+            <!-- /.panel-body -->
+        </div>
+    </div>
+    <div class="row">
+
+
+            <div class="col-lg-6" style="padding-left: 0px;">
+              <div class="panel panel-default">
+                <div class="panel-heading clearfix">
+                <h5 class="patient-name pull-left">Placeholder 1</h5>
+                </div>
+                <div class="panel-body">
+                     
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-6" style="padding-right: 0px;">
+              <div class="panel panel-default">
+                <div class="panel-heading clearfix">
+                <h5 class="patient-name pull-left">Placeholder 2</h5>
+                </div>
+                <div class="panel-body">
+                </div>
+              </div>
+            </div> 
+            <canvas id="canvas" width="900" height="300px" style="visibility:hidden;"></canvas>
+    </div>
+</div>
