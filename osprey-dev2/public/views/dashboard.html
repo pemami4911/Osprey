@@ -17,10 +17,20 @@
         <!-- /.navbar-top-links -->
 
         <div class="navbar-default sidebar" role="navigation">
+            <div class="row" style="width:250px;">
+                <div class="col-md-5 column clearfix" style="padding: 0px 0px 0px 20px;">
+                    <p><center><img src="img/user.png" class="img-circle" width="60"></img></center></p>
+                </div>
+                <div class="col-md-7 column clearfix" style="padding: 20px 0px 0px 0px; vertical-align:middle;">
+                    <strong><h5 style="vertical-align:middle; margin:5px 0px 2px 0px; font-size: 13px;">Welcome back,</h5></strong>
+                    <strong><h4 style="vertical-align:middle; margin:0px 0px; font-size: 16px; font-weight: bold;">
+                    John Doe</h4></strong>
+                </div>
+             </div>
             <div class="sidebar-nav navbar-collapse">
                 <ul class="nav" id="side-menu">
                     <li ng-repeat="item in navItems">
-                        <a class="tab1" ng-class="{active:isActive(item.num)}" ng-click="switchTab(item.num)"><i class="fa fa-table fa-fw"></i>{{item.name}}</a>
+                        <a class="tab1" ng-class="{active:isActive(item.num)}" ng-click="switchTab(item.num)"><i class="fa fa-table fa-fw" style="color:#434343;"></i><font color="#434343">{{item.name}}</font></a>
                     </li>
                 </ul>
             </div>

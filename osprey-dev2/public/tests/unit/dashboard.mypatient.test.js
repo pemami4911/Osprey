@@ -10,7 +10,25 @@ describe('dashboardMyPatientController', function(){
 		scope = $rootScope.$new();
 
 		// establish parent controller
-		userResponse = { "userType": "Physician", "email": "asd@asd.com", "password": "hash", "tableSettings" : {"showAge": true, "showWeight": true, "showEmail": true}};
+		userResponse = 	{ 	"userType": "Physician", "email": "asd@asd.com", "password": "hash", 
+							"phyShowAge": true, "phyShowEmail": false, "phyShowWeight": true, 
+							"children" : {"content": [
+							{"birthday":"2010-01-01", "name": "child a", 
+								"parent": {"firstName":"John", "lastName":"Smith", "username": "a@a.com"},
+								"fitbit": [{calories: 324.5683931745589,
+											timeActiveNotStrenuous: 9.280397527252777,
+											timeActiveStrenuous: 6.117963233962655,
+											timeSedentary: 8.601639238784568,
+											timestamp: "2014-01-06"}, 
+											{calories: 324.5683931745589,
+											timeActiveNotStrenuous: 9.280397527252777,
+											timeActiveStrenuous: 6.117963233962655,
+											timeSedentary: 8.601639238784568,
+											timestamp: "2014-01-07"}]
+							}
+							]}
+						};
+		scope.selectedRow = {"patientName":"child a"}
 		scope.loggedUser = userResponse;
 
 		// Create the controller

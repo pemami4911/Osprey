@@ -154,7 +154,7 @@ describe('mocha unit tests', function () {
 		          	}
 		          	should.exist(res);
 		          	res.status.should.equal(500);
-		          	res.error.text.should.equal('{"message":"Invalid email or password"}')
+		          	res.error.text.should.equal('{"message":"Invalid email"}')
 		          	done();
 		        });
 		});
@@ -246,7 +246,7 @@ describe('mocha unit tests', function () {
 		          	}
 		          	should.exist(res);
 		          	res.status.should.equal(500);
-		          	res.error.text.should.equal('<h1> An error occurred while verifying your email. Please contact the Osprey Team</h1>');
+		          	res.error.text.should.equal('<h1> The email address being used to verify this account is not found in our records. Please contact the Osprey Team</h1>');
 		          	done();
 		        });
 	    });
@@ -846,7 +846,7 @@ describe('mocha unit tests', function () {
 		            	throw err;
 		          	}
 		          	res.status.should.equal(500);
-		          	res.error.text.should.equal('{"message":"Verification Error"}');
+		          	res.error.text.should.equal('{"message":"User has been logged out...redirecting to the login page"}');
 		          	done();
 		        });
 	    });
@@ -1060,6 +1060,25 @@ describe('mocha unit tests', function () {
 		          	done();
 		        });
 	    });
+
+	  //   it('should change an email successfully', function(done) {
+	  //   	this.timeout(5000);
+	  //   	var postBody = {
+	  //   		"email":"ospreytestphysician@gmail.com",
+	  //   		"password":"newPass",
+	  //   		"newEmail":"asdf"
+	  //   	}
+			// agent
+   //        		.post('/settings/changePassword')
+   //        		.send(postBody)
+			// 	.end(function(err, res) {
+		 //        	if (err) {
+		 //            	throw err;
+		 //          	}
+		 //          	res.status.should.equal(200);
+		 //          	done();
+		 //        });
+	  //   });
 
 	    it('should log out successfully', function(done) {
 	    	agent

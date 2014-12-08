@@ -121,7 +121,7 @@ Users.prototype.addChild = function(req, res) {
 
 		var newChild = Child.createChild( value.user.user_id, req.body.childName, req.body.childBirthday, req.body.childGender );
 		var childDoc = Builder.vendDocument( globals.childSchemaId, vaultid, newChild );
-
+		console.log(newChild);
 		truevault.documents.create( childDoc, function( err, value ) {
 			if (err) {
 				console.log( err ); 

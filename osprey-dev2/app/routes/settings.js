@@ -170,15 +170,17 @@ Settings.prototype.changePassword = function(req, res) {
 
 	var foundUser = function( err, value ) {
 		if( err ) {
-			console.log( error ); 
 			res.status( 500 ).send({"message":"An error occurred while changing your password"}); 
 		}
 		else {
 			var b64string = value.data.documents[0].document;
 			var buf = new Buffer(b64string, 'base64');
 			user = JSON.parse(buf.toString('ascii'));
-			truevault.users.updatePassword({'user_id': user.user_id, 'password': req.body.newPassword}, ifError); 
-			res.status(200).end(); 
+			truevault.users.updatePassword({'user_id': user.user_id, 'password': req.body.newPassword}, function(err, value) {
+				if (err)
+					res.status(500).send({"message": err} ); 
+				res.status(200).end(); 
+			}); 
 		}
 	}
 

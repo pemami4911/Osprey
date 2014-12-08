@@ -1,4 +1,4 @@
-describe('dashboardPatientsController', function(){
+describe('dashboardSettingsController', function(){
 
  	beforeEach(module('dashboardSettingsModule')); 
 
@@ -8,16 +8,36 @@ describe('dashboardPatientsController', function(){
 	beforeEach(inject(function($controller, $rootScope, _$httpBackend_, _$location_) {
 		// Create a new scope that's a child of the $rootScope
 		scope = $rootScope.$new();
-		dashSettingsCtrl = $controller('dashboardSettingsController', {
-			$scope : scope
-		});
+		
 
 		//establish parent controller
-		userResponse = { "userType": "Physician", "email": "asd@asd.com", "password": "hash", "tableSettings" : {"showAge": true, "showWeight": true, "showEmail": true}};
+		userResponse = 	{ 	"userType": "Physician", "email": "asd@asd.com", "password": "hash", 
+							"phyShowAge": true, "phyShowEmail": false, "phyShowWeight": true, 
+							"children" : {"content": [
+							{"birthday":"2010-01-01", "name": "child a", 
+								"parent": {"firstName":"John", "lastName":"Smith", "username": "a@a.com"},
+								"fitbit": [{calories: 324.5683931745589,
+											timeActiveNotStrenuous: 9.280397527252777,
+											timeActiveStrenuous: 6.117963233962655,
+											timeSedentary: 8.601639238784568,
+											timestamp: "2014-01-06"}, 
+											{calories: 324.5683931745589,
+											timeActiveNotStrenuous: 9.280397527252777,
+											timeActiveStrenuous: 6.117963233962655,
+											timeSedentary: 8.601639238784568,
+											timestamp: "2014-01-07"}]
+							}
+							]}
+						};
 		scope.loggedUser = userResponse;
+
 		scope.checkLogged = function() {
 			scope.loggedUser = userResponse;
 		}
+
+		dashSettingsCtrl = $controller('dashboardSettingsController', {
+			$scope : scope
+		});
 
 		$httpBackend = _$httpBackend_; 
 		 
@@ -84,23 +104,22 @@ describe('dashboardPatientsController', function(){
 	it('should prevent a user from changing their email if they provide an incorrect password', function() {
 
 		$httpBackend.when('POST', '/auth/checkReg').respond(200, 0); 
-		$httpBackend.when('POST', '/settings/changeEmail').respond(200, "err2"); 
+		$httpBackend.when('POST', '/settings/changeEmail').respond(401, {"message": "User verification error"}); 
 
 		scope.newAccountSettings.changeEmail.email = "a@a.com";
 		scope.newAccountSettings.changeEmail.password = " "; 
 		scope.changeEmail();
-		userResponse = {"email": "a@a.com"}; 
 		$httpBackend.flush();
 		expect(scope.loggedUser.email).toBe("asd@asd.com");
 	}); 
 
 	it('should allow the user to change their password', function () {
 
-		$httpBackend.when('POST', '/settings/changePassword').respond(200, 1); 
+		$httpBackend.when('POST', '/settings/changePassword').respond(200); 
 		scope.newAccountSettings.changePassword.currentPassword = "hash"; 
 		scope.newAccountSettings.changePassword.newPassword = "hash2"; 
 		scope.changePassword(); 
-		userResponse = {"password": "hash2"};
+		userResponse = 	{ 	"userType": "Physician", "email": "asd@asd.com", "password": "hash2" }
 		$httpBackend.flush(); 
 		expect(scope.loggedUser.password).toBe("hash2"); 
 
@@ -108,7 +127,7 @@ describe('dashboardPatientsController', function(){
 
 	it('should not allow a user to change their password if they enter an incorrect email', function() {
 
-		$httpBackend.when('POST', '/settings/changePassword').respond(200, "err2"); 
+		$httpBackend.when('POST', '/settings/changePassword').respond(401, {"message": "User verification error"}); 
 		scope.newAccountSettings.changePassword.currentPassword = ""; 
 		scope.newAccountSettings.changePassword.newPassword = "hackerzRus"; 
 		scope.changePassword(); 

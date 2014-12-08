@@ -89,6 +89,10 @@ angular.module('splashPageService', [])
 				var postBody = {};
 				postBody.physicianId = physicianId;
 				return $http.post('/users/childrenOfPhysician', postBody);
+			},
+
+			addChild: function(newChild) {
+				return $http.post('/users/addChild', newChild);
 			}
 
 		}

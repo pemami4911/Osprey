@@ -152,7 +152,7 @@ Auth.prototype.verify = function(req, res) {
 		var filter = Builder.vendFilter( globals.userSchemaId, vaultid, {"confirmationToken":filterAttributes}, true );
 
 		isConfirmed( filter, function ( resp, user, id ) {
-			console.log( filter ); 
+			// console.log( filter ); 
 			if( resp === "Bad Email" ) 	// should not happen
 				res.status(500).send("<h1> The email address being used to verify this account is not found in our records. Please contact the Osprey Team</h1>"); 
 			else if( resp === undefined )
@@ -379,7 +379,7 @@ function isConfirmed( user, callback ) {
 				var buf = new Buffer(b64string, 'base64');
 				var data = JSON.parse(buf.toString('ascii'));
 				
-				console.log( data ); 
+				// console.log( data ); 
 
 				if( data.isConfirmed === false )	// if the user has not been confirmed yet
 					callback( "Unauthorized", data, doc_id);  // send back an error message
