@@ -125,7 +125,7 @@ describe('dashboardSettingsController', function(){
 
 	});
 
-	it('should not allow a user to change their password if they enter an incorrect email', function() {
+	it('should allow a user to add a child', function() {
 
 		$httpBackend.when('POST', '/settings/changePassword').respond(401, {"message": "User verification error"}); 
 		scope.newAccountSettings.changePassword.currentPassword = ""; 

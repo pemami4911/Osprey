@@ -35,20 +35,16 @@ angular.module('dashboardSettingsModule', ['splashPageService', 'ngReactGrid', '
 						$scope.checkLogged();
 						window.alert("You have successfully changed your e-mail!");
 				}).error(function (response){
-					console.log(response.message);
 					$scope.error = response.message; 	
 				}); 
 		}
 
 		$scope.changePassword = function() {
-			console.log( $scope.loggedUser.username ); 
-			console.log( $scope.newAccountSettings.changePassword.currentPassword );
 			splashFactory.changePassword( $scope.loggedUser.username, $scope.newAccountSettings.changePassword.currentPassword, $scope.newAccountSettings.changePassword.newPassword )
 				.success(function () {
 						$scope.checkLogged();
 						window.alert("You have successfully changed your password!");
 				}).error(function (response){
-					console.log(response.message);
 					$scope.error = response.message;
 				});
 		}
@@ -59,7 +55,6 @@ angular.module('dashboardSettingsModule', ['splashPageService', 'ngReactGrid', '
 					window.alert("You have successfully changed your table settings!");
 					$scope.checkLogged();
 				}).error(function (response){
-					console.log(response.message);
 					$scope.error = response.message; 
 				});
 		}
@@ -69,7 +64,6 @@ angular.module('dashboardSettingsModule', ['splashPageService', 'ngReactGrid', '
 				.success ( function () {
 					window.alert("Sent invite code"); 
 				}).error ( function (response) {
-					console.log( response.message ); 
 					$scope.error = response.message; 
 				}); 
 		}
@@ -93,6 +87,7 @@ angular.module('dashboardSettingsModule', ['splashPageService', 'ngReactGrid', '
 			splashFactory.addChild($scope.newChild)
 				.success( function( data ) {
 					window.alert("Child added successfully!");
+					$scope.checkLogged($scope.getChildren);
 				}).error( function( response ) {
 					window.alert(response.message);
 				});

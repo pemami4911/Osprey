@@ -117,6 +117,9 @@ describe('dashboardControllerLoggedInParent', function(){
         $httpBackend.when('POST', '/auth/isLogged').respond( function() {
             return [200, userResponse];
         }); 
+        $httpBackend.when('POST', '/users/childrenOfParent').respond( function() {
+            return [200, {'content':[]}];
+        });
         $httpBackend.flush();
         $location = _$location_; 
     }));
@@ -129,11 +132,11 @@ describe('dashboardControllerLoggedInParent', function(){
         expect(scope.activeTab).toExist; 
     });
 
-    it('should display a table of the physicians patients immediately when they log in to the dashboard', function() {
-        expect(scope.contentUrl).toBe('views/dashPartials/dashParent.html'); 
+    it('should display the parent page upon logging in', function() {
+        expect(scope.contentUrl).toBe('views/parentPartials/dashParent.html'); 
     });
-    it('should have one tab in the navigation bar', function() {
-        expect(scope.navItems.length).toBe(1);
+    it('should have two tabs in the navigation bar', function() {
+        expect(scope.navItems.length).toBe(2);
    });
 }); 
 

@@ -181,7 +181,7 @@ Debug.prototype.deleteTestUser = function(req, res) {
 					}
 
 					usersDeleted++;
-					if (usersDeleted == 3)
+					if (usersDeleted == 1)
 						res.status(200).end();
 				});
 			}

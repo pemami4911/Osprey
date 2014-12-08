@@ -25,7 +25,6 @@ angular.module('splashPageModule', ['splashPageService'])
 					$scope.loading = true; 
 					$location.path('/dashboard');
 				}).error(function (response) {
-					console.log( response.message ); 
 					$scope.addAlert( response.message, "danger", true)
 					$scope.error = response.message;
 					$scope.loading = false;
@@ -37,7 +36,6 @@ angular.module('splashPageModule', ['splashPageService'])
 			splashFactory.registerAttempt( $scope.initRegData )
 				// if successful creation, call our get function to get all the new todos
 				.success( function( physData ) {
-					console.log( physData ); 
 					$scope.loading = true; 
 
 					$cookieStore.put( 'userType', $scope.initRegData.userType ); 
@@ -52,7 +50,6 @@ angular.module('splashPageModule', ['splashPageService'])
 						$location.path('/regPhysician');
 					
 				}).error(function (response) {
-					console.log( response.message ); 
 					$scope.addAlert( response.message, "danger", false); 
 					$scope.error = response.message;
 					$scope.loading = false;
