@@ -1464,8 +1464,244 @@ describe('mocha unit tests', function () {
 		          	done();
 		        });
 	    });
+	});
+
+	/*
+	=========================================================================
+	=========================================================================
+	|																		|
+	|						  OTHER FUNCTIONALITY							|
+	|																		|
+	=========================================================================
+	=========================================================================
+	*/
+
+	describe('Other functionality (/settings/deleteAccount, /nvd3css)', function() {
+		var agent = request.agent(url); // agent tracks its own cookies and session variables
+		var agentParent = request.agent(url);
+		var physicianId = '';
+		before( function(done) {			
+			this.timeout(20000);
+
+	     	var postBody = {
+	        	email: 'ospreytestphysician@gmail.com',
+	        	password: 'asdf'
+	      	};
+
+	      	agent
+          		.post('/auth/login')
+				.send(postBody)
+				.end(function(err, res) {
+		        	if (err) {
+		            	throw err;
+		          	}
+		          	var postBody2 = {
+			        	email: 'ospreytestparent@gmail.com',
+			        	password: 'asdf'
+			      	};
+
+				    agentParent
+		          		.post('/auth/login')
+						.send(postBody2)
+						.end(function(err, res) {
+				        	if (err) {
+				            	throw err;
+				          	}
+				          	done();
+				        });
+		        });
+		});
+
+		it('should find a parent document prior to deleting', function(done) {
+			this.timeout(5000);
+			truevault.documents.search({
+				"vault_id" : vaultid, 
+				"filter" : {"username": {type:"eq", value:"ospreytestparent@gmail.com"}},
+				"full_document" : true,
+				"per_page": 10 //true to return full documents vs uuids
+			}, function (err, document){
+				if (err)
+					throw err;
+				document.data.documents.length.should.equal(1);
+				done();
+			});
+	    });
+
+	    it('should fail to delete a parent account if a user is not logged in', function(done) {
+			this.timeout(5000);
+			var postBody = {"email":"ospreytestparent@gmail.com", "password":"asdf"};
+			request(url)
+          		.post('/settings/deleteAccount')
+          		.send(postBody)
+				.end(function(err, res) {
+		        	if (err) {
+		            	throw err;
+		          	}
+		          	res.status.should.equal(401);
+		          	res.error.text.should.equal('{"message":"User verification error"}');
+		          	done();
+		        });
+	    });
+
+	    it('should fail to delete a parent account if a user inputs the wrong password', function(done) {
+			this.timeout(5000);
+			var postBody = {"email":"ospreytestparent@gmail.com", "password":"wrongpassword"};
+			agentParent
+          		.post('/settings/deleteAccount')
+          		.send(postBody)
+				.end(function(err, res) {
+		        	if (err) {
+		            	throw err;
+		          	}
+		          	res.status.should.equal(401);
+		          	res.error.text.should.equal('{"message":"The email/password combination you entered is incorrect"}');
+		          	done();
+		        });
+	    });
+
+		it('should successfully delete a parent account', function(done) {
+			this.timeout(5000);
+			var postBody = {"email":"ospreytestparent@gmail.com", "password":"asdf"};
+			agentParent
+          		.post('/settings/deleteAccount')
+          		.send(postBody)
+				.end(function(err, res) {
+		        	if (err) {
+		            	throw err;
+		          	}
+		          	res.status.should.equal(200);
+		          	done();
+		        });
+	    });
+
+	    it('should successfully remove the parent user from truevault', function(done) {
+			this.timeout(5000);
+			truevault.users.list(function (err, value){
+				var found = false
+				for (var i = 0; i < value.users.length; i++) {
+					if (value.users[i].username == "ospreytestparent@gmail.com")
+						found = true;
+				}
+				found.should.equal(false);
+				done();
+			});
+	    });
+
+		it('should successfully delete a parent document', function(done) {
+			this.timeout(5000);
+			truevault.documents.search({
+				"vault_id" : vaultid, 
+				"filter" : {"username": {type:"eq", value:"ospreytestparent@gmail.com"}},
+				"full_document" : true,
+				"per_page": 10 //true to return full documents vs uuids
+			}, function (err, document){
+				document.data.documents.length.should.equal(0);
+				done();
+			});
+	    });
 
 
+
+	    it('should find a physician document prior to deleting', function(done) {
+			this.timeout(5000);
+			truevault.documents.search({
+				"vault_id" : vaultid, 
+				"filter" : {"username": {type:"eq", value:"ospreytestphysician@gmail.com"}},
+				"full_document" : true,
+				"per_page": 10 //true to return full documents vs uuids
+			}, function (err, document){
+				if (err)
+					throw err;
+				document.data.documents.length.should.equal(1);
+				done();
+			});
+	    });
+
+	    it('should fail to delete a physician account if a user is not logged in', function(done) {
+			this.timeout(5000);
+			var postBody = {"email":"ospreytestphysician@gmail.com", "password":"asdf"};
+			request(url)
+          		.post('/settings/deleteAccount')
+          		.send(postBody)
+				.end(function(err, res) {
+		        	if (err) {
+		            	throw err;
+		          	}
+		          	res.status.should.equal(401);
+		          	res.error.text.should.equal('{"message":"User verification error"}');
+		          	done();
+		        });
+	    });
+
+	    it('should fail to delete a physician account if a user inputs the wrong password', function(done) {
+			this.timeout(5000);
+			var postBody = {"email":"ospreytestphysician@gmail.com", "password":"wrongpassword"};
+			agent
+          		.post('/settings/deleteAccount')
+          		.send(postBody)
+				.end(function(err, res) {
+		        	if (err) {
+		            	throw err;
+		          	}
+		          	res.status.should.equal(401);
+		          	res.error.text.should.equal('{"message":"The email/password combination you entered is incorrect"}');
+		          	done();
+		        });
+	    });
+
+		it('should successfully delete a physician account', function(done) {
+			this.timeout(5000);
+			var postBody = {"email":"ospreytestphysician@gmail.com", "password":"asdf"};
+			agent
+          		.post('/settings/deleteAccount')
+          		.send(postBody)
+				.end(function(err, res) {
+		        	if (err) {
+		            	throw err;
+		          	}
+		          	res.status.should.equal(200);
+		          	done();
+		        });
+	    });
+
+	    it('should successfully remove the physician user from truevault', function(done) {
+			this.timeout(5000);
+			truevault.users.list(function (err, value){
+				var found = false
+				for (var i = 0; i < value.users.length; i++) {
+					if (value.users[i].username == "ospreytestphysician@gmail.com")
+						found = true;
+				}
+				found.should.equal(false);
+				done();
+			});
+	    });
+
+		it('should successfully delete a physician document', function(done) {
+			this.timeout(5000);
+			truevault.documents.search({
+				"vault_id" : vaultid, 
+				"filter" : {"username": {type:"eq", value:"ospreytestphysician@gmail.com"}},
+				"full_document" : true,
+				"per_page": 10 //true to return full documents vs uuids
+			}, function (err, document){
+				document.data.documents.length.should.equal(0);
+				done();
+			});
+	    });
+
+	    it('should successfully return the nvd3 css file parsed as an array of rules', function(done) {
+			this.timeout(5000);
+			agent
+          		.get('/nvd3css')
+				.end(function(err, res) {
+		        	if (err) {
+		            	throw err;
+		          	}
+		          	res.body.length.should.equal(139);
+		          	done();
+		        });
+	    });
 
 	});
 

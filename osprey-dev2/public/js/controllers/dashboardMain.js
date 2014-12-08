@@ -90,19 +90,17 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 						$scope.loggedUser = null;
 						$location.path('/'); 	
 					}).error( function (response) {
-						console.log( response.message ); 
 						$scope.error = response.message; 
 					});
 				$scope.loading = false;
 			}
 			else {
 				$scope.error = "Attempt to log out failed because no one is logged in!"; 
-				console.log( $scope.error ); 
 			}
 		}
 
 		var init = function() {
-			// console.log($scope.loggedUser);
+			$scope.navItems = [];
 			if ($scope.loggedUser.userType == 'Parent') {
 				$scope.navItems.push({name: "Home", num: 1})
 				$scope.navItems.push({name: "Admin", num: 2})

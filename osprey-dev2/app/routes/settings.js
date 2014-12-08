@@ -253,7 +253,7 @@ Settings.prototype.deleteAccount = function( req, res ) {
 	
 	var searchCallback = function( err, value ) {
 		for (var i = 0; i < value.data.documents.length; ++i) {
-			console.log("Deleting document "+i+" : " + value.data.documents[i].document_id)
+			// console.log("Deleting document "+i+" : " + value.data.documents[i].document_id)
 			truevault.documents.del({
 			   'vault_id' : vaultid,
 			   'id' : value.data.documents[i].document_id
@@ -263,8 +263,7 @@ Settings.prototype.deleteAccount = function( req, res ) {
 					console.log( err ); 
 					res.status(500).send({"message":"An error occurred while deleting the account."});
 				}
-				else
-					console.log("Document deleted");
+
 			});
 		}
 
@@ -277,7 +276,7 @@ Settings.prototype.deleteAccount = function( req, res ) {
 			res.status(500).send({"message":err});
 		}
 		else {
-			console.log( value ); 
+			// console.log( value ); 
 			// delete all documents containing this email
 			var filterAttributes = Builder.vendFilterAttributes("eq", req.body.email);
 			var filter = Builder.vendFilter(globals.userSchemaId, vaultid, {"username":filterAttributes}, true);
@@ -293,9 +292,24 @@ Settings.prototype.deleteAccount = function( req, res ) {
 		}
 	}
 
-	var options = {"user_id":req.body.user_id}; 
-	truevault.auth.login( loginDetails, loginCallback); 
-	truevault.users.delete( options, deleteCallback); 
+	
+	var temp = require('../../truevault/lib/truevault.js')(req.session.access_token);
+
+	temp.auth.verify(function(err, value){
+		if (err) {
+			res.status(401).send({"message": "User verification error"});
+			return;
+		}
+		truevault.auth.login( loginDetails, function( err, value ) {
+			if( err ) {
+				res.status( 401 ).send({"message":"The email/password combination you entered is incorrect"}); 
+				return;
+			}
+			var options = {"user_id":value.user.user_id}; 
+
+			truevault.users.delete( options, deleteCallback); 
+		});
+	});
 }
 
 function validateUser( err, value ) {

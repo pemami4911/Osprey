@@ -10,7 +10,7 @@ var session = require('express-session');
 var flash = require('connect-flash');
 
 // configuration ===============================================================
-var vaultid = 'b51db608-3321-41dd-9531-bfc40c1f5c27' // nick-dev
+var vaultid = '7b55edbd-a907-4569-947c-726c215c0eee' // osprey-dev
 if (process.env.NODE_ENV == 'test') {
 	vaultid = '093b7e33-be5c-4f41-bd95-11cdebf3465b' // test
 } else {
