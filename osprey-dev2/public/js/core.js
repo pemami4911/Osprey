@@ -36,6 +36,9 @@ ospreyApp.config(['$routeProvider',
       when('/verify', {
          templateUrl: 'views/verify.html' 
       }).
+      when('/forgotPassword', {
+        templateUrl: 'views/forgotPassword.html',
+      }).
       otherwise({
         redirectTo: '/'
       });

@@ -10,8 +10,10 @@ angular.module('splashPageModule', ['splashPageService'])
 		$scope.clearUserData; 
 		// $scope.$on is an event handler
 		// $locationChangeStart is an angular event that is called every time a route change begins
-		$scope.$on('$locationChangeStart', function (event) {
-	        if( $scope.loading === false )
+		$scope.$on('$locationChangeStart', function (event, newURL) {
+			var url = "forgotPassword"; 
+
+	        if( $scope.loading === false && newURL.indexOf(url) === -1 )
 	        	event.preventDefault();
    		})
 
