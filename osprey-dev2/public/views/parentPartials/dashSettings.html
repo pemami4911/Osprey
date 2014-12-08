@@ -82,6 +82,41 @@
                             </form>
                         </accordion-group>
                     </accordion>
+                </tab>
+                <tab id="addChild" heading="Add Child">
+                    <br>
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label for="inputField2" class="col-sm-2 control-label">Child {{index}} Name</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" placeholder="Name" ng-model="newChild.childName">
+                            </div>
+                        </div>     
+                        <div class="form-group">
+                            <label for="inputField3" class="col-sm-2 control-label">Child {{index}} Birthday</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" placeholder="Birthday" ng-model="newChild.childBirthday" data-provide="datepicker" data-date-format="yyyy-mm-dd" data-date-start-view="2" data-date-end-date="0d" data-date-autoclose="true">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputField3" class="col-sm-2 control-label">Child {{index}} Gender</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" ng-model="newChild.childGender">
+                                    <option value="" disabled selected>Select gender</option>
+                                    <option value="m">Male</option>
+                                    <option value="f">Female</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12 text-center">
+                                <div class="btn-group">                    
+                                    <button type="button" ng-click="addChild()" class="btn btn-default btn-lg" id="regParent">Add Child</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </tab>
             </tabset>
 
             <!-- /.panel -->

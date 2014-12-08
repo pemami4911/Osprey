@@ -15,6 +15,7 @@ angular.module('dashboardSettingsModule', ['splashPageService', 'ngReactGrid', '
 			'changeEmail': {}, 
 			'changePassword': {}
 		}; 
+		$scope.newChild = {};
 		$scope.newTableSettings = {};
 		$scope.newTableSettings.email = $scope.loggedUser.phyShowEmail; 
 		$scope.newTableSettings.age = $scope.loggedUser.phyShowAge; 
@@ -86,6 +87,15 @@ angular.module('dashboardSettingsModule', ['splashPageService', 'ngReactGrid', '
 						window.alert( $scope.error ); 
 					});
 			}
+		}
+
+		$scope.addChild = function() {
+			splashFactory.addChild($scope.newChild)
+				.success( function( data ) {
+					window.alert("Child added successfully!");
+				}).error( function( response ) {
+					window.alert(response.message);
+				});
 		}
 
 	}]);

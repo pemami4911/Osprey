@@ -57,8 +57,8 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 											"email": $scope.loggedUser.username,
 											"weight": Math.random()
 										 }
+					$scope.$broadcast('reloadPatient');
 					$scope.contentUrl = 'views/parentPartials/dashPatient.html';
-
 				}  
 
 			}
