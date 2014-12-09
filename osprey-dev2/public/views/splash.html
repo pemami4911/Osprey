@@ -1,28 +1,34 @@
-      <div class="container" style="height:100%; background: url('/img/background.jpg') no-repeat center center fixed; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; background-size: cover; margin-left:0px; margin-right:0px; margin-bottom:0px; width:100%;">
+      <div class="container" style="height:100%; background: url('/img/background-new.jpg') no-repeat center center fixed; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover; background-size: cover; margin-left:0px; margin-right:0px; margin-bottom:0px; width:100%;">
       <div class="container" style="height:100%; padding-top: 0px; padding-bottom: 0px;">
          <div class="jumbotron" style="background-color: transparent; padding-top: 5px; padding-bottom: 5px; margin-left:auto; margin-right:auto; width:1170px; margin-bottom:5px;" >
-            <img class="img-responsive" src="img/Osprey-Logo-Small.png"></img>
+            <img class="img-responsive" src="img/Osprey-Logo-Small-blue.png"></img>
          </div>
          <div class="row marketing" style ="outline: 1px solid #ddd">
             <div class="col-md-6">
-               <h1 class="text-center">LOG IN</h1>
+                <h1 class="text-center" style="color:#00344f;"><strong>Sign In</strong></h1>
                <br><br>
-               <form class="form-horizontal" role="form" >
+               <form class="form-horizontal" role="form">
                   <div class="form-group">
-                     <label for="inputEmail3" class="col-sm-2 control-label">Email</label>
-                     <div class="col-sm-10">
-                        <input type="email" class="form-control" id="inputEmail3" placeholder="Email" ng-model="loginData.email" ng-required="true" ng-pattern="/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/i">
+                     <!-- <label for="inputEmail3" class="col-sm-2 control-label">Email</label> -->
+                     <div class="col-sm-10 col-md-offset-2">
+                        <div class="input-group " style="margin-left:-4px">
+                           <span class="input-group-addon"><i class="glyphicon glyphicon-envelope" style="color:#00344f;"></i></span>
+                           <input type="email" class="form-control" id="inputEmail3" style="width: 330px;" placeholder="Email" ng-model="loginData.email" ng-required="true" ng-pattern="/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/i">
+                        </div>
                      </div>
                   </div>
                   <div class="form-group">
-                     <label for="inputPassword3" class="col-sm-2 control-label">Password</label>
-                     <div class="col-sm-10">
-                        <input type="password" class="form-control" id="inputPassword3" placeholder="Password" ng-model="loginData.password" ng-required="true">
+                     <!-- <label for="inputPassword3" class="col-sm-2 control-label">Password</label> -->
+                     <div class="col-sm-10 col-md-offset-2">
+                        <div class="input-group" style="margin-left:-4px">
+                           <span class="input-group-addon"><i class="glyphicon glyphicon-lock" style="color:#00344f;"  style="color:#00344f;"></i></span>
+                           <input type="password" class="form-control" id="inputPassword3"  style="width: 330px;" placeholder="Password" ng-model="loginData.password" ng-required="true">
+                        </div>
                      </div>
                   </div>
                   <div class="form-group text-center">
                      <div class="col-sm-12">
-                        <button type="submit" class="btn btn-default btn-lg" ng-click="login()" id="signin-button">Sign in</button>
+                        <button type="submit" class="btn btn-default btn-lg"  style="width: 369px; background-color:#00344f; color:#eee; border-color:#00344f;" ng-click="login()" id="signin-button">Sign In</button>
                      </div>
                   </div>
                </form>
@@ -31,35 +37,43 @@
                </div>
             </div>
             <div class="col-md-6" style="border-left:1px solid #ddd">
-               <h1 class="text-center">JOIN OSPREY</h1>
+               <h1 class="text-center" style="color:#00344f;"><strong>Join Osprey</strong></h1>
                   <alert ng-repeat="alert in regAlerts" type="{{alert.type}}" close="closeAlert($index, false)">
                      {{alert.msg}}
-                  </alert>               <h4 class="text-center">Are you a</h4>
+                  </alert>               <h4 class="text-center" style="color:#00344f;">Are you a</h4>
                <form class="form-horizontal" role="form" ng-submit="register()">
                   <div class="text-center">
-                     <div class="btn-group">
-                        <label class="btn btn-lg btn-default" ng-model="initRegData.userType" id="parentButton" btn-radio="'Parent'">Parent</label>
-                        <label class="btn btn-lg btn-default" ng-model="initRegData.userType" id="physButton" btn-radio="'Physician'">Physician</label>
+                     <div class="btn-group btn-group-justified" style="width: 369px; margin: 0 auto; float: none;" >
+                        <label class="btn btn-lg btn-default" style="color:#00344f;" ng-model="initRegData.userType" id="parentButton" btn-radio="'Parent'">Parent</label>
+                        <label class="btn btn-lg btn-default" style="color:#00344f;" ng-model="initRegData.userType" id="physButton" btn-radio="'Physician'">Physician</label>
                      </div>
                   </div>
 
                   <p>
                   <div class="form-group">
-                     <label for="inputEmail3" class="col-sm-2 control-label">Email</label>
-                     <div class="col-sm-9">
-                        <input type="email" class="form-control" id="inputEmail3" placeholder="Email" ng-model="initRegData.email" ng-required="true" ng-pattern="/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/i">
+                  <div class="col-sm-10 col-md-offset-2">
+                    <div class="input-group" style="margin-left:-4px">
+                    <!--  <label for="inputEmail3" class="col-sm-2 control-label">Email</label> -->
+                    <!-- <div class="col-sm-9"> -->
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-envelope" style="color:#00344f;"></i></span>
+                        <input type="email" class="form-control" id="inputEmail3" placeholder="Email" style="width: 330px;" ng-model="initRegData.email" ng-required="true" ng-pattern="/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/i">
                      </div>
+                  </div>
                   </div>
                
                   <div class="form-group">
-                     <label for="inviteCode" class="col-sm-2 control-label">Invite Code</label>
-                     <div class="col-sm-9">
-                        <input type="text" class="form-control" id="inviteCode" placeholder="Invite Code" ng-model="initRegData.inviteCode" ng-disabled="isPhysician()" ng-required="true">
+                  <div class="col-sm-10 col-md-offset-2">
+                     <div class="input-group" style="margin-left:-4px">
+                     <!-- <label for="inviteCode" class="col-sm-2 control-label">Invite Code</label> -->
+                     <!-- <div class="col-sm-9"> -->
+                     <span class="input-group-addon"><i class="glyphicon glyphicon-asterisk" style="color:#00344f;"></i></span>
+                        <input type="text" class="form-control" id="inviteCode" placeholder="Invite Code" style="width: 330px;" ng-model="initRegData.inviteCode" ng-disabled="isPhysician()" ng-required="true">
                      </div>
+                  </div>
                   </div>
                   <div class="form-group text-center">
                      <div class="col-sm-12">
-                        <button type="submit" class="btn btn-default btn-lg" id = "next-button" >Next</button>
+                        <button type="submit" class="btn btn-default btn-lg" id = "next-button" style="width: 369px; background-color:#00344f; color:#eee; border-color:#00344f;">Sign Up</button>
                      </div>
                   </div>
                </form>
@@ -72,7 +86,10 @@
          </div>
       </div>
       <br>
+      <br>
+      <br>
+<!--       <br>
       <button ng-click="test()" class="btn btn-default btn-sm">Test</button>
       <input type="text" ng-model="clearUserData" placeholder="Email">
-      <button ng-click="clearUser()" class="btn btn-default btn-sm" >delete user</button>
+      <button ng-click="clearUser()" class="btn btn-default btn-sm" >delete user</button> -->
       </div>
