@@ -18,7 +18,6 @@ if (process.env.NODE_ENV == 'test') {
 		vaultid = 'b51db608-3321-41dd-9531-bfc40c1f5c27'  // nick-dev
 	else if (process.env.NODE_ENV == 'patrick')
 		vaultid = '3ff57a92-b0ba-4972-b518-7b584c667809'  // patrick-dev
-
 	app.use(morgan('dev')); // log every request to the console
 }
 
