@@ -76,16 +76,14 @@ describe('dashboardControllerLoggedInPhysician', function(){
     it('should change the content url when a new tab is selected, and should be able to switch back', function() {
         scope.activeTab = 2;
         expect(scope.contentUrl).toBe('views/dashPartials/dashMyPatients.html'); 
-        scope.switchTab(3);
-        expect(scope.contentUrl).toBe('views/dashPartials/dashCharts.html'); 
+        scope.switchTab(4);
+        expect(scope.contentUrl).toBe('views/dashPartials/dashSettings.html'); 
         scope.switchTab(2);
         expect(scope.contentUrl).toBe('views/dashPartials/dashMyPatients.html'); 
 
     }); 
 
    it('should change the content url to any other url', function() {
-        scope.switchTab(3);  
-        expect(scope.contentUrl).toBe('views/dashPartials/dashCharts.html'); 
         scope.switchTab(4);
         expect(scope.contentUrl).toBe('views/dashPartials/dashSettings.html'); 
         scope.switchTab(2); 
@@ -93,7 +91,7 @@ describe('dashboardControllerLoggedInPhysician', function(){
     });
 
    it('should have three tabs in the navigation bar', function() {
-        expect(scope.navItems.length).toBe(3);
+        expect(scope.navItems.length).toBe(2);
    });
 });
 
