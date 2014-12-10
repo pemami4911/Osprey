@@ -60,6 +60,21 @@ describe('regParentController', function(){
       expect(scope.error).toEqual('Invalid email'); 
    });
 
+   it('should reject empty passwords', function() {
+      scope.regData.email = 'test@test.com';
+      scope.regData.password = ''; 
+
+      $httpBackend.when('POST', '/auth/register').respond(400, {
+          'message': "Invalid password"
+      }); 
+
+      scope.registerFinal(); 
+      $httpBackend.flush(); 
+
+      expect(scope.error).toExist; 
+      expect(scope.error).toEqual('Invalid password'); 
+   });
+
    it('should initialize children to 1', function () {
       expect(scope.regData.numChildren).toBe(1);
    });

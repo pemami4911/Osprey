@@ -121,15 +121,12 @@ describe('dashboardControllerLoggedInParent', function(){
         $httpBackend.flush();
         $location = _$location_; 
     }));
-
     it('should be able to instantiate a copy of the dashboardController', function() {
         expect(dashCtrl).toExist; 
     });
-
     it('should have access to the dashboardControllers scope', function() {
         expect(scope.activeTab).toExist; 
     });
-
     it('should display the parent page upon logging in', function() {
         expect(scope.contentUrl).toBe('views/parentPartials/dashParent.html'); 
     });

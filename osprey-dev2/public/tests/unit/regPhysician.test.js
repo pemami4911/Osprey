@@ -59,7 +59,7 @@ describe('regPhysicianController', function(){
       expect(scope.error).toEqual('Invalid email'); 
    });
 
-   it('should send a confirmation email on registration', function() {
+   it('should send user to verify page on registration', function() {
       scope.regData.email = "test@test123.com"; 
       scope.regData.userType = "Parent"; 
 
@@ -70,6 +70,20 @@ describe('regPhysicianController', function(){
 
       expect( $location.url() ).toBe('/verify'); 
       expect(scope.error).toBe(undefined); 
+   });
+
+   it('should reject empty passwords', function() {
+       scope.regData.email = "test@test123.com"; 
+       scope.regData.password = "Parent"; 
+
+      $httpBackend.when('POST', '/auth/register').respond(400, {
+        'message':'invalid password'
+      }); 
+
+      scope.registerFinal();  
+      $httpBackend.flush(); 
+
+      expect(scope.error).toBe('invalid password'); 
    });
 
  }); 
