@@ -59,21 +59,17 @@ describe('regPhysicianController', function(){
       expect(scope.error).toEqual('Invalid email'); 
    });
 
-   it('should ask the user if they are sure that they want to change pages on route-change-start, unless they have filled out all required input boxes and hit "register" button', function () {
-
-   });
-
-   it('should allow the user to hit a reset button which clears the form out', function () {
-
-   });
-   
-   it('should prevent the user from navigating to the dashboard without registering', function() {
-
-   }); 
-
    it('should send a confirmation email on registration', function() {
+      scope.regData.email = "test@test123.com"; 
+      scope.regData.userType = "Parent"; 
 
+      $httpBackend.when('POST', '/auth/register').respond(200); 
+
+      scope.registerFinal();  
+      $httpBackend.flush(); 
+
+      expect( $location.url() ).toBe('/verify'); 
+      expect(scope.error).toBe(undefined); 
    });
-
 
  }); 

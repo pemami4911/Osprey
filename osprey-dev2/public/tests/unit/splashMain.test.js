@@ -20,6 +20,8 @@ describe('splashController', function(){
     	 $httpBackend = _$httpBackend_; 
     	 $location = _$location_; 
     	 $cookieStore = _$cookieStore_; 
+
+    	 
   	}));
 
  	it('should be able to create an instance of itself', function() {
@@ -140,8 +142,24 @@ describe('splashController', function(){
 		expect(scope.error).toEqual(undefined); 
 	});
 
-	it('should not be able to finish a route change if the user has not legitimately logged in or registered', function() {
-
+	it('should navigate to /forgotPassword on request', function() {
+		$location.path('/forgotPassword'); 
+		expect($location.url()).toBe('/forgotPassword');
 	});
 
-});
+	it('forgotPassword() should take in an email and reply with an appropriate message', function() {
+		scope.guessWhoForgotTheirPassword = {
+			'email':'test@test.com'
+		}
+
+		$httpBackend.when('POST', '/auth/forgotPassword').respond( 200, {'message':'success'});
+
+		scope.forgotPassword(); 
+		
+		$httpBackend.flush(); 
+
+		expect(scope.error).toEqual(undefined); 	
+	});
+
+
+});	

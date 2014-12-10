@@ -73,8 +73,12 @@ Auth.prototype.login = function(req, res) {
 // takes username, password, user attributes in request body
 // returns true or false, sets session variable to access token
 Auth.prototype.register = function(req, res) {
+
 	var uuid, token; 
 	// schema for a new user
+	if( req.body.password === undefined || req.body.password.trim() === '')
+		res.status(401).send({"message":"Please enter a valid password"}); 
+
 	var user = {
 		"username": req.body.email,
 		"password": req.body.password,

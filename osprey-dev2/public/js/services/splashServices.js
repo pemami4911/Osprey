@@ -13,8 +13,10 @@ angular.module('splashPageService', [])
 			},
 
 			registerFinal : function(regData) {
-				//console.log(regData);
-				return $http.post('/auth/register', regData);
+				var postBody = {};
+				postBody.email = regData.email; 
+				postBody.password = regData.password; 
+				return $http.post('/auth/register', postBody);
 			},
 
 			isLoggedIn : function() {

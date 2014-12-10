@@ -103,10 +103,10 @@ describe('dashboardControllerLoggedInParent', function(){
     // inject the $controller and $rootScope services
     // in the beforeEach block
     beforeEach(inject(function($controller, $rootScope, _$httpBackend_, _$location_) {
-    // Create a new scope that's a child of the $rootScope
+        // Create a new scope that's a child of the $rootScope
         scope = $rootScope.$new();
        
-      // Create the controller
+        // Create the controller
         dashCtrl = $controller('dashboardController', {
             $scope : scope
         });
@@ -164,5 +164,4 @@ describe('dashboardControllerNotLoggedIn', function(){
         $httpBackend.flush();
         expect($location.url()).toBe('/'); 
     });
-
 });

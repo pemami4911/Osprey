@@ -32,6 +32,11 @@ angular.module('regPhysicianPageModule', ['splashPageService'])
 
 		$scope.registerFinal = function() {
 			$scope.loading = true;
+			
+			// if( $scope.regData.password === undefined ) {
+			// 	window.alert('Please enter a valid password');
+			// 	return;
+			// } 
 			// validate the formData to make sure that something is there
 			// if form is empty, nothing will happen
 			if ($scope.regData.email != undefined) {

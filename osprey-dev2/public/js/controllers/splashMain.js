@@ -110,6 +110,7 @@ angular.module('splashPageModule', ['splashPageService'])
 				})
 				.error( function ( response ) {
 					$scope.addAlert( response.message, "danger", false);  
+					$scope.error = response.message; 
 				});	
 		}
 

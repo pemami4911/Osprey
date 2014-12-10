@@ -72,20 +72,17 @@ describe('regParentController', function(){
       expect(scope.getNumber(5).length).toBe(5);
    });
 
-   it('should ask the user if they are sure that they want to change pages on route-change-start, unless they have filled out all required input boxes and hit "register" button', function () {
+   it('should navigate to /verify upon registration', function() {
+      scope.regData.email = "test@test123.com"; 
+      scope.regData.userType = "Parent"; 
 
-   });
+      $httpBackend.when('POST', '/auth/register').respond(200); 
 
-   it('should allow the user to hit a reset button which clears the form out', function() {
+      scope.registerFinal();  
+      $httpBackend.flush(); 
 
-   });
-
-   it('should prevent the user from navigating to the dashboard without registering', function() {
-
-   }); 
-
-   it('should send a confirmation email on registration', function() {
-
+      expect( $location.url() ).toBe('/verify'); 
+      expect(scope.error).toBe(undefined); 
    }); 
 
  }); 
