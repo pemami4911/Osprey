@@ -20,6 +20,8 @@ if (process.env.NODE_ENV == 'test') {
 		vaultid = '3ff57a92-b0ba-4972-b518-7b584c667809'  // patrick-dev
 	else if (process.env.NODE_ENV == 'gabe')
 		vaultid = 'b6825b50-dd69-4311-8b89-0064a3df0521'  // gabe-dev
+	else if (process.env.NODE_ENV == 'peyt')
+		vaultid = '8925f5e4-e4db-4a96-a2f5-1edcff487f48'  // peyt-dev
 
 	app.use(morgan('dev')); // log every request to the console
 }
