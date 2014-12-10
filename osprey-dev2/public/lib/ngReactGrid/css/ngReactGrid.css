@@ -217,7 +217,7 @@
 }
 
 .ngReactGridPagination ul li.active a {
-    background: #428bca;
+    background: #00344f;
     color: #FFF;
 }
 
@@ -227,7 +227,7 @@
     padding: 3px 9px;
     line-height: 1.42857143;
     text-decoration: none;
-    color: #428bca;
+    color: #00344f;
     background-color: #fff;
     border: 1px solid #ddd;
     margin-left: -1px;
