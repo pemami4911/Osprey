@@ -38,6 +38,7 @@ ospreyApp.config(['$routeProvider',
       }).
       when('/forgotPassword', {
         templateUrl: 'views/forgotPassword.html',
+        controller: 'splashController'
       }).
       otherwise({
         redirectTo: '/'

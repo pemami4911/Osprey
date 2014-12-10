@@ -25,6 +25,12 @@ angular.module('splashPageService', [])
 				return $http.get('/auth/logout', userData); 
 			},
 
+			forgotPassword : function( user ) {
+				var postBody = {};
+				postBody.email = user.email; 
+				return $http.post('/auth/forgotPassword', postBody); 
+			},
+
 			deleteAccount: function( userID, email, password) {
 				var postBody = {};
 				postBody.email = email; 

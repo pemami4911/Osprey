@@ -66,8 +66,8 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 			if ($scope.loggedUser.userType == 'Physician') {
 				if ($scope.activeTab == 2) {
 					$scope.contentUrl = 'views/dashPartials/dashMyPatients.html';
-				} else if ($scope.activeTab == 3) {
-					$scope.contentUrl = 'views/dashPartials/dashCharts.html';
+				// } else if ($scope.activeTab == 3) {
+				// 	$scope.contentUrl = 'views/dashPartials/dashCharts.html';
 				} else if ($scope.activeTab == 4) {
 					$scope.contentUrl = 'views/dashPartials/dashSettings.html';
 				} else if ($scope.activeTab == 5) {
@@ -111,7 +111,7 @@ angular.module('dashboardPageModule', ['splashPageService', 'ngReactGrid', 'ui.b
 			} else {
 				$scope.switchTab(2);
 				$scope.navItems.push({name: "My Patients", num: 2})
-				$scope.navItems.push({name: "Reports", num: 3})
+				//$scope.navItems.push({name: "Reports", num: 3})
 				$scope.navItems.push({name: "Admin", num: 4})
 			}
 		};

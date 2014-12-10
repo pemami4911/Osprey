@@ -68,6 +68,9 @@ module.exports = function(app, vault) {
 	app.post('/auth/isLogged', function(req, res) {	
 		Auth.isLogged(req, res);
 	});
+	app.post('/auth/forgotPassword', function(req, res) {
+		Auth.forgotPassword(req, res); 
+	});
 	app.post('/settings/deleteAccount', function(req, res) {
 		Settings.deleteAccount(req, res); 
 	});

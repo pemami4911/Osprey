@@ -184,6 +184,14 @@ Auth.prototype.verify = function(req, res) {
 		res.status(500).send("<h1>Request is from unknown source");
 }
 
+Auth.prototype.forgotPassword = function( req, res ) {
+	console.log( req.body.email ); 
+	if( req.body.email === undefined || req.body.email.trim() === '')
+		res.status(401).send({'message':'Please provide an email'}); 
+	else
+		res.status(200).send({'message':'An email has been sent with instructions on how to reset your password'}); 
+}	
+
 // takes email in request body
 // returns 1 if that user is found in list of all users, 0 otherwise
 Auth.prototype.checkReg = function (req, res) {
