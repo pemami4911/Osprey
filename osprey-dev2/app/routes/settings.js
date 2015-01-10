@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 
 'use strict'
 
 var globals = {};
@@ -8,8 +25,8 @@ var nodemailer = require('nodemailer');
 var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'ospreytester@gmail.com',
-        pass: 'mypasstest1'
+        user: 'noreply.kiwee@gmail.com',
+        pass: 'whynotnow901'
     }
 });
 
@@ -20,16 +37,7 @@ var InviteCode = new InviteCodeSchema();
 var regex = new RegExp("[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}$", "i");	// document id validation
 
 // set this to our domain for security 
-var host = 'localhost:8080'; 
-
-var nodemailer = require('nodemailer');
-var transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: 'ospreytester@gmail.com',
-        pass: 'mypasstest1'
-    }
-});
+var host = '104.236.30.199:8080'; 
 
 function Settings(_globals, _api_key, _vaultid) {
 	globals = _globals;
@@ -115,6 +123,8 @@ Settings.prototype.changeEmail = function(req, res) {
 		// update the user document in the database
 		var updateDetails = Builder.updateDocument( globals.userSchemaId, vaultid, doc_id, user ); 
 		truevault.documents.update( updateDetails, ifError); 
+
+		res.status(200).send(); 
 	}
 
 	var foundUser = function( err, value ) {
@@ -139,8 +149,6 @@ Settings.prototype.changeEmail = function(req, res) {
 			user.isConfirmed = false; 
 			// set the new token and send an email
 			require("crypto").randomBytes(32, onSuccess); 
-			
-			res.status(200).end(); 
 		}
 	}
 
@@ -330,7 +338,7 @@ function ifError( err, value ) {
 function sendEmail(recipient, subject, message) {
 	// console.log("Send Email"); 
 	transporter.sendMail({
-	    from: "ospreytester@gmail.com",
+	    from: "noreply.kiwee@gmail.com",
 	    to: recipient,
 	    subject: subject,
 	    html: message

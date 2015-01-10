@@ -1,19 +1,33 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 
 var globals = {};
 var api_key = '';
 var vaultid = '';
 var truevault = {};
-var host = 'localhost:8080'; 
+var host = '104.236.30.199:8080'; 
 var nodemailer = require('nodemailer');
 var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'ospreytester@gmail.com',
-        pass: 'mypasstest1'
+        user: 'noreply.kiwee@gmail.com',
+        pass: 'whynotnow901'
     }
 });
-
-// set this to our domain for security 
-var host = 'localhost:8080'; 
 
 var truevaultBuilder = require('../schemas/truevaultBuilder'); 
 var Builder = new truevaultBuilder(); 
@@ -75,19 +89,12 @@ Auth.prototype.login = function(req, res) {
 Auth.prototype.register = function(req, res) {
 
 	var uuid, token; 
-	// schema for a new user
-	if( req.body.password === undefined || req.body.password.trim() === '')
-		res.status(401).send({"message":"Please enter a valid password"}); 
-
-	var user = {
-		"username": req.body.email,
-		"password": req.body.password,
-	};
 
 	var onCreation = function( err2, value2 ) {
+
 		if ( err2 ) {
 			console.log(err2);
-			res.status(500).send( {"message":"An internal server error occurred. Sad tiger!"});
+			res.status(500).send( {"message":"An internal server error occurred."});
 		}
 
 		var link, mailOptions; 
@@ -138,12 +145,22 @@ Auth.prototype.register = function(req, res) {
 		    		truevault.documents.create( childDoc, callback); 
 		    	}
 			}
+
 			req.session.access_token = value.user.access_token;
 			require("crypto").randomBytes(32, onSuccess); 
 	    }
 	}
 
-	truevault.users.create( user, createUser); 
+	var user = {
+		"username": req.body.email,
+		"password": req.body.password,
+	};
+
+	// schema for a new user
+	if( req.body.password === undefined || req.body.password.trim() === '')
+		res.status(401).send({"message":"Please enter a valid password"});
+	else
+		truevault.users.create( user, createUser); 
 }
 
 Auth.prototype.verify = function(req, res) {
@@ -165,9 +182,7 @@ Auth.prototype.verify = function(req, res) {
 				// isConfirmed is set to true, confirmationToken set to null
 
 				user.isConfirmed = true; 
-				user.confirmationToken = null; 
-				// not usable with IE9 and earlier
-				//var enc = window.btoa( user ); 
+				user.confirmationToken = null;
 				var updateUser = Builder.updateDocument( globals.userSchemaId, vaultid, id, user);
 				truevault.documents.update( updateUser, function ( err, data ) {
 					if( err ) {
@@ -189,11 +204,10 @@ Auth.prototype.verify = function(req, res) {
 }
 
 Auth.prototype.forgotPassword = function( req, res ) {
-	console.log( req.body.email ); 
 	if( req.body.email === undefined || req.body.email.trim() === '')
 		res.status(401).send({'message':'Please provide an email'}); 
 	else
-		res.status(200).send({'message':'An email has been sent with instructions on how to reset your password'}); 
+		res.status(200).send({'message':'This feature is still in progress. Thank you for your patience.'}); 
 }	
 
 // takes email in request body
@@ -267,7 +281,7 @@ Auth.prototype.checkReg = function (req, res) {
 													}
 													truevault.users.list(function(err, value) {
 													    if (err)
-													    	res.status(500).send({"message":"An internal server error occurred. Sad tiger!"});
+													    	res.status(500).send({"message":"An internal server error occurred."});
 													    else {
 													    	for (var i = 0; i < value.users.length; i++) {
 													    		if (req.body.email == value.users[i].username)
@@ -312,9 +326,9 @@ Auth.prototype.isLogged = function(req, res) {
 
 	var confirmCallback = function( err ) {
 		if ( err === undefined )
-			res.status(500).send({ "message" : "An internal server error occurred. Sad tiger!" });
+			res.status(500).send({ "message" : "An internal server error occurred" }); 
 		else if ( err === "Unauthorized" )
-			res.status(401).send({ "message" : "The user has accessed the dashboard with an unconfirmed email! ANGRY TIGER!" }); 
+			res.status(401).send({ "message" : "The user has accessed the dashboard with an unconfirmed email"}); 
 		else {
 			document.username = theUsername;
 			res.send( document ); 
@@ -340,9 +354,8 @@ Auth.prototype.isLogged = function(req, res) {
 
 	var verifyCallback = function( err, value ) {
 		if ( err ) 
-			res.status(500).send({"message":"User has been logged out...redirecting to the login page"});
+			res.status(500).send({"message":"User was not able to be authenticated...redirecting to the login page"});
 		else {
-
 			theUsername = value.user.username; 
 			var filterAttributes = Builder.vendFilterAttributes( "eq", value.user.user_id ); 
 			filter = Builder.vendFilter( globals.userSchemaId, vaultid, {"user_id":filterAttributes}, true );
@@ -391,8 +404,7 @@ function isConfirmed( user, callback ) {
 				var buf = new Buffer(b64string, 'base64');
 				var data = JSON.parse(buf.toString('ascii'));
 				
-				// console.log( data ); 
-
+				console.log( data ); 
 				if( data.isConfirmed === false )	// if the user has not been confirmed yet
 					callback( "Unauthorized", data, doc_id);  // send back an error message
 				else 
@@ -428,7 +440,7 @@ function checkDuplicates( email ) {
 function sendEmail(recipient, subject, message) {
 	// console.log("Send Email"); 
 	transporter.sendMail({
-	    from: "ospreytester@gmail.com",
+	    from: "noreply.kiwee@gmail.com",
 	    to: recipient,
 	    subject: subject,
 	    html: message

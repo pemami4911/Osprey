@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 
 module.exports = function(grunt) {
 
 	var watchFiles = {
@@ -45,6 +62,9 @@ module.exports = function(grunt) {
 		tasks: ['jshint', 'qunit']
 	    },
 	    env: {
+	    	prod: {
+	    		NODE_ENV: 'prod'
+	    	},
 			test: {
 				NODE_ENV: 'test'
 			},
@@ -103,8 +123,8 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-protractor-webdriver');
     grunt.loadNpmTasks('grunt-nodemon');
 
-    grunt.registerTask('test', ['env:test', 'karma', 'mochaTest', 'protractor_webdriver', 'protractor']);
-    grunt.registerTask('default', ['nodemon']);
+    grunt.registerTask('test', ['env:test', 'karma', 'mochaTest']);
+    grunt.registerTask('default', ['env:prod', 'nodemon']);
     grunt.registerTask('nick', ['env:nick', 'nodemon']);
     grunt.registerTask('patrick', ['env:patrick', 'nodemon']);
     grunt.registerTask('gabe', ['env:gabe', 'nodemon']);

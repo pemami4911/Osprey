@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 // set up ======================================================================
 var express  = require('express');
 var app      = express(); 								// create our app w/ express
@@ -10,7 +27,10 @@ var session = require('express-session');
 var flash = require('connect-flash');
 
 // configuration ===============================================================
-var vaultid = '7b55edbd-a907-4569-947c-726c215c0eee' // osprey-dev
+var vaultid = '949e7fe3-d455-4b00-8c42-e2a07d0a1c84'; // kiwee
+
+//var vaultid = '7b55edbd-a907-4569-947c-726c215c0eee' // osprey-dev
+
 if (process.env.NODE_ENV == 'test') {
 	vaultid = '093b7e33-be5c-4f41-bd95-11cdebf3465b' // test
 } else {
@@ -33,8 +53,6 @@ app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse applica
 app.use(methodOverride('X-HTTP-Method-Override')); // override with the X-HTTP-Method-Override header in the request
 
 app.use(cookieParser()); // read cookies (needed for auth)
-
-// required for passport
 app.use(session({ secret: 'thisismysecret'}));
 app.use(flash()); // flash messages stored in session
 
