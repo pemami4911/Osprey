@@ -49,14 +49,7 @@ describe('ospreyCoreApp', function() {
 		expect(browser.get('http://localhost:8080'));
 	});
 
-	it('should show that the physician exists already', function() {
-		element(by.css('#physButton')).click();
-		regEmail.sendKeys('psdewar2@yahoo.com');
-		next.click();
-		expect(alertMsg.getText()).toEqual('A user is already registered with this email');
-	});
-/*
-	//invalid login check
+		//invalid login check
 	it('should catch invalid emails and passwords', function() {
 		loginEmail.sendKeys('cantwaitforthenbaseasontostart@letsgo.com');
 		loginPassword.sendKeys('ilovenickjiang');
@@ -66,7 +59,16 @@ describe('ospreyCoreApp', function() {
 		loginEmail.clear();
 		loginPassword.clear();
 	});
-*/
+
+/*
+	it('should show that the physician exists already', function() {
+		element(by.css('#physButton')).click();
+		regEmail.sendKeys('psdewar2@yahoo.com');
+		next.click();
+		expect(alertMsg.getText()).toEqual('A user is already registered with this email');
+	});
+
+
 	//valid login and dashboard check for physician
 	it('should have new physician in dashboard', function() {
 		
